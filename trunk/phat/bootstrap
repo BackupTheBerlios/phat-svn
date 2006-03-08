@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -x
+
+libtoolize -c -f --automake
+aclocal 
+autoheader
+autoconf -f
+automake -a -c
+

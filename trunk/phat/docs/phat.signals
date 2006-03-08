@@ -1,0 +1,38 @@
+<SIGNAL>
+<NAME>PhatFanSlider::changed</NAME>
+<RETURNS>void</RETURNS>
+PhatFanSlider *phatfanslider
+</SIGNAL>
+
+<SIGNAL>
+<NAME>PhatFanSlider::value-changed</NAME>
+<RETURNS>void</RETURNS>
+PhatFanSlider *phatfanslider
+</SIGNAL>
+
+<SIGNAL>
+<NAME>PhatSliderButton::changed</NAME>
+<RETURNS>void</RETURNS>
+PhatSliderButton *phatsliderbutton
+</SIGNAL>
+
+<SIGNAL>
+<NAME>PhatSliderButton::value-changed</NAME>
+<RETURNS>void</RETURNS>
+PhatSliderButton *phatsliderbutton
+</SIGNAL>
+
+<SIGNAL>
+<NAME>PhatKeyboard::key-pressed</NAME>
+<RETURNS>void</RETURNS>
+PhatKeyboard *phatkeyboard
+gint  arg1
+</SIGNAL>
+
+<SIGNAL>
+<NAME>PhatKeyboard::key-released</NAME>
+<RETURNS>void</RETURNS>
+PhatKeyboard *phatkeyboard
+gint  arg1
+</SIGNAL>
+

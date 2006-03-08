@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>PhatFanslider</TITLE><META NAME="GENERATOR" CONTENT="Modular DocBook HTML Stylesheet Version 1.7"><LINK REL="HOME" TITLE="[Insert name here] Reference Manual" HREF="index.html"><LINK REL="UP" TITLE="[Insert title here]" HREF="c4.html"><LINK REL="PREVIOUS" TITLE="[Insert title here]" HREF="c4.html"><LINK REL="NEXT" TITLE="PhatHFanslider" HREF="phat-phathfanslider.html"><META NAME="GENERATOR" CONTENT="GTK-Doc V1.2 (SGML mode)"><STYLE TYPE="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</STYLE></HEAD><BODY CLASS="REFENTRY" BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#840084" ALINK="#0000FF"><TABLE WIDTH="100%" CLASS="navigation" SUMMARY="Navigation header" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD><A ACCESSKEY="p" HREF="c4.html"><IMG SRC="left.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Prev"></A></TD><TD><A ACCESSKEY="u" HREF="c4.html"><IMG SRC="up.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Up"></A></TD><TD><A ACCESSKEY="h" HREF="index.html"><IMG SRC="home.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Home"></A></TD><TH WIDTH="100%" align="center">[Insert name here] Reference Manual</TH><TD><A ACCESSKEY="n" HREF="phat-phathfanslider.html"><IMG SRC="right.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Next"></A></TD></TR></TABLE><H1><A NAME="PHAT-PHATFANSLIDER"></A>PhatFanslider</H1><DIV CLASS="REFNAMEDIV"><A NAME="AEN11"></A><H2>Name</H2>PhatFanslider&nbsp;--&nbsp;a base class for <a
+href="../phat/phathfanslider.html"
+><SPAN CLASS="TYPE">PhatHFanslider</SPAN></a> and <a
+href="../phat/phatvfanslider.html"
+><SPAN CLASS="TYPE">PhatVFanslider</SPAN></a></DIV><DIV CLASS="REFSYNOPSISDIV"><A NAME="AEN18"></A><H2>Synopsis</H2><PRE CLASS="SYNOPSIS">&#13;
+
+void        <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-SET-VALUE">phat_fan_slider_set_value</A>       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double value);
+double      <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-GET-VALUE">phat_fan_slider_get_value</A>       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider);
+void        <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-SET-RANGE">phat_fan_slider_set_range</A>       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double lower,
+                                             double upper);
+void        <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-GET-RANGE">phat_fan_slider_get_range</A>       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double *lower,
+                                             double *upper);
+void        <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-SET-ADJUSTMENT">phat_fan_slider_set_adjustment</A>  (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             GtkAdjustment *adjustment);
+GtkAdjustment* <A HREF="phat-phatfanslider.html#PHAT-FAN-SLIDER-GET-ADJUSTMENT">phat_fan_slider_get_adjustment</A>
+                                            (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider);&#13;</PRE></DIV><DIV CLASS="REFSECT1"><A NAME="AEN45"></A><H2>Description</H2><P>The <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanslider</SPAN></a> widget family provides a slider widget for
+retrieving floating point values from the user.  The cool thing about
+fansliders is that the user can have a great amount of precision in a
+very small space.  After depressing the left mouse button on a
+fanslider, the user can then drag the pointer away from the widget,
+causing a "fan" to popup which indicates the new scale they are
+working with.  The farther out the pointer is drawn, the greater the
+size of the fan and the level of precision.</P><P>The fansliders work like most other numerical entry widgets; if you
+know how to use a <SPAN CLASS="TYPE">GtkSpinbutton</SPAN>, you know how to use a
+<a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanslider</SPAN></a>.  If not, check out the <A HREF="http://www.gtk.org/tutorial/" TARGET="_top"> GTK+-2.0 tutorial.</A> The
+only notable operational difference is that fansliders have no step
+parameters.</P><P><a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanslider</SPAN></a> is an abstract base class, from which <a
+href="../phat/phathfanslider.html"
+><SPAN CLASS="TYPE">PhatHFanslider</SPAN></a> and
+<a
+href="../phat/phatvfanslider.html"
+><SPAN CLASS="TYPE">PhatVFanslider</SPAN></a> are derived.  To create a new fanslider, call either
+<a
+href="../phat/phatvfanslider.html#PHAT-VFANSLIDER-NEW"
+><CODE CLASS="FUNCTION">phat_vfanslider_new()</CODE></a> or <a
+href="../phat/phathfanslider.html#PHAT-HFANSLIDER-NEW"
+><CODE CLASS="FUNCTION">phat_hfanslider_new()</CODE></a>.</P></DIV><DIV CLASS="REFSECT1"><A NAME="AEN67"></A><H2>Details</H2><DIV CLASS="REFSECT2"><A NAME="AEN69"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-VALUE"></A>phat_fan_slider_set_value ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_value       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double value);</PRE><P>Sets the current value of the slider.  If the value is outside the
+range of values allowed by <VAR CLASS="PARAMETER">slider</VAR>, it will be clamped.  The slider
+emits the "value-changed" signal if the value changes.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN82"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN89"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">value</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a new value for the slider</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN94"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-VALUE"></A>phat_fan_slider_get_value ()</H3><PRE CLASS="PROGRAMLISTING">double      phat_fan_slider_get_value       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider);</PRE><P>Retrieves the current value of the slider.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN105"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN112"><SPAN STYLE="white-space: nowrap"><SPAN CLASS="emphasis"><I CLASS="EMPHASIS">Returns</I></SPAN> :</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> current value of the slider.&#13;</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN117"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-RANGE"></A>phat_fan_slider_set_range ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_range       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double lower,
+                                             double upper);</PRE><P>Sets the range of allowable values for the slider, and  clamps the slider's
+current value to be between <VAR CLASS="PARAMETER">lower</VAR> and <VAR CLASS="PARAMETER">upper</VAR>.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN132"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN139"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">lower</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> lowest allowable value</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN144"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">upper</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> highest allowable value</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN149"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-RANGE"></A>phat_fan_slider_get_range ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_get_range       (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             double *lower,
+                                             double *upper);</PRE><P>Places the range of allowable values for <VAR CLASS="PARAMETER">slider</VAR> into <VAR CLASS="PARAMETER">lower</VAR>
+and <VAR CLASS="PARAMETER">upper</VAR>.  Either variable may be set to <VAR CLASS="LITERAL">NULL</VAR> if you are not
+interested in it's value.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN166"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN173"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">lower</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> retrieves lowest allowable value</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN178"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">upper</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> retrieves highest allowable value</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN183"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-ADJUSTMENT"></A>phat_fan_slider_set_adjustment ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_adjustment  (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider,
+                                             GtkAdjustment *adjustment);</PRE><P>Sets the adjustment used by <VAR CLASS="PARAMETER">slider</VAR>.  Every <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a> uses an
+adjustment to store it's current value and it's range of allowable
+values.  If <VAR CLASS="PARAMETER">slider</VAR> already has an adjustment (and it always will),
+it will <CODE CLASS="FUNCTION">g_object_unref()</CODE> it's current adjustment before using the
+new one.  If <VAR CLASS="PARAMETER">adjustment</VAR> is <VAR CLASS="LITERAL">NULL</VAR>, a new adjustment with a value of
+zero and a range of [-1.0, 1.0] will be created.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN203"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN210"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">adjustment</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <SPAN CLASS="TYPE">GtkAdjustment</SPAN></P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN217"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-ADJUSTMENT"></A>phat_fan_slider_get_adjustment ()</H3><PRE CLASS="PROGRAMLISTING">GtkAdjustment* phat_fan_slider_get_adjustment
+                                            (<a
+href="../phat/phatfanslider.html"
+>PhatFanSlider</a> *slider);</PRE><P>Retrives the current adjustment in use by <VAR CLASS="PARAMETER">slider</VAR>.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN229"><SPAN STYLE="white-space: nowrap"><VAR CLASS="PARAMETER">slider</VAR>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanSlider</SPAN></a></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN236"><SPAN STYLE="white-space: nowrap"><SPAN CLASS="emphasis"><I CLASS="EMPHASIS">Returns</I></SPAN> :</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> <VAR CLASS="PARAMETER">slider</VAR>'s current <SPAN CLASS="TYPE">GtkAdjustment</SPAN>&#13;</P></TD></TR></TBODY></TABLE></DIV></DIV><DIV CLASS="REFSECT1"><A NAME="AEN244"></A><H2>See Also</H2><P><a
+href="../phat/phathfanslider.html"
+><SPAN CLASS="TYPE">PhatHFanslider</SPAN></a> and <a
+href="../phat/phatvfanslider.html"
+><SPAN CLASS="TYPE">PhatVFanslider</SPAN></a> to create instances of <a
+href="../phat/phatfanslider.html"
+><SPAN CLASS="TYPE">PhatFanslider</SPAN></a>.</P></DIV><TABLE CLASS="navigation" WIDTH="100%" SUMMARY="Navigation footer" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD ALIGN="left"><A ACCESSKEY="p" HREF="c4.html"><B>&lt;&lt;&lt;&nbsp;[Insert title here]</B></A></TD><TD ALIGN="right"><A ACCESSKEY="n" HREF="phat-phathfanslider.html"><B>PhatHFanslider&nbsp;&gt;&gt;&gt;</B></A></TD></TR></TABLE></BODY></HTML>

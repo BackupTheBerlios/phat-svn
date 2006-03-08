@@ -1,0 +1,543 @@
+<MACRO>
+<NAME>PHAT_TYPE_KEYBOARD</NAME>
+#define PHAT_TYPE_KEYBOARD (phat_keyboard_get_type())
+</MACRO>
+<MACRO>
+<NAME>PHAT_KEYBOARD</NAME>
+#define PHAT_KEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_KEYBOARD, PhatKeyboard))
+</MACRO>
+<MACRO>
+<NAME>PHAT_KEYBOARD_CLASS</NAME>
+#define PHAT_KEYBOARD_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_KEYBOARD, PhatKeyboardClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_KEYBOARD</NAME>
+#define PHAT_IS_KEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_KEYBOARD))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_KEYBOARD_CLASS</NAME>
+#define PHAT_IS_KEYBOARD_CLASS(klass) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), PHAT_TYPE_KEYBOARD))
+</MACRO>
+<STRUCT>
+<NAME>PhatKeyboardClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatKeyboard</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>_Key</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>_Key</NAME>
+struct __Key
+{
+    int index;
+    PhatKeyboard* keyboard;	/* the keyboard we belong to */
+    GnomeCanvasGroup* group;	/* the group this key belongs to */
+    GnomeCanvasItem* pre;	/* prelight rectangle */
+    GnomeCanvasItem* on;	/* active (depressed) rectangle */
+    GnomeCanvasItem* shad;	/* active shadow */
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatKeyboard</NAME>
+struct _PhatKeyboard
+{
+    /*< private >*/
+    GtkViewport parent;
+
+    _Key *keys;
+    int nkeys;
+    int label;
+    GnomeCanvas* canvas;
+    GtkOrientation orientation;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatKeyboardClass</NAME>
+struct _PhatKeyboardClass
+{
+    /*< private >*/
+    GtkViewportClass parent_class;
+
+    void (*key_pressed)(PhatKeyboard* keyboard, int key);
+    void (*key_released)(PhatKeyboard* keyboard, int key);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_keyboard_get_type</NAME>
+<RETURNS>GType </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_keyboard_get_adjustment</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatKeyboard* keyboard
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_keyboard_set_adjustment</NAME>
+<RETURNS>void </RETURNS>
+PhatKeyboard* keyboard, GtkAdjustment* adjustment
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_HFAN_SLIDER</NAME>
+#define PHAT_TYPE_HFAN_SLIDER            (phat_hfan_slider_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_HFAN_SLIDER</NAME>
+#define PHAT_HFAN_SLIDER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_HFAN_SLIDER, PhatHFanSlider))
+</MACRO>
+<MACRO>
+<NAME>PHAT_HFAN_SLIDER_CLASS</NAME>
+#define PHAT_HFAN_SLIDER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_HFAN_SLIDER, PhatHFanSliderClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_HFAN_SLIDER</NAME>
+#define PHAT_IS_HFAN_SLIDER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_HFAN_SLIDER))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_HFAN_SLIDER_CLASS</NAME>
+#define PHAT_IS_HFAN_SLIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_HFAN_SLIDER))
+</MACRO>
+<STRUCT>
+<NAME>PhatHFanSliderClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatHFanSlider</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatHFanSlider</NAME>
+struct _PhatHFanSlider
+{
+     PhatFanSlider parent;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatHFanSliderClass</NAME>
+struct _PhatHFanSliderClass
+{
+     PhatFanSliderClass parent_class;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_hfan_slider_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_hfan_slider_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_hfan_slider_new_with_range</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+double value,double lower,double upper,double step
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_VFAN_SLIDER</NAME>
+#define PHAT_TYPE_VFAN_SLIDER            (phat_vfan_slider_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_VFAN_SLIDER</NAME>
+#define PHAT_VFAN_SLIDER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_VFAN_SLIDER, PhatVFanSlider))
+</MACRO>
+<MACRO>
+<NAME>PHAT_VFAN_SLIDER_CLASS</NAME>
+#define PHAT_VFAN_SLIDER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_VFAN_SLIDER, PhatVFanSliderClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_VFAN_SLIDER</NAME>
+#define PHAT_IS_VFAN_SLIDER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_VFAN_SLIDER))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_VFAN_SLIDER_CLASS</NAME>
+#define PHAT_IS_VFAN_SLIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_VFAN_SLIDER))
+</MACRO>
+<STRUCT>
+<NAME>PhatVFanSliderClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatVFanSlider</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatVFanSlider</NAME>
+struct _PhatVFanSlider
+{
+     PhatFanSlider parent;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatVFanSliderClass</NAME>
+struct _PhatVFanSliderClass
+{
+     PhatFanSliderClass parent_class;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_vfan_slider_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_vfan_slider_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_vfan_slider_new_with_range</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+double value,double lower,double upper,double step
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_FAN_SLIDER</NAME>
+#define PHAT_TYPE_FAN_SLIDER            (phat_fan_slider_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_FAN_SLIDER</NAME>
+#define PHAT_FAN_SLIDER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_FAN_SLIDER, PhatFanSlider))
+</MACRO>
+<MACRO>
+<NAME>PHAT_FAN_SLIDER_CLASS</NAME>
+#define PHAT_FAN_SLIDER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_FAN_SLIDER, PhatFanSliderClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_FAN_SLIDER</NAME>
+#define PHAT_IS_FAN_SLIDER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_FAN_SLIDER))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_FAN_SLIDER_CLASS</NAME>
+#define PHAT_IS_FAN_SLIDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_FAN_SLIDER))
+</MACRO>
+<STRUCT>
+<NAME>PhatFanSliderClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatFanSlider</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatFanSlider</NAME>
+struct _PhatFanSlider
+{
+     GtkWidget parent;
+
+     GtkAdjustment* adjustment;
+     double         val;
+     double         center_val;
+     int            xclick_root;
+     int            yclick_root;
+     int            xclick;
+     int            yclick;
+     int            fan_max_thickness;
+     int            state;
+     gboolean       inverted;
+     GtkOrientation orientation;
+     GtkWidget*     fan_window;
+     GdkRegion*     fan_clip0;
+     GdkRegion*     fan_clip1;
+     GdkCursor*     arrow_cursor;
+     GdkCursor*     empty_cursor;
+     GdkWindow*     event_window;
+     GtkWidget*     hint_window0;
+     GtkWidget*     hint_window1;
+     GdkRegion*     hint_clip0;
+     GdkRegion*     hint_clip1;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatFanSliderClass</NAME>
+struct _PhatFanSliderClass
+{
+     GtkWidgetClass parent_class;
+
+     void (*value_changed) (PhatFanSlider* slider);
+     void (*changed)       (PhatFanSlider* slider);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_fan_slider_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_set_value</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider, double value
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_get_value</NAME>
+<RETURNS>double </RETURNS>
+PhatFanSlider* slider
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_set_range</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider,double lower, double upper
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_get_range</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider,double* lower, double* upper
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_set_adjustment</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider,GtkAdjustment* adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_get_adjustment</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatFanSlider* slider
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_set_inverted</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider, gboolean inverted
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_get_inverted</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatFanSlider* slider
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_HKEYBOARD</NAME>
+#define PHAT_TYPE_HKEYBOARD (phat_hkeyboard_get_type())
+</MACRO>
+<MACRO>
+<NAME>PHAT_HKEYBOARD</NAME>
+#define PHAT_HKEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_HKEYBOARD, PhatHKeyboard))
+</MACRO>
+<MACRO>
+<NAME>PHAT_HKEYBOARD_CLASS</NAME>
+#define PHAT_HKEYBOARD_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_HKEYBOARD, PhatHKeyboardClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_HKEYBOARD</NAME>
+#define PHAT_IS_HKEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_HKEYBOARD))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_HKEYBOARD_CLASS</NAME>
+#define PHAT_IS_HKEYBOARD_CLASS(klass) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), PHAT_TYPE_HKEYBOARD))
+</MACRO>
+<STRUCT>
+<NAME>PhatHKeyboardClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatHKeyboard</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatHKeyboard</NAME>
+struct _PhatHKeyboard
+{
+    /*< private >*/
+    PhatKeyboard parent;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatHKeyboardClass</NAME>
+struct _PhatHKeyboardClass
+{
+    /*< private >*/
+    PhatKeyboardClass parent_class;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_hkeyboard_get_type</NAME>
+<RETURNS>GType </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_hkeyboard_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment, int numkeys, gboolean show_labels
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_VKEYBOARD</NAME>
+#define PHAT_TYPE_VKEYBOARD (phat_vkeyboard_get_type())
+</MACRO>
+<MACRO>
+<NAME>PHAT_VKEYBOARD</NAME>
+#define PHAT_VKEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_VKEYBOARD, PhatVKeyboard))
+</MACRO>
+<MACRO>
+<NAME>PHAT_VKEYBOARD_CLASS</NAME>
+#define PHAT_VKEYBOARD_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_VKEYBOARD, PhatVKeyboardClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_VKEYBOARD</NAME>
+#define PHAT_IS_VKEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_VKEYBOARD))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_VKEYBOARD_CLASS</NAME>
+#define PHAT_IS_VKEYBOARD_CLASS(klass) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), PHAT_TYPE_VKEYBOARD))
+</MACRO>
+<STRUCT>
+<NAME>PhatVKeyboardClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatVKeyboard</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatVKeyboard</NAME>
+struct _PhatVKeyboard
+{
+    /*< private >*/
+    PhatKeyboard parent;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatVKeyboardClass</NAME>
+struct _PhatVKeyboardClass
+{
+    /*< private >*/
+    PhatKeyboardClass parent_class;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_vkeyboard_get_type</NAME>
+<RETURNS>GType </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_vkeyboard_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment, int numkeys, gboolean show_labels
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_SLIDER_BUTTON</NAME>
+#define PHAT_TYPE_SLIDER_BUTTON            (phat_slider_button_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_SLIDER_BUTTON</NAME>
+#define PHAT_SLIDER_BUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_SLIDER_BUTTON, PhatSliderButton))
+</MACRO>
+<MACRO>
+<NAME>PHAT_SLIDER_BUTTON_CLASS</NAME>
+#define PHAT_SLIDER_BUTTON_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_SLIDER_BUTTON, PhatSliderButtonClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_SLIDER_BUTTON</NAME>
+#define PHAT_IS_SLIDER_BUTTON(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_SLIDER_BUTTON))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_SLIDER_BUTTON_CLASS</NAME>
+#define PHAT_IS_SLIDER_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_SLIDER_BUTTON))
+</MACRO>
+<STRUCT>
+<NAME>PhatSliderButtonClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatSliderButton</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatSliderButton</NAME>
+struct _PhatSliderButton
+{
+    GtkHBox parent;
+
+    GdkCursor* arrow_cursor;
+    GdkCursor* empty_cursor;
+    GdkWindow* event_window;
+    GtkWidget* left_arrow;
+    GtkWidget* right_arrow;
+    GtkWidget* label;
+    GtkWidget* prefix_label;
+    GtkWidget* postfix_label;
+    GtkWidget* entry;
+    GtkAdjustment* adjustment;
+    char* prefix;
+    char* postfix;
+    int digits;
+    int hilite;
+    int state;
+    int xpress_root, ypress_root;
+    int xpress, ypress;
+    guint threshold;
+    gboolean slid;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatSliderButtonClass</NAME>
+struct _PhatSliderButtonClass
+{
+    GtkHBoxClass parent_class;
+
+    void (*value_changed) (PhatSliderButton* slider);
+    void (*changed)       (PhatSliderButton* slider);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_slider_button_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment,int digits
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_new_with_range</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+double value,double lower,double upper,double step,int digits
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_value</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button, double value
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_value</NAME>
+<RETURNS>double </RETURNS>
+PhatSliderButton* button
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_range</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,double lower, double upper
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_range</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,double* lower, double* upper
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_adjustment</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,GtkAdjustment* adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_adjustment</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatSliderButton* button
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_increment</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,double step, double page
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_increment</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,double* step, double* page
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_format</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,int digits,const char* prefix,const char* postfix
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_format</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,int* digits,char** prefix,char** postfix
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_set_threshold</NAME>
+<RETURNS>void </RETURNS>
+PhatSliderButton* button,guint threshold
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_slider_button_get_threshold</NAME>
+<RETURNS>int </RETURNS>
+PhatSliderButton* button
+</FUNCTION>

@@ -1,0 +1,100 @@
+Summary: A collection of GTK+ widgets useful for audio applications
+Name: phat
+Version: 0.3.1
+Release: 2
+License: GPL
+Group: Applications/Multimedia
+URL: http://www.gazuga.net/phat.php
+Source0: %{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
+Requires: gtk2
+BuildPrereq: gtk2 gtk2-devel
+
+%description
+PHAT is a collection of GTK+ widgets geared toward pro-audio apps. The
+goal is to eliminate duplication of effort and provide some
+standardization (well, at least for GTK+ apps).
+
+
+%package devel
+Summary:	Header files for PHAT 
+Group:		Development/Libraries
+Requires:	%{name} = %{version}
+
+%description devel
+Header files for the PHAT Audio Toolkit.
+
+
+%package examples
+Summary:	Example applications that use PHAT
+Group:		Applications/
+Requires:	%{name} = %{version}
+
+%description examples
+Small example applications that use the PHAT Audio Toolkit.
+
+
+%package docs
+Summary:	PHAT API documentation
+Group:		Documentation/
+Requires:	%{name} = %{version}
+
+%description docs
+Documentation for the PHAT Audio Toolkit API.
+
+
+%prep
+%setup -q
+
+%build
+%configure
+make
+
+%makeinstall
+
+%clean
+rm -rf %{buildroot}
+
+
+%files
+%defattr(-,root,root,-)
+%{_libdir}/libphat.so
+%{_libdir}/libphat.so.0
+%{_libdir}/libphat.so.0.0.*
+%doc AUTHORS ChangeLog COPYING NEWS README TODO
+
+
+%files devel
+%defattr(-,root,root,-)
+%{_libdir}/pkgconfig/phat.pc
+%{_libdir}/libphat.a
+%{_libdir}/libphat.la
+%dir %{_includedir}/phat
+%{_includedir}/phat/phat.h
+%{_includedir}/phat/phatfanslider.h
+%{_includedir}/phat/phathfanslider.h
+%{_includedir}/phat/phatvfanslider.h
+%{_includedir}/phat/phatsliderbutton.h
+%{_includedir}/phat/phatkeyboard.h
+%{_includedir}/phat/phathkeyboard.h
+%{_includedir}/phat/phatvkeyboard.h
+
+
+%files examples
+%defattr(-,root,root,-)
+%{_bindir}/phatsliderbutton
+%{_bindir}/phatfanslider
+%{_bindir}/phatkeyboard
+
+
+%files docs
+%defattr(-,root,root,-)
+%dir %{_datadir}/gtk-doc/html/phat
+%{_datadir}/gtk-doc/html/phat/*.html
+%{_datadir}/gtk-doc/html/phat/index.sgml
+
+
+%changelog
+
+* Wed Sep 29 2004 Pete Bessman <ninjadroid@gazuga.net>
+- initial file

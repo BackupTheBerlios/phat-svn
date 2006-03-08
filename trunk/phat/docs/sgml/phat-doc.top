@@ -1,0 +1,7 @@
+<!ENTITY PhatFanSlider SYSTEM "sgml/phatfanslider.sgml">
+<!ENTITY PhatHFanSlider SYSTEM "sgml/phathfanslider.sgml">
+<!ENTITY PhatVFanSlider SYSTEM "sgml/phatvfanslider.sgml">
+<!ENTITY PhatSliderButton SYSTEM "sgml/phatsliderbutton.sgml">
+<!ENTITY PhatKeyboard SYSTEM "sgml/phatkeyboard.sgml">
+<!ENTITY PhatVKeyboard SYSTEM "sgml/phatvkeyboard.sgml">
+<!ENTITY PhatHKeyboard SYSTEM "sgml/phathkeyboard.sgml">

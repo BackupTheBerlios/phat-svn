@@ -1,0 +1,371 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object FanSlider
+  (in-module "Phat")
+  (parent "GtkWidget")
+  (c-name "PhatFanSlider")
+  (gtype-id "PHAT_TYPE_FAN_SLIDER")
+)
+
+(define-object HFanSlider
+  (in-module "Phat")
+  (parent "PhatFanSlider")
+  (c-name "PhatHFanSlider")
+  (gtype-id "PHAT_TYPE_HFAN_SLIDER")
+)
+
+(define-object Keyboard
+  (in-module "Phat")
+  (parent "GtkViewport")
+  (c-name "PhatKeyboard")
+  (gtype-id "PHAT_TYPE_KEYBOARD")
+)
+
+(define-object HKeyboard
+  (in-module "Phat")
+  (parent "PhatKeyboard")
+  (c-name "PhatHKeyboard")
+  (gtype-id "PHAT_TYPE_HKEYBOARD")
+)
+
+(define-object SliderButton
+  (in-module "Phat")
+  (parent "GtkHBox")
+  (c-name "PhatSliderButton")
+  (gtype-id "PHAT_TYPE_SLIDER_BUTTON")
+)
+
+(define-object VFanSlider
+  (in-module "Phat")
+  (parent "PhatFanSlider")
+  (c-name "PhatVFanSlider")
+  (gtype-id "PHAT_TYPE_VFAN_SLIDER")
+)
+
+(define-object VKeyboard
+  (in-module "Phat")
+  (parent "PhatKeyboard")
+  (c-name "PhatVKeyboard")
+  (gtype-id "PHAT_TYPE_VKEYBOARD")
+)
+
+;; Enumerations and flags ...
+
+
+;; From phat.h
+
+(define-function phat_fan_slider_get_type
+  (c-name "phat_fan_slider_get_type")
+  (return-type "GType")
+  (parameters
+  )
+)
+
+(define-method set_value
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_value")
+  (return-type "none")
+  (parameters
+    '("double" "value")
+  )
+)
+
+(define-method get_value
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_get_value")
+  (return-type "double")
+)
+
+(define-method set_range
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_range")
+  (return-type "none")
+  (parameters
+    '("double" "lower")
+    '("double" "upper")
+  )
+)
+
+(define-method get_range
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_get_range")
+  (return-type "none")
+  (parameters
+    '("double*" "lower")
+    '("double*" "upper")
+  )
+)
+
+(define-method set_adjustment
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_adjustment")
+  (return-type "none")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-method get_adjustment
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_get_adjustment")
+  (return-type "GtkAdjustment*")
+)
+
+(define-method set_inverted
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_inverted")
+  (return-type "none")
+  (parameters
+    '("gboolean" "inverted")
+  )
+)
+
+(define-method get_inverted
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_get_inverted")
+  (return-type "gboolean")
+)
+
+(define-function phat_vfan_slider_get_type
+  (c-name "phat_vfan_slider_get_type")
+  (return-type "GType")
+  (parameters
+  )
+)
+
+(define-function phat_vfan_slider_new
+  (c-name "phat_vfan_slider_new")
+  (is-constructor-of "PhatVfanSlider")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-function phat_vfan_slider_new_with_range
+  (c-name "phat_vfan_slider_new_with_range")
+  (return-type "GtkWidget*")
+  (parameters
+    '("double" "value")
+    '("double" "lower")
+    '("double" "upper")
+    '("double" "step")
+  )
+)
+
+(define-function phat_hfan_slider_get_type
+  (c-name "phat_hfan_slider_get_type")
+  (return-type "GType")
+  (parameters
+  )
+)
+
+(define-function phat_hfan_slider_new
+  (c-name "phat_hfan_slider_new")
+  (is-constructor-of "PhatHfanSlider")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-function phat_hfan_slider_new_with_range
+  (c-name "phat_hfan_slider_new_with_range")
+  (return-type "GtkWidget*")
+  (parameters
+    '("double" "value")
+    '("double" "lower")
+    '("double" "upper")
+    '("double" "step")
+  )
+)
+
+(define-function phat_slider_button_get_type
+  (c-name "phat_slider_button_get_type")
+  (return-type "GType")
+  (parameters
+  )
+)
+
+(define-function phat_slider_button_new
+  (c-name "phat_slider_button_new")
+  (is-constructor-of "PhatSliderButton")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+    '("int" "digits")
+  )
+)
+
+(define-function phat_slider_button_new_with_range
+  (c-name "phat_slider_button_new_with_range")
+  (return-type "GtkWidget*")
+  (parameters
+    '("double" "value")
+    '("double" "lower")
+    '("double" "upper")
+    '("double" "step")
+    '("int" "digits")
+  )
+)
+
+(define-method set_value
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_value")
+  (return-type "none")
+  (parameters
+    '("double" "value")
+  )
+)
+
+(define-method get_value
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_value")
+  (return-type "double")
+)
+
+(define-method set_range
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_range")
+  (return-type "none")
+  (parameters
+    '("double" "lower")
+    '("double" "upper")
+  )
+)
+
+(define-method get_range
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_range")
+  (return-type "none")
+  (parameters
+    '("double*" "lower")
+    '("double*" "upper")
+  )
+)
+
+(define-method set_adjustment
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_adjustment")
+  (return-type "none")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-method get_adjustment
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_adjustment")
+  (return-type "GtkAdjustment*")
+)
+
+(define-method set_increment
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_increment")
+  (return-type "none")
+  (parameters
+    '("double" "step")
+    '("double" "page")
+  )
+)
+
+(define-method get_increment
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_increment")
+  (return-type "none")
+  (parameters
+    '("double*" "step")
+    '("double*" "page")
+  )
+)
+
+(define-method set_format
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_format")
+  (return-type "none")
+  (parameters
+    '("int" "digits")
+    '("const-char*" "prefix")
+    '("const-char*" "postfix")
+  )
+)
+
+(define-method get_format
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_format")
+  (return-type "none")
+  (parameters
+    '("int*" "digits")
+    '("char**" "prefix")
+    '("char**" "postfix")
+  )
+)
+
+(define-method set_threshold
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_set_threshold")
+  (return-type "none")
+  (parameters
+    '("guint" "threshold")
+  )
+)
+
+(define-method get_threshold
+  (of-object "PhatSliderButton")
+  (c-name "phat_slider_button_get_threshold")
+  (return-type "int")
+)
+
+(define-function phat_keyboard_get_type
+  (c-name "phat_keyboard_get_type")
+  (return-type "GType")
+)
+
+(define-method get_adjustment
+  (of-object "PhatKeyboard")
+  (c-name "phat_keyboard_get_adjustment")
+  (return-type "GtkAdjustment*")
+)
+
+(define-method set_adjustment
+  (of-object "PhatKeyboard")
+  (c-name "phat_keyboard_set_adjustment")
+  (return-type "none")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-function phat_vkeyboard_get_type
+  (c-name "phat_vkeyboard_get_type")
+  (return-type "GType")
+)
+
+(define-function phat_vkeyboard_new
+  (c-name "phat_vkeyboard_new")
+  (is-constructor-of "PhatVkeyboard")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+    '("int" "numkeys")
+    '("gboolean" "show_labels")
+  )
+)
+
+(define-function phat_hkeyboard_get_type
+  (c-name "phat_hkeyboard_get_type")
+  (return-type "GType")
+)
+
+(define-function phat_hkeyboard_new
+  (c-name "phat_hkeyboard_new")
+  (is-constructor-of "PhatHkeyboard")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+    '("int" "numkeys")
+    '("gboolean" "show_labels")
+  )
+)
+
+

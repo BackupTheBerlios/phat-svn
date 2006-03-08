@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML><HEAD><TITLE>PhatFanSlider</TITLE><META NAME="GENERATOR" CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK REL="HOME" TITLE="PHAT Reference Manual" HREF="index.html"><LINK REL="UP" TITLE="PHAT Widgets" HREF="phatwidgets.html"><LINK REL="PREVIOUS" TITLE="PHAT Widgets" HREF="phatwidgets.html"><LINK REL="NEXT" TITLE="PhatHFanSlider" HREF="phathfanslider.html"><META NAME="GENERATOR" CONTENT="GTK-Doc V1.4 (SGML mode)"><STYLE TYPE="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</STYLE></HEAD><BODY CLASS="REFENTRY" BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#840084" ALINK="#0000FF"><TABLE WIDTH="100%" CLASS="navigation" SUMMARY="Navigation header" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD><A ACCESSKEY="p" HREF="phatwidgets.html"><IMG SRC="left.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Prev"></A></TD><TD><A ACCESSKEY="u" HREF="phatwidgets.html"><IMG SRC="up.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Up"></A></TD><TD><A ACCESSKEY="h" HREF="index.html"><IMG SRC="home.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Home"></A></TD><TH WIDTH="100%" align="center">PHAT Reference Manual</TH><TD><A ACCESSKEY="n" HREF="phathfanslider.html"><IMG SRC="right.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Next"></A></TD></TR></TABLE><H1><A NAME="PHATFANSLIDER"></A>PhatFanSlider</H1><DIV CLASS="REFNAMEDIV"><A NAME="AEN39"></A><H2>Name</H2>PhatFanSlider&nbsp;--&nbsp;a base class for <A HREF="phathfanslider.html"><SPAN CLASS="TYPE">PhatHFanSlider</SPAN></A> and <A HREF="phatvfanslider.html"><SPAN CLASS="TYPE">PhatVFanSlider</SPAN></A></DIV><DIV CLASS="REFSYNOPSISDIV"><A NAME="AEN46"></A><H2>Synopsis</H2><PRE CLASS="SYNOPSIS">&#13;
+
+            <A HREF="phatfanslider.html#PHATFANSLIDER-STRUCT">PhatFanSlider</A>;
+void        <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-SET-VALUE">phat_fan_slider_set_value</A>       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double value);
+double      <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-GET-VALUE">phat_fan_slider_get_value</A>       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);
+void        <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-SET-RANGE">phat_fan_slider_set_range</A>       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double lower,
+                                             double upper);
+void        <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-GET-RANGE">phat_fan_slider_get_range</A>       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double *lower,
+                                             double *upper);
+void        <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-SET-ADJUSTMENT">phat_fan_slider_set_adjustment</A>  (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             GtkAdjustment *adjustment);
+GtkAdjustment* <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-GET-ADJUSTMENT">phat_fan_slider_get_adjustment</A>
+                                            (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);
+void        <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-SET-INVERTED">phat_fan_slider_set_inverted</A>    (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             gboolean inverted);
+gboolean    <A HREF="phatfanslider.html#PHAT-FAN-SLIDER-GET-INVERTED">phat_fan_slider_get_inverted</A>    (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);
+&#13;</PRE></DIV><DIV CLASS="REFSECT1"><A NAME="AEN81"></A><H2>Object Hierarchy</H2><PRE CLASS="SYNOPSIS">&#13;  GObject
+   +----GtkObject
+         +----GtkWidget
+               +----PhatFanSlider
+                     +----<A HREF="phatvfanslider.html">PhatVFanSlider</A>
+                     +----<A HREF="phathfanslider.html">PhatHFanSlider</A></PRE></DIV><DIV CLASS="REFSECT1"><A NAME="AEN89"></A><H2>Implemented Interfaces</H2><P>PhatFanSlider implements
+ AtkImplementorIface.</P></DIV><DIV CLASS="REFSECT1"><A NAME="AEN93"></A><H2>Signal Prototypes</H2><PRE CLASS="SYNOPSIS">&#13;&quot;<A HREF="phatfanslider.html#PHATFANSLIDER-CHANGED">changed</A>&quot;   void        user_function      (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                            gpointer user_data);
+&quot;<A HREF="phatfanslider.html#PHATFANSLIDER-VALUE-CHANGED">value-changed</A>&quot;
+            void        user_function      (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                            gpointer user_data);</PRE></DIV><DIV CLASS="REFSECT1"><A NAME="AEN104"></A><H2>Description</H2><P>The <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A> widget family provides a slider widget for
+retrieving floating point values from the user.  The cool thing about
+fansliders is that the user can have a great amount of precision in a
+very small space.  After depressing the left mouse button on a
+fanslider, the user can then drag the pointer away from the widget,
+causing a "fan" to popup which indicates the new scale they are
+working with.  The farther out the pointer is drawn, the greater the
+size of the fan and the level of precision.</P><P>The fansliders work like most other numerical entry widgets; if you
+know how to use a <SPAN CLASS="TYPE">GtkSpinbutton</SPAN>, you know how to use a
+<A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A>.  If not, check out the <A HREF="http://www.gtk.org/tutorial/" TARGET="_top"> GTK+-2.0 tutorial.</A></P><P>You can change the colors that a given fanslider uses.  Fansliders
+use widget-&#62;style-&#62;base_gc[GTK_STATE_SELECTED] for the foreground color,
+and widget-&#62;style-&#62;dark_gc[GTK_STATE_NORMAL] for the background color.
+Adjusting these elements of the widget's style will change the way
+the fanslider draws.</P><P><A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A> is an abstract base class, from which <A HREF="phathfanslider.html"><SPAN CLASS="TYPE">PhatHFanSlider</SPAN></A> and
+<A HREF="phatvfanslider.html"><SPAN CLASS="TYPE">PhatVFanSlider</SPAN></A> are derived.  To create a new fanslider, call either
+<CODE CLASS="FUNCTION">phat_vfanslider_new()</CODE> or <CODE CLASS="FUNCTION">phat_hfanslider_new()</CODE>.</P></DIV><DIV CLASS="REFSECT1"><A NAME="AEN127"></A><H2>Details</H2><DIV CLASS="REFSECT2"><A NAME="AEN129"></A><H3><A NAME="PHATFANSLIDER-STRUCT"></A>PhatFanSlider</H3><PRE CLASS="PROGRAMLISTING">typedef struct _PhatFanSlider PhatFanSlider;</PRE><P>The <A HREF="phatfanslider.html#PHATFANSLIDER-STRUCT"><SPAN CLASS="TYPE">PhatFanSlider-struct</SPAN></A> struct contains private data only, and
+should be accessed using the functions below.</P></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN138"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-VALUE"></A>phat_fan_slider_set_value ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_value       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double value);</PRE><P>Sets the current value of the slider.  If the value is outside the
+range of values allowed by <CODE CLASS="PARAMETER">slider</CODE>, it will be clamped to fit
+within them.  The slider emits the "value-changed" signal if the
+value changes.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN151"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN158"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">value</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a new value for the slider</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN163"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-VALUE"></A>phat_fan_slider_get_value ()</H3><PRE CLASS="PROGRAMLISTING">double      phat_fan_slider_get_value       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);</PRE><P>Retrieves the current value of the slider.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN174"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN181"><SPAN STYLE="white-space: nowrap"><SPAN CLASS="emphasis"><I CLASS="EMPHASIS">Returns</I></SPAN>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> current value of the slider.&#13;</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN186"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-RANGE"></A>phat_fan_slider_set_range ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_range       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double lower,
+                                             double upper);</PRE><P>Sets the range of allowable values for the slider, and  clamps the slider's
+current value to be between <CODE CLASS="PARAMETER">lower</CODE> and <CODE CLASS="PARAMETER">upper</CODE>.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN201"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN208"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">lower</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> lowest allowable value</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN213"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">upper</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> highest allowable value</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN218"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-RANGE"></A>phat_fan_slider_get_range ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_get_range       (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             double *lower,
+                                             double *upper);</PRE><P>Places the range of allowable values for <CODE CLASS="PARAMETER">slider</CODE> into <CODE CLASS="PARAMETER">lower</CODE>
+and <CODE CLASS="PARAMETER">upper</CODE>.  Either variable may be set to <TT CLASS="LITERAL">NULL</TT> if you are not
+interested in its value.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN235"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN242"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">lower</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> retrieves lowest allowable value</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN247"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">upper</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> retrieves highest allowable value</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN252"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-ADJUSTMENT"></A>phat_fan_slider_set_adjustment ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_adjustment  (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             GtkAdjustment *adjustment);</PRE><P>Sets the adjustment used by <CODE CLASS="PARAMETER">slider</CODE>.  Every <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A> uses an
+adjustment to store its current value and its range of allowable
+values.  If <CODE CLASS="PARAMETER">adjustment</CODE> is <TT CLASS="LITERAL">NULL</TT>, a new adjustment with a value of
+zero and a range of [-1.0, 1.0] will be created.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN269"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN276"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">adjustment</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <SPAN CLASS="TYPE">GtkAdjustment</SPAN></P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN283"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-ADJUSTMENT"></A>phat_fan_slider_get_adjustment ()</H3><PRE CLASS="PROGRAMLISTING">GtkAdjustment* phat_fan_slider_get_adjustment
+                                            (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);</PRE><P>Retrives the current adjustment in use by <CODE CLASS="PARAMETER">slider</CODE>.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN295"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN302"><SPAN STYLE="white-space: nowrap"><SPAN CLASS="emphasis"><I CLASS="EMPHASIS">Returns</I></SPAN>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> <CODE CLASS="PARAMETER">slider</CODE>'s current <SPAN CLASS="TYPE">GtkAdjustment</SPAN>&#13;</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN310"></A><H3><A NAME="PHAT-FAN-SLIDER-SET-INVERTED"></A>phat_fan_slider_set_inverted ()</H3><PRE CLASS="PROGRAMLISTING">void        phat_fan_slider_set_inverted    (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                             gboolean inverted);</PRE><P>Sets in which direction the fanslider should draw increasing
+values.  By default, horizontal fansliders draw low to high from
+left to right, and vertical fansliders draw from bottom to top.
+You can reverse this behavior by setting <CODE CLASS="PARAMETER">inverted</CODE> to <TT CLASS="LITERAL">TRUE</TT>.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN324"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN331"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">inverted</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> <TT CLASS="LITERAL">TRUE</TT> to invert the fanslider</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN337"></A><H3><A NAME="PHAT-FAN-SLIDER-GET-INVERTED"></A>phat_fan_slider_get_inverted ()</H3><PRE CLASS="PROGRAMLISTING">gboolean    phat_fan_slider_get_inverted    (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider);</PRE><P>Determines whether <CODE CLASS="PARAMETER">slider</CODE> is inverted or not.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN349"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> a <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A></P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN356"><SPAN STYLE="white-space: nowrap"><SPAN CLASS="emphasis"><I CLASS="EMPHASIS">Returns</I></SPAN>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> <TT CLASS="LITERAL">TRUE</TT> if <CODE CLASS="PARAMETER">slider</CODE> is inverted&#13;</P></TD></TR></TBODY></TABLE></DIV></DIV><DIV CLASS="REFSECT1"><A NAME="AEN363"></A><H2>Signals</H2><DIV CLASS="REFSECT2"><A NAME="AEN365"></A><H3><A NAME="PHATFANSLIDER-CHANGED"></A>The &quot;changed&quot; signal</H3><PRE CLASS="PROGRAMLISTING">void        user_function                  (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                            gpointer user_data);</PRE><P>The "changed" signal is emitted when any parameter of the
+slider's adjustment changes, except for the <TT CLASS="LITERAL">value</TT> parameter.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN376"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> the object on which the signal was emitted</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN381"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">user_data</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P>user data set when the signal handler was connected.</P></TD></TR></TBODY></TABLE></DIV><HR><DIV CLASS="REFSECT2"><A NAME="AEN386"></A><H3><A NAME="PHATFANSLIDER-VALUE-CHANGED"></A>The &quot;value-changed&quot; signal</H3><PRE CLASS="PROGRAMLISTING">void        user_function                  (<A HREF="phatfanslider.html">PhatFanSlider</A> *slider,
+                                            gpointer user_data);</PRE><P>The "value-changed" signal is emitted when the value of the
+slider's adjustment changes.</P><P></P><P></P><TABLE CLASS="variablelist" BORDER="0" CELLSPACING="0" CELLPADDING="4"><TBODY><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN396"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">slider</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P> the object on which the signal was emitted</P></TD></TR><TR><TD ALIGN="LEFT" VALIGN="TOP"><A NAME="AEN401"><SPAN STYLE="white-space: nowrap"><CODE CLASS="PARAMETER">user_data</CODE>&nbsp;:</SPAN></TD><TD ALIGN="LEFT" VALIGN="TOP"><P>user data set when the signal handler was connected.</P></TD></TR></TBODY></TABLE></DIV></DIV><DIV CLASS="REFSECT1"><A NAME="AEN406"></A><H2>See Also</H2><P><A HREF="phathfanslider.html"><SPAN CLASS="TYPE">PhatHFanSlider</SPAN></A> and <A HREF="phatvfanslider.html"><SPAN CLASS="TYPE">PhatVFanSlider</SPAN></A> to create instances of <A HREF="phatfanslider.html"><SPAN CLASS="TYPE">PhatFanSlider</SPAN></A>.</P></DIV><TABLE CLASS="navigation" WIDTH="100%" SUMMARY="Navigation footer" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD ALIGN="left"><A ACCESSKEY="p" HREF="phatwidgets.html"><B>&lt;&lt;&lt;&nbsp;PHAT Widgets</B></A></TD><TD ALIGN="right"><A ACCESSKEY="n" HREF="phathfanslider.html"><B>PhatHFanSlider&nbsp;&gt;&gt;&gt;</B></A></TD></TR></TABLE></BODY></HTML>

@@ -1,0 +1,13 @@
+GtkWidget AtkImplementorIface
+PhatFanSlider AtkImplementorIface
+PhatVFanSlider AtkImplementorIface
+PhatHFanSlider AtkImplementorIface
+GtkContainer AtkImplementorIface
+GtkBox AtkImplementorIface
+GtkHBox AtkImplementorIface
+PhatSliderButton AtkImplementorIface
+GtkBin AtkImplementorIface
+GtkViewport AtkImplementorIface
+PhatKeyboard AtkImplementorIface
+PhatVKeyboard AtkImplementorIface
+PhatHKeyboard AtkImplementorIface

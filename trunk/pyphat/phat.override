@@ -1,0 +1,16 @@
+%%
+headers
+#include <Python.h>               
+#include "pygobject.h"
+#include <phat/phat.h>
+%%
+modulename phat                     
+%%
+import gtk.Widget as PyGtkWidget_Type
+import gtk.Adjustment as PyGtkAdjustment_Type
+import gtk.Viewport as PyGtkViewport_Type
+import gtk.HBox as PyGtkHBox_Type
+%%
+ignore-glob
+  *_get_type                            
+%%

@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML><HEAD><TITLE>Installation</TITLE><META NAME="GENERATOR" CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK REL="HOME" TITLE="PHAT Reference Manual" HREF="index.html"><LINK REL="UP" TITLE="PHAT Overview" HREF="phat.html"><LINK REL="PREVIOUS" TITLE="PHAT Overview" HREF="phat.html"><LINK REL="NEXT" TITLE="Usage" HREF="use.html"><META NAME="GENERATOR" CONTENT="GTK-Doc V1.4 (SGML mode)"><STYLE TYPE="text/css">.synopsis, .classsynopsis {
+    background: #eeeeee;
+    border: solid 1px #aaaaaa;
+    padding: 0.5em;
+}
+.programlisting {
+    background: #eeeeff;
+    border: solid 1px #aaaaff;
+    padding: 0.5em;
+}
+.variablelist {
+    padding: 4px;
+    margin-left: 3em;
+}
+.navigation {
+    background: #ffeeee;
+    border: solid 1px #ffaaaa;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.navigation a {
+    color: #770000;
+}
+.navigation a:visited {
+    color: #550000;
+}
+.navigation .title {
+    font-size: 200%;
+}</STYLE></HEAD><BODY CLASS="REFENTRY" BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#840084" ALINK="#0000FF"><TABLE WIDTH="100%" CLASS="navigation" SUMMARY="Navigation header" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD><A ACCESSKEY="p" HREF="phat.html"><IMG SRC="left.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Prev"></A></TD><TD><A ACCESSKEY="u" HREF="phat.html"><IMG SRC="up.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Up"></A></TD><TD><A ACCESSKEY="h" HREF="index.html"><IMG SRC="home.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Home"></A></TD><TH WIDTH="100%" align="center">PHAT Reference Manual</TH><TD><A ACCESSKEY="n" HREF="use.html"><IMG SRC="right.png" WIDTH="24" HEIGHT="24" BORDER="0" ALT="Next"></A></TD></TR></TABLE><H1><A NAME="INSTALL"></A>Installation</H1><DIV CLASS="REFNAMEDIV"><A NAME="AEN10"></A><H2>Name</H2>Installation&nbsp;--&nbsp;How to build and install PHAT on your system</DIV><DIV CLASS="REFSECT1"><A NAME="AEN13"></A><H2>Linux Systems</H2><P>If you're familiar with standard tarball compilation and
+	installation procedures, then PHAT won't pose a problem for
+	you.  If you're not used to the tarball dance, you'll still
+	probably do just fine if you follow these instructions.</P><P>Apart from having a generally sane Linux distribution
+	and build environment, you need to have <A HREF="http://www.gtk.org" TARGET="_top">GTK+-2.0</A> or greater
+	installed, along with it's development files.</P><P>The magic incantantations to build and install PHAT are
+	as follows:</P><PRE CLASS="PROGRAMLISTING">        tar -xzvpf phat.tar.gz
+        cd phat.tar.gz
+        ./configure
+        make
+        su
+        &lt;enter root password&gt;
+        make install
+        /sbin/ldconfig
+        </PRE><P>Replace "phat.tar.gz" above with the actual name of the
+	package you downloaded and you should be golden.</P></DIV><DIV CLASS="REFSECT1"><A NAME="AEN21"></A><H2>Other Systems</H2><P>I don't see why PHAT should fail to build on other POSIX
+	systems such as the BSDs, but I'm not supporting it either.
+	If and when that "I" becomes a "we," that policy may
+	change.</P><P>If you're using Windows you're probably S.O.L., but that
+	too could change in the future (see above).</P></DIV><TABLE CLASS="navigation" WIDTH="100%" SUMMARY="Navigation footer" CELLPADDING="2" CELLSPACING="2"><TR VALIGN="middle"><TD ALIGN="left"><A ACCESSKEY="p" HREF="phat.html"><B>&lt;&lt;&lt;&nbsp;PHAT Overview</B></A></TD><TD ALIGN="right"><A ACCESSKEY="n" HREF="use.html"><B>Usage&nbsp;&gt;&gt;&gt;</B></A></TD></TR></TABLE></BODY></HTML>

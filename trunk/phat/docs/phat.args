@@ -1,0 +1,30 @@
+<ARG>
+<NAME>PhatKeyboard::numkeys</NAME>
+<TYPE>gint</TYPE>
+<RANGE>[1,1000]</RANGE>
+<FLAGS>rwX</FLAGS>
+<NICK>Number of Keys</NICK>
+<BLURB>How many keys this keyboard should have.</BLURB>
+<DEFAULT>128</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>PhatKeyboard::orientation</NAME>
+<TYPE>GtkOrientation</TYPE>
+<RANGE></RANGE>
+<FLAGS>rwX</FLAGS>
+<NICK>Orientation</NICK>
+<BLURB>How the keyboard should be arranged on the screen.</BLURB>
+<DEFAULT>GTK_ORIENTATION_VERTICAL</DEFAULT>
+</ARG>
+
+<ARG>
+<NAME>PhatKeyboard::show-labels</NAME>
+<TYPE>gboolean</TYPE>
+<RANGE></RANGE>
+<FLAGS>rwX</FLAGS>
+<NICK>Show Labels</NICK>
+<BLURB>Whether C keys should be labeled or not.</BLURB>
+<DEFAULT>TRUE</DEFAULT>
+</ARG>
+
