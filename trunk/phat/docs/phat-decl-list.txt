@@ -42,6 +42,19 @@ PHAT_IS_VFAN_SLIDER_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>phat2dpad</FILE>
+<TITLE>Phat2dPad</TITLE>
+phat_2d_pad_new
+<SUBSECTION Standard>
+PHAT_2D_PAD
+PHAT_IS_2D_PAD
+PHAT_TYPE_2D_PAD
+phat_2d_pad_get_type
+PHAT_2D_PAD_CLASS
+PHAT_IS_2D_PAD_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>phatfanslider</FILE>
 <TITLE>PhatFanSlider</TITLE>
 phat_fan_slider_set_value

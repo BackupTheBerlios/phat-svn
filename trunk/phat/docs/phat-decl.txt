@@ -190,6 +190,62 @@ GtkAdjustment* adjustment
 double value,double lower,double upper,double step
 </FUNCTION>
 <MACRO>
+<NAME>PHAT_TYPE_2D_PAD</NAME>
+#define PHAT_TYPE_2D_PAD            (phat_2d_pad_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_2D_PAD</NAME>
+#define PHAT_2D_PAD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_2D_PAD, Phat2dPad))
+</MACRO>
+<MACRO>
+<NAME>PHAT_2D_PAD_CLASS</NAME>
+#define PHAT_2D_PAD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_2D_PAD, Phat2dPadClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_2D_PAD</NAME>
+#define PHAT_IS_2D_PAD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_2D_PAD))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_2D_PAD_CLASS</NAME>
+#define PHAT_IS_2D_PAD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_2D_PAD))
+</MACRO>
+<STRUCT>
+<NAME>Phat2dPadClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>Phat2dPad</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>Phat2dPad</NAME>
+struct _Phat2dPad
+{
+    GtkHBox parent;
+
+    GtkWidget* drawing_area;
+    GdkPixmap* pixmap;
+};
+</STRUCT>
+<STRUCT>
+<NAME>Phat2dPadClass</NAME>
+struct _Phat2dPadClass
+{
+    GtkHBoxClass parent_class;
+
+    void (*value_changed) (Phat2dPad* slider);
+    void (*changed)       (Phat2dPad* slider);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_2d_pad_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_2d_pad_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+
+</FUNCTION>
+<MACRO>
 <NAME>PHAT_TYPE_FAN_SLIDER</NAME>
 #define PHAT_TYPE_FAN_SLIDER            (phat_fan_slider_get_type ( ))
 </MACRO>
