@@ -389,3 +389,51 @@ GtkWidget* phat_hkeyboard_new(GtkAdjustment* adjustment, int numkeys, gboolean s
 
 G_END_DECLS
 # 11 "/usr/include/phat/phat.h" 2
+# 1 "/usr/include/phat/phatpad.h" 1 3 4
+
+
+
+
+
+G_BEGIN_DECLS
+
+
+
+
+
+
+
+typedef struct _PhatPadClass PhatPadClass;
+typedef struct _PhatPad PhatPad;
+
+struct _PhatPad
+{
+    GtkDrawingArea parent;
+    GdkPixmap* pixmap;
+    gdouble pressure;
+    gdouble xtilt;
+    gdouble ytilt;
+    gdouble x;
+    gdouble y;
+};
+
+struct _PhatPadClass
+{
+    GtkDrawingAreaClass parent_class;
+
+    void (*value_changed) (PhatPad* pad);
+};
+
+GType phat_pad_get_type ( );
+
+
+GtkWidget* phat_pad_new ( );
+gdouble phat_pad_get_ytilt (PhatPad* pad);
+gdouble phat_pad_get_xtilt (PhatPad* pad);
+gdouble phat_pad_get_pressure (PhatPad* pad);
+gdouble phat_pad_get_y (PhatPad* pad);
+gdouble phat_pad_get_x (PhatPad* pad);
+
+
+G_END_DECLS
+# 12 "/usr/include/phat/phat.h" 2

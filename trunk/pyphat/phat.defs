@@ -28,6 +28,13 @@
   (gtype-id "PHAT_TYPE_HKEYBOARD")
 )
 
+(define-object Pad
+  (in-module "Phat")
+  (parent "GtkDrawingArea")
+  (c-name "PhatPad")
+  (gtype-id "PHAT_TYPE_PAD")
+)
+
 (define-object SliderButton
   (in-module "Phat")
   (parent "GtkHBox")
@@ -366,6 +373,51 @@
     '("int" "numkeys")
     '("gboolean" "show_labels")
   )
+)
+
+(define-function phat_pad_get_type
+  (c-name "phat_pad_get_type")
+  (return-type "GType")
+  (parameters
+  )
+)
+
+(define-function phat_pad_new
+  (c-name "phat_pad_new")
+  (is-constructor-of "PhatPad")
+  (return-type "GtkWidget*")
+  (parameters
+  )
+)
+
+(define-method get_ytilt
+  (of-object "PhatPad")
+  (c-name "phat_pad_get_ytilt")
+  (return-type "gdouble")
+)
+
+(define-method get_xtilt
+  (of-object "PhatPad")
+  (c-name "phat_pad_get_xtilt")
+  (return-type "gdouble")
+)
+
+(define-method get_pressure
+  (of-object "PhatPad")
+  (c-name "phat_pad_get_pressure")
+  (return-type "gdouble")
+)
+
+(define-method get_y
+  (of-object "PhatPad")
+  (c-name "phat_pad_get_y")
+  (return-type "gdouble")
+)
+
+(define-method get_x
+  (of-object "PhatPad")
+  (c-name "phat_pad_get_x")
+  (return-type "gdouble")
 )
 
 
