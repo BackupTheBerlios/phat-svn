@@ -1,20 +1,20 @@
-#ifndef __PHAT_2D_PAD_H__
-#define __PHAT_2D_PAD_H__
+#ifndef __PHAT_PAD_H__
+#define __PHAT_PAD_H__
 
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define PHAT_TYPE_2D_PAD            (phat_2d_pad_get_type ( ))
-#define PHAT_2D_PAD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_2D_PAD, Phat2dPad))
-#define PHAT_2D_PAD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_2D_PAD, Phat2dPadClass))
-#define PHAT_IS_2D_PAD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_2D_PAD))
-#define PHAT_IS_2D_PAD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_2D_PAD))
+#define PHAT_TYPE_PAD            (phat_pad_get_type ( ))
+#define PHAT_PAD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_PAD, PhatPad))
+#define PHAT_PAD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_PAD, PhatPadClass))
+#define PHAT_IS_PAD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_PAD))
+#define PHAT_IS_PAD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_PAD))
 
-typedef struct _Phat2dPadClass Phat2dPadClass;
-typedef struct _Phat2dPad      Phat2dPad;
+typedef struct _PhatPadClass PhatPadClass;
+typedef struct _PhatPad      PhatPad;
 
-struct _Phat2dPad
+struct _PhatPad
 {
     GtkDrawingArea parent; 
     GdkPixmap* pixmap;
@@ -25,24 +25,24 @@ struct _Phat2dPad
     gdouble y;
 };
 
-struct _Phat2dPadClass
+struct _PhatPadClass
 {
     GtkDrawingAreaClass parent_class;
 
-    void (*value_changed) (Phat2dPad* pad);
+    void (*value_changed) (PhatPad* pad);
 };
 
-GType phat_2d_pad_get_type ( );
+GType phat_pad_get_type ( );
 
 
-GtkWidget* phat_2d_pad_new ( );
-gdouble phat_2d_pad_get_ytilt (Phat2dPad* pad);
-gdouble phat_2d_pad_get_xtilt (Phat2dPad* pad);
-gdouble phat_2d_pad_get_pressure (Phat2dPad* pad);
-gdouble phat_2d_pad_get_y (Phat2dPad* pad);
-gdouble phat_2d_pad_get_x (Phat2dPad* pad);
+GtkWidget* phat_pad_new ( );
+gdouble phat_pad_get_ytilt (PhatPad* pad);
+gdouble phat_pad_get_xtilt (PhatPad* pad);
+gdouble phat_pad_get_pressure (PhatPad* pad);
+gdouble phat_pad_get_y (PhatPad* pad);
+gdouble phat_pad_get_x (PhatPad* pad);
 
 
 G_END_DECLS
 
-#endif /* __PHAT_2D_PAD_H__ */
+#endif /* __PHAT_PAD_H__ */

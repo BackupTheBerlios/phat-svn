@@ -6,9 +6,9 @@ enum
      SPACING = 5,
 };
 
-void motion_cb(Phat2dPad* pad)
+void motion_cb(PhatPad* pad)
 {
-    printf("for signals pressure %f x %f y %f\n", phat_2d_pad_get_pressure(pad), phat_2d_pad_get_x(pad), phat_2d_pad_get_y(pad));
+    printf("for signals pressure %f x %f y %f\n", phat_pad_get_pressure(pad), phat_pad_get_x(pad), phat_pad_get_y(pad));
 }  
 
 
@@ -65,8 +65,8 @@ int main (int argc, char* argv[])
      gtk_container_add (GTK_CONTAINER (window), vbox);
      gtk_widget_show (vbox);
      
-     /* 2d pad */
-     pad = phat_2d_pad_new ();
+     /*  pad */
+     pad = phat_pad_new ();
      gtk_box_pack_start (GTK_BOX (vbox), pad, TRUE, FALSE, 0);
      gtk_widget_show (pad);
      g_signal_connect (G_OBJECT (pad), "value-changed",

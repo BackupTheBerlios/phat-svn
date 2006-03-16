@@ -2,7 +2,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include "phatprivate.h"
-#include "phat2dpad.h"
+#include "phatpad.h"
 
 /* signals */
 enum
@@ -25,25 +25,25 @@ static GtkHBoxClass* parent_class;
 static int signals[LAST_SIGNAL];
 
 
-static void phat_2d_pad_class_init               (Phat2dPadClass* klass);
-static void phat_2d_pad_init                     (Phat2dPad* pad);
-static void phat_2d_pad_destroy                  (GtkObject* object);
-static void phat_2d_pad_realize                  (GtkWidget* widget);
-static void phat_2d_pad_unrealize                (GtkWidget* widget);
-static void phat_2d_pad_map                      (GtkWidget* widget);
-static void phat_2d_pad_unmap                    (GtkWidget* widget);
-static void phat_2d_pad_size_allocate            (GtkWidget* widget,
+static void phat_pad_class_init               (PhatPadClass* klass);
+static void phat_pad_init                     (PhatPad* pad);
+static void phat_pad_destroy                  (GtkObject* object);
+static void phat_pad_realize                  (GtkWidget* widget);
+static void phat_pad_unrealize                (GtkWidget* widget);
+static void phat_pad_map                      (GtkWidget* widget);
+static void phat_pad_unmap                    (GtkWidget* widget);
+static void phat_pad_size_allocate            (GtkWidget* widget,
 							 GtkAllocation* allocation);
-static gboolean phat_2d_pad_expose               (GtkWidget* widget,
+static gboolean phat_pad_expose               (GtkWidget* widget,
 							 GdkEventExpose* event);
-static gboolean phat_2d_pad_button_press         (GtkWidget* widget,
+static gboolean phat_pad_button_press         (GtkWidget* widget,
 							 GdkEventButton* event);
-static gboolean phat_2d_pad_motion_notify        (GtkWidget* widget,
+static gboolean phat_pad_motion_notify        (GtkWidget* widget,
 							 GdkEventMotion* event);
-static gboolean phat_2d_pad_configure_event		 (GtkWidget *widget, 
+static gboolean phat_pad_configure_event		 (GtkWidget *widget, 
 							 GdkEventConfigure *event);
 
-GType phat_2d_pad_get_type ( )
+GType phat_pad_get_type ( )
 {
     static GType type = 0;
 
@@ -51,19 +51,19 @@ GType phat_2d_pad_get_type ( )
     {
 	static const GTypeInfo info =
 	    {
-		sizeof (Phat2dPadClass),
+		sizeof (PhatPadClass),
 		NULL,
 		NULL,
-		(GClassInitFunc) phat_2d_pad_class_init,
+		(GClassInitFunc) phat_pad_class_init,
 		NULL,
 		NULL,
-		sizeof (Phat2dPad),
+		sizeof (PhatPad),
 		0,
-		(GInstanceInitFunc) phat_2d_pad_init,
+		(GInstanceInitFunc) phat_pad_init,
 	    };
 
 	type = g_type_register_static (GTK_TYPE_DRAWING_AREA,
-				       "Phat2dPad",
+				       "PhatPad",
 				       &info,
 				       0);
     }
@@ -74,26 +74,26 @@ GType phat_2d_pad_get_type ( )
 
 
 /**
- * phat_2d_pad_new:
+ * phat_pad_new:
  * @digits: number of decimal digits to display
  * 
- * Creates a new #Phat2dPad.
+ * Creates a new #PhatPad.
  *
- * Returns: a newly created #Phat2dPad
+ * Returns: a newly created #PhatPad
  * 
  */
-GtkWidget* phat_2d_pad_new ()
+GtkWidget* phat_pad_new ()
 {
-    Phat2dPad* pad;
+    PhatPad* pad;
 
     debug ("new\n");
 
-    pad = g_object_new (PHAT_TYPE_2D_PAD, NULL);
+    pad = g_object_new (PHAT_TYPE_PAD, NULL);
          
     return (GtkWidget*) pad;
 }
 
-static void phat_2d_pad_class_init (Phat2dPadClass* klass)
+static void phat_pad_class_init (PhatPadClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
     GtkWidgetClass* widget_class = (GtkWidgetClass*) klass;
@@ -102,19 +102,19 @@ static void phat_2d_pad_class_init (Phat2dPadClass* klass)
      
     parent_class = gtk_type_class (gtk_drawing_area_get_type ());
 
-    object_class->destroy = phat_2d_pad_destroy;
+    object_class->destroy = phat_pad_destroy;
 
-    widget_class->realize = phat_2d_pad_realize;
-    widget_class->unrealize = phat_2d_pad_unrealize;
-    widget_class->map = phat_2d_pad_map;
-    widget_class->unmap = phat_2d_pad_unmap;
-    widget_class->size_allocate = phat_2d_pad_size_allocate;
-    widget_class->expose_event = phat_2d_pad_expose;
-    widget_class->button_press_event = phat_2d_pad_button_press;
-    widget_class->motion_notify_event = phat_2d_pad_motion_notify;
+    widget_class->realize = phat_pad_realize;
+    widget_class->unrealize = phat_pad_unrealize;
+    widget_class->map = phat_pad_map;
+    widget_class->unmap = phat_pad_unmap;
+    widget_class->size_allocate = phat_pad_size_allocate;
+    widget_class->expose_event = phat_pad_expose;
+    widget_class->button_press_event = phat_pad_button_press;
+    widget_class->motion_notify_event = phat_pad_motion_notify;
 
     /**
-     * Phat2dPad::value-changed:
+     * PhatPad::value-changed:
      * @pad: the object on which the signal was emitted
      *
      * The "value-changed" signal is emitted when the value of the
@@ -126,7 +126,7 @@ static void phat_2d_pad_class_init (Phat2dPadClass* klass)
 	g_signal_new ("value-changed",
 		      G_TYPE_FROM_CLASS (klass),
 		      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-		      G_STRUCT_OFFSET (Phat2dPadClass, value_changed),
+		      G_STRUCT_OFFSET (PhatPadClass, value_changed),
 		      NULL, NULL,
 		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
      
@@ -135,7 +135,7 @@ static void phat_2d_pad_class_init (Phat2dPadClass* klass)
 
 
 
-static void phat_2d_pad_init (Phat2dPad* pad)
+static void phat_pad_init (PhatPad* pad)
 {
     debug ("init\n");
 
@@ -165,16 +165,16 @@ static void phat_2d_pad_init (Phat2dPad* pad)
 			  NULL);
     
     g_signal_connect (G_OBJECT (pad), "expose_event",
-                    G_CALLBACK (phat_2d_pad_expose), NULL);
+                    G_CALLBACK (phat_pad_expose), NULL);
     g_signal_connect (G_OBJECT(pad),"configure_event",
-                    G_CALLBACK (phat_2d_pad_configure_event), NULL);
+                    G_CALLBACK (phat_pad_configure_event), NULL);
 
     /* Event signals */
 
     g_signal_connect (G_OBJECT (pad), "motion_notify_event",
-			G_CALLBACK (phat_2d_pad_motion_notify), NULL);
+			G_CALLBACK (phat_pad_motion_notify), NULL);
     g_signal_connect (G_OBJECT (pad), "button_press_event",
-			G_CALLBACK (phat_2d_pad_button_press), NULL);
+			G_CALLBACK (phat_pad_button_press), NULL);
 
     gtk_widget_set_events (widget, GDK_EXPOSURE_MASK
 			     | GDK_LEAVE_NOTIFY_MASK
@@ -190,19 +190,19 @@ static void phat_2d_pad_init (Phat2dPad* pad)
 
 
 
-static void phat_2d_pad_destroy (GtkObject* object)
+static void phat_pad_destroy (GtkObject* object)
 {
     GtkObjectClass* klass;
-    Phat2dPad* pad;
+    PhatPad* pad;
     GtkWidget* widget;
      
     debug ("destroy %p\n", object);
      
     g_return_if_fail (object != NULL);
-    g_return_if_fail (PHAT_IS_2D_PAD(object));
+    g_return_if_fail (PHAT_IS_PAD(object));
 
     klass = GTK_OBJECT_CLASS (parent_class);
-    pad = (Phat2dPad*) object;
+    pad = (PhatPad*) object;
     widget = GTK_WIDGET (object);
 
    
@@ -218,15 +218,15 @@ static void phat_2d_pad_destroy (GtkObject* object)
 
 
 
-static void phat_2d_pad_realize (GtkWidget* widget)
+static void phat_pad_realize (GtkWidget* widget)
 {
     GtkWidgetClass* klass = GTK_WIDGET_CLASS (parent_class);
-    //Phat2dPad* pad = (Phat2dPad*) widget;
+    //PhatPad* pad = (PhatPad*) widget;
         
     debug ("realize\n");
      
     g_return_if_fail (widget != NULL);
-    g_return_if_fail (PHAT_IS_2D_PAD(widget));
+    g_return_if_fail (PHAT_IS_PAD(widget));
 
     if (klass->realize)
 	klass->realize (widget);
@@ -235,9 +235,9 @@ static void phat_2d_pad_realize (GtkWidget* widget)
 
 
 
-static void phat_2d_pad_unrealize (GtkWidget *widget)
+static void phat_pad_unrealize (GtkWidget *widget)
 {
-    //Phat2dPad* pad = PHAT_2D_PAD(widget);
+    //PhatPad* pad = PHAT_PAD(widget);
     GtkWidgetClass* klass = GTK_WIDGET_CLASS (parent_class);
 
     debug ("unrealize\n");
@@ -248,14 +248,14 @@ static void phat_2d_pad_unrealize (GtkWidget *widget)
 }
 
 
-static void phat_2d_pad_map (GtkWidget *widget)
+static void phat_pad_map (GtkWidget *widget)
 {
-    Phat2dPad* pad;
+    PhatPad* pad;
 
     debug ("map\n");
      
-    g_return_if_fail (PHAT_IS_2D_PAD(widget));
-    pad = (Phat2dPad*) widget;
+    g_return_if_fail (PHAT_IS_PAD(widget));
+    pad = (PhatPad*) widget;
     //debug ("during map\n");
 
     GTK_WIDGET_CLASS (parent_class)->map (widget);
@@ -266,28 +266,28 @@ static void phat_2d_pad_map (GtkWidget *widget)
 }
 
 
-static void phat_2d_pad_unmap (GtkWidget *widget)
+static void phat_pad_unmap (GtkWidget *widget)
 {
-    Phat2dPad* pad;
+    PhatPad* pad;
 
     debug ("unmap\n");
      
-    g_return_if_fail (PHAT_IS_2D_PAD(widget));
-    pad = (Phat2dPad*) widget;
+    g_return_if_fail (PHAT_IS_PAD(widget));
+    pad = (PhatPad*) widget;
    
     GTK_WIDGET_CLASS (parent_class)->unmap (widget);
 }
 
 
-static void phat_2d_pad_size_allocate (GtkWidget* widget,
+static void phat_pad_size_allocate (GtkWidget* widget,
 					      GtkAllocation* allocation)
 {
-    Phat2dPad* pad;
-    pad = PHAT_2D_PAD(widget);
+    PhatPad* pad;
+    pad = PHAT_PAD(widget);
 
     g_return_if_fail (widget != NULL);
     g_return_if_fail (allocation != NULL);
-    g_return_if_fail (PHAT_IS_2D_PAD(widget));
+    g_return_if_fail (PHAT_IS_PAD(widget));
 
     debug ("size allocate\n");
      
@@ -311,7 +311,7 @@ static void phat_2d_pad_size_allocate (GtkWidget* widget,
                       widget->allocation.width,
                       widget->allocation.height);
 	*/
-	/*gdk_window_move_resize (PHAT_2D_PAD(widget)->event_window,
+	/*gdk_window_move_resize (PHAT_PAD(widget)->event_window,
 				allocation->x,
 				allocation->y,
 				allocation->width,
@@ -319,21 +319,21 @@ static void phat_2d_pad_size_allocate (GtkWidget* widget,
     }
 }
 
-static gboolean phat_2d_pad_expose (GtkWidget*      widget,
+static gboolean phat_pad_expose (GtkWidget*      widget,
 					   GdkEventExpose* event)
 {
-    Phat2dPad* pad;
+    PhatPad* pad;
     GtkAllocation* a;
      
     g_return_val_if_fail (widget != NULL, FALSE);
-    g_return_val_if_fail (PHAT_IS_2D_PAD(widget), FALSE);
+    g_return_val_if_fail (PHAT_IS_PAD(widget), FALSE);
     g_return_val_if_fail (event != NULL, FALSE);
     g_return_val_if_fail (GTK_WIDGET_DRAWABLE (widget), FALSE);
     g_return_val_if_fail (event->count == 0, FALSE);
 
     debug ("expose\n");
 
-    pad = PHAT_2D_PAD(widget);
+    pad = PHAT_PAD(widget);
     a = &widget->allocation;
 
     gdk_draw_drawable (widget->window,
@@ -350,12 +350,12 @@ static gboolean phat_2d_pad_expose (GtkWidget*      widget,
 }
 
 /* Create a new backing pixmap of the appropriate size */
-static gboolean phat_2d_pad_configure_event (GtkWidget *widget, GdkEventConfigure *event)
+static gboolean phat_pad_configure_event (GtkWidget *widget, GdkEventConfigure *event)
 {
-    Phat2dPad* pad;
+    PhatPad* pad;
 
     debug ("configure  \n");
-    pad = PHAT_2D_PAD(widget);
+    pad = PHAT_PAD(widget);
     if (pad->pixmap)
 	g_object_unref (pad->pixmap);
 
@@ -374,10 +374,10 @@ static gboolean phat_2d_pad_configure_event (GtkWidget *widget, GdkEventConfigur
 }
 
 
-static gboolean phat_2d_pad_button_press (GtkWidget* widget,
+static gboolean phat_pad_button_press (GtkWidget* widget,
 						 GdkEventButton* event)
 {
-    Phat2dPad* pad = PHAT_2D_PAD(widget);
+    PhatPad* pad = PHAT_PAD(widget);
 
     debug ("pad press\n");
      
@@ -397,10 +397,10 @@ static gboolean phat_2d_pad_button_press (GtkWidget* widget,
 }
 
 
-static gboolean phat_2d_pad_motion_notify (GtkWidget* widget,
+static gboolean phat_pad_motion_notify (GtkWidget* widget,
 						  GdkEventMotion* event)
 {
-    Phat2dPad* pad = PHAT_2D_PAD(widget);
+    PhatPad* pad = PHAT_PAD(widget);
 
     GdkModifierType state;
 
@@ -429,88 +429,88 @@ static gboolean phat_2d_pad_motion_notify (GtkWidget* widget,
     
     g_signal_emit (G_OBJECT (widget), signals[VALUE_CHANGED_SIGNAL], 0);
     //if (state & GDK_BUTTON1_MASK && widget->pixmap != NULL)
-	//phat_2d_pad_get_xphat_2d_pad_get_xdraw_brush (widget, event->device->source, x, y, pressure);
+	//phat_pad_get_xphat_pad_get_xdraw_brush (widget, event->device->source, x, y, pressure);
       
     return TRUE;
 }
 
 /**
- * phat_2d_pad_get_x:
- * @button: a #Phat2dPad
+ * phat_pad_get_x:
+ * @button: a #PhatPad
  *
  * Retrieves the current x value of the pad.
  *
  * Returns: current x value.
  *
  */
-gdouble phat_2d_pad_get_x (Phat2dPad* pad)
+gdouble phat_pad_get_x (PhatPad* pad)
 {
-    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+    g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
     return pad->x;
 }
 
 /**
- * phat_2d_pad_get_y:
- * @button: a #Phat2dPad
+ * phat_pad_get_y:
+ * @button: a #PhatPad
  *
  * Retrieves the current y value of the pad.
  *
  * Returns: current y value.
  *
  */
-gdouble phat_2d_pad_get_y (Phat2dPad* pad)
+gdouble phat_pad_get_y (PhatPad* pad)
 {
-    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+    g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
     return pad->y;
 }
 
 /**
- * phat_2d_pad_get_pressure:
- * @button: a #Phat2dPad
+ * phat_pad_get_pressure:
+ * @button: a #PhatPad
  *
  * Retrieves the current pressure value of the pad.
  *
  * Returns: current pressure value.
  *
  */
-gdouble phat_2d_pad_get_pressure (Phat2dPad* pad)
+gdouble phat_pad_get_pressure (PhatPad* pad)
 {
-    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+    g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
     return pad->pressure;
 }
 
 /**
- * phat_2d_pad_get_xtilt:
- * @button: a #Phat2dPad
+ * phat_pad_get_xtilt:
+ * @button: a #PhatPad
  *
  * Retrieves the current xtilt value of the pad.
  *
  * Returns: current xtilt value.
  *
  */
-gdouble phat_2d_pad_get_xtilt (Phat2dPad* pad)
+gdouble phat_pad_get_xtilt (PhatPad* pad)
 {
-    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+    g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
     return pad->xtilt;
 }
 
 
 /**
- * phat_2d_pad_get_ytilt:
- * @button: a #Phat2dPad
+ * phat_pad_get_ytilt:
+ * @button: a #PhatPad
  *
  * Retrieves the current ytilt value of the pad.
  *
  * Returns: current ytilt value.
  *
  */
-gdouble phat_2d_pad_get_ytilt (Phat2dPad* pad)
+gdouble phat_pad_get_ytilt (PhatPad* pad)
 {
-    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+    g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
     return pad->ytilt;
 }
