@@ -6,8 +6,13 @@ enum
      SPACING = 5,
 };
 
-void
-input_dialog_destroy (GtkWidget *w, gpointer data)
+void motion_cb(Phat2dPad* pad)
+{
+    printf("for signals pressure %f x %f y %f\n", phat_2d_pad_get_pressure(pad), phat_2d_pad_get_x(pad), phat_2d_pad_get_y(pad));
+}  
+
+
+void input_dialog_destroy (GtkWidget *w, gpointer data)
 {
   *((GtkWidget **)data) = NULL;
 }
@@ -64,6 +69,8 @@ int main (int argc, char* argv[])
      pad = phat_2d_pad_new ();
      gtk_box_pack_start (GTK_BOX (vbox), pad, TRUE, FALSE, 0);
      gtk_widget_show (pad);
+     g_signal_connect (G_OBJECT (pad), "value-changed",
+		       G_CALLBACK (motion_cb), NULL);
 
      button = gtk_button_new_with_label ("Input Dialog");
      gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 0);

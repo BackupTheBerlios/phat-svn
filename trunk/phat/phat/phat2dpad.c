@@ -7,17 +7,8 @@
 /* signals */
 enum
 {
-    CHANGED_SIGNAL,
     VALUE_CHANGED_SIGNAL,
     LAST_SIGNAL,
-};
-
-/* hilite states */
-enum
-{
-    LEFT_ARROW = 1,
-    RIGHT_ARROW,
-    LABEL,
 };
 
 /* action states */
@@ -30,17 +21,8 @@ enum
     STATE_SCROLL,
 };
 
-/* magic numbers */
-enum
-{
-    SCROLL_THRESHOLD = 4,
-    DIGITS = 2,
-    MAXDIGITS = 20,
-};
-
-
 static GtkHBoxClass* parent_class;
-//static int signals[LAST_SIGNAL];
+static int signals[LAST_SIGNAL];
 
 
 static void phat_2d_pad_class_init               (Phat2dPadClass* klass);
@@ -139,16 +121,16 @@ static void phat_2d_pad_class_init (Phat2dPadClass* klass)
      * pad's adjustment changes.
      *
      */
-    /*
+    
     signals[VALUE_CHANGED_SIGNAL] =
 	g_signal_new ("value-changed",
 		      G_TYPE_FROM_CLASS (klass),
 		      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
 		      G_STRUCT_OFFSET (Phat2dPadClass, value_changed),
 		      NULL, NULL,
-		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0); */
+		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
      
-    //klass->value_changed = NULL;
+    klass->value_changed = NULL;
 }
 
 
@@ -168,6 +150,11 @@ static void phat_2d_pad_init (Phat2dPad* pad)
      * (mapped) */
     //gtk_widget_set_redraw_on_allocate (GTK_WIDGET (box), TRUE);
     
+    pad->x = 0;
+    pad->y = 0;
+    pad->xtilt = 0;
+    pad->ytilt = 0;
+    pad->pressure = 0;
     pad->pixmap = NULL;
     gtk_widget_set_size_request (GTK_WIDGET (pad), 200, 200);
          
@@ -199,8 +186,6 @@ static void phat_2d_pad_init (Phat2dPad* pad)
 	 events for the drawing area */
     gtk_widget_set_extension_events (widget, GDK_EXTENSION_EVENTS_CURSOR);
     
-    /*g_signal_connect (G_OBJECT (pad->entry), "activate",
-		      G_CALLBACK (phat_2d_pad_entry_activate), (gpointer) pad);*/
 }
 
 
@@ -400,23 +385,23 @@ static gboolean phat_2d_pad_button_press (GtkWidget* widget,
 	return FALSE;
 
     if (event->button == 1 && pad->pixmap != NULL) {
-	gdouble pressure;
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pressure);
+	pad->x = event->x;
+	pad->y = event->y;
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
+
 	//draw_brush (widget, event->device->source, event->x, event->y, pressure);
     }
-
-  return TRUE;
-
+    return TRUE;
 }
 
 
 static gboolean phat_2d_pad_motion_notify (GtkWidget* widget,
 						  GdkEventMotion* event)
 {
-    //Phat2dPad* pad = PHAT_2D_PAD(widget);
+    Phat2dPad* pad = PHAT_2D_PAD(widget);
 
-    gdouble x, y;
-    gdouble pressure;
     GdkModifierType state;
 
     debug ("motion\n");
@@ -424,21 +409,108 @@ static gboolean phat_2d_pad_motion_notify (GtkWidget* widget,
     if (event->is_hint) 
     {
 	gdk_device_get_state (event->device, event->window, NULL, &state);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_X, &x);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_Y, &y);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_X, &pad->x);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_Y, &pad->y);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
     }
     else
     {
-	x = event->x;
-	y = event->y;
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pressure);
+	pad->x = event->x;
+	pad->y = event->y;
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
 	state = event->state;
     }
 	
-    printf("pressure %f x %f y %f\n", pressure, x, y);
+    //printf("pressure %f x %f y %f\n", pad->pressure, pad->x, pad->y);
+    
+    g_signal_emit (G_OBJECT (widget), signals[VALUE_CHANGED_SIGNAL], 0);
     //if (state & GDK_BUTTON1_MASK && widget->pixmap != NULL)
-	//draw_brush (widget, event->device->source, x, y, pressure);
+	//phat_2d_pad_get_xphat_2d_pad_get_xdraw_brush (widget, event->device->source, x, y, pressure);
       
     return TRUE;
+}
+
+/**
+ * phat_2d_pad_get_x:
+ * @button: a #Phat2dPad
+ *
+ * Retrieves the current x value of the pad.
+ *
+ * Returns: current x value.
+ *
+ */
+gdouble phat_2d_pad_get_x (Phat2dPad* pad)
+{
+    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+
+    return pad->x;
+}
+
+/**
+ * phat_2d_pad_get_y:
+ * @button: a #Phat2dPad
+ *
+ * Retrieves the current y value of the pad.
+ *
+ * Returns: current y value.
+ *
+ */
+gdouble phat_2d_pad_get_y (Phat2dPad* pad)
+{
+    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+
+    return pad->y;
+}
+
+/**
+ * phat_2d_pad_get_pressure:
+ * @button: a #Phat2dPad
+ *
+ * Retrieves the current pressure value of the pad.
+ *
+ * Returns: current pressure value.
+ *
+ */
+gdouble phat_2d_pad_get_pressure (Phat2dPad* pad)
+{
+    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+
+    return pad->pressure;
+}
+
+/**
+ * phat_2d_pad_get_xtilt:
+ * @button: a #Phat2dPad
+ *
+ * Retrieves the current xtilt value of the pad.
+ *
+ * Returns: current xtilt value.
+ *
+ */
+gdouble phat_2d_pad_get_xtilt (Phat2dPad* pad)
+{
+    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+
+    return pad->xtilt;
+}
+
+
+/**
+ * phat_2d_pad_get_ytilt:
+ * @button: a #Phat2dPad
+ *
+ * Retrieves the current ytilt value of the pad.
+ *
+ * Returns: current ytilt value.
+ *
+ */
+gdouble phat_2d_pad_get_ytilt (Phat2dPad* pad)
+{
+    g_return_val_if_fail (PHAT_IS_2D_PAD (pad), 0);
+
+    return pad->ytilt;
 }

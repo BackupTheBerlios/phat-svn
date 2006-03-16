@@ -18,20 +18,30 @@ struct _Phat2dPad
 {
     GtkDrawingArea parent; 
     GdkPixmap* pixmap;
+    gdouble pressure;
+    gdouble xtilt;
+    gdouble ytilt;
+    gdouble x;
+    gdouble y;
 };
 
 struct _Phat2dPadClass
 {
     GtkDrawingAreaClass parent_class;
 
-    //void (*value_changed) (Phat2dPad* slider);
-    //void (*changed)       (Phat2dPad* slider);
+    void (*value_changed) (Phat2dPad* pad);
 };
 
 GType phat_2d_pad_get_type ( );
 
 
 GtkWidget* phat_2d_pad_new ( );
+gdouble phat_2d_pad_get_ytilt (Phat2dPad* pad);
+gdouble phat_2d_pad_get_xtilt (Phat2dPad* pad);
+gdouble phat_2d_pad_get_pressure (Phat2dPad* pad);
+gdouble phat_2d_pad_get_y (Phat2dPad* pad);
+gdouble phat_2d_pad_get_x (Phat2dPad* pad);
+
 
 G_END_DECLS
 
