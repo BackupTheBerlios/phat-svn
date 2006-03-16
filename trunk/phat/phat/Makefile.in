@@ -64,7 +64,7 @@ am_libphat_la_OBJECTS = libphat_la-phatfanslider.lo \
 	libphat_la-phatvfanslider.lo libphat_la-phathfanslider.lo \
 	libphat_la-phatprivate.lo libphat_la-phatsliderbutton.lo \
 	libphat_la-phatkeyboard.lo libphat_la-phatvkeyboard.lo \
-	libphat_la-phathkeyboard.lo libphat_la-phat2dpad.lo
+	libphat_la-phathkeyboard.lo libphat_la-phatpad.lo
 libphat_la_OBJECTS = $(am_libphat_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -195,13 +195,13 @@ libphat_la_SOURCES = phatfanslider.c phatfanslider.h phatvfanslider.c	\
 phatvfanslider.h phathfanslider.c phathfanslider.h phatprivate.h	\
 phatprivate.c phatsliderbutton.c phatsliderbutton.h phatkeyboard.c	\
 phatkeyboard.h phatvkeyboard.c phatvkeyboard.h phathkeyboard.c		\
-phathkeyboard.h phat2dpad.c phat2dpad.h
+phathkeyboard.h phatpad.c phatpad.h
 
 libphat_la_CFLAGS = $(CFLAGS) -I..
 libphatincludedir = $(includedir)/phat
 libphatinclude_HEADERS = phat.h phatfanslider.h phatvfanslider.h	\
 phathfanslider.h phatsliderbutton.h phatkeyboard.h phatvkeyboard.h	\
-phathkeyboard.h phat2dpad.h
+phathkeyboard.h phatpad.h
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -290,11 +290,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phat2dpad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatfanslider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phathfanslider.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phathkeyboard.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatkeyboard.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatpad.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatprivate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatsliderbutton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libphat_la-phatvfanslider.Plo@am__quote@
@@ -377,12 +377,12 @@ libphat_la-phathkeyboard.lo: phathkeyboard.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libphat_la_CFLAGS) $(CFLAGS) -c -o libphat_la-phathkeyboard.lo `test -f 'phathkeyboard.c' || echo '$(srcdir)/'`phathkeyboard.c
 
-libphat_la-phat2dpad.lo: phat2dpad.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libphat_la_CFLAGS) $(CFLAGS) -MT libphat_la-phat2dpad.lo -MD -MP -MF "$(DEPDIR)/libphat_la-phat2dpad.Tpo" -c -o libphat_la-phat2dpad.lo `test -f 'phat2dpad.c' || echo '$(srcdir)/'`phat2dpad.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libphat_la-phat2dpad.Tpo" "$(DEPDIR)/libphat_la-phat2dpad.Plo"; else rm -f "$(DEPDIR)/libphat_la-phat2dpad.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='phat2dpad.c' object='libphat_la-phat2dpad.lo' libtool=yes @AMDEPBACKSLASH@
+libphat_la-phatpad.lo: phatpad.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libphat_la_CFLAGS) $(CFLAGS) -MT libphat_la-phatpad.lo -MD -MP -MF "$(DEPDIR)/libphat_la-phatpad.Tpo" -c -o libphat_la-phatpad.lo `test -f 'phatpad.c' || echo '$(srcdir)/'`phatpad.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libphat_la-phatpad.Tpo" "$(DEPDIR)/libphat_la-phatpad.Plo"; else rm -f "$(DEPDIR)/libphat_la-phatpad.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='phatpad.c' object='libphat_la-phatpad.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libphat_la_CFLAGS) $(CFLAGS) -c -o libphat_la-phat2dpad.lo `test -f 'phat2dpad.c' || echo '$(srcdir)/'`phat2dpad.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libphat_la_CFLAGS) $(CFLAGS) -c -o libphat_la-phatpad.lo `test -f 'phatpad.c' || echo '$(srcdir)/'`phatpad.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

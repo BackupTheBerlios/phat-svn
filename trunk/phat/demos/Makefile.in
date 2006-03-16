@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(phat2dpad_SOURCES) $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) $(phatsliderbutton_SOURCES)
+SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) $(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -39,7 +39,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = phatfanslider$(EXEEXT) phatsliderbutton$(EXEEXT) \
-	phatkeyboard$(EXEEXT) phat2dpad$(EXEEXT)
+	phatkeyboard$(EXEEXT) phatpad$(EXEEXT)
 subdir = demos
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -52,15 +52,15 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_phat2dpad_OBJECTS = phat2dpad-2dpad.$(OBJEXT)
-phat2dpad_OBJECTS = $(am_phat2dpad_OBJECTS)
-phat2dpad_DEPENDENCIES = ../phat/libphat.la
 am_phatfanslider_OBJECTS = phatfanslider-fanslider.$(OBJEXT)
 phatfanslider_OBJECTS = $(am_phatfanslider_OBJECTS)
 phatfanslider_DEPENDENCIES = ../phat/libphat.la
 am_phatkeyboard_OBJECTS = phatkeyboard-keyboard.$(OBJEXT)
 phatkeyboard_OBJECTS = $(am_phatkeyboard_OBJECTS)
 phatkeyboard_DEPENDENCIES = ../phat/libphat.la
+am_phatpad_OBJECTS = phatpad-pad.$(OBJEXT)
+phatpad_OBJECTS = $(am_phatpad_OBJECTS)
+phatpad_DEPENDENCIES = ../phat/libphat.la
 am_phatsliderbutton_OBJECTS = phatsliderbutton-sliderbutton.$(OBJEXT)
 phatsliderbutton_OBJECTS = $(am_phatsliderbutton_OBJECTS)
 phatsliderbutton_DEPENDENCIES = ../phat/libphat.la
@@ -75,10 +75,10 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(phat2dpad_SOURCES) $(phatfanslider_SOURCES) \
-	$(phatkeyboard_SOURCES) $(phatsliderbutton_SOURCES)
-DIST_SOURCES = $(phat2dpad_SOURCES) $(phatfanslider_SOURCES) \
-	$(phatkeyboard_SOURCES) $(phatsliderbutton_SOURCES)
+SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) \
+	$(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
+DIST_SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) \
+	$(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -200,10 +200,10 @@ phatkeyboard_SOURCES = keyboard.c
 phatkeyboard_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
 phatkeyboard_LIBS = `pkg-config --libs gtk+-2.0`
 phatkeyboard_LDADD = ../phat/libphat.la
-phat2dpad_SOURCES = 2dpad.c
-phat2dpad_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
-phat2dpad_LIBS = `pkg-config --libs gtk+-2.0`
-phat2dpad_LDADD = ../phat/libphat.la
+phatpad_SOURCES = pad.c
+phatpad_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
+phatpad_LIBS = `pkg-config --libs gtk+-2.0`
+phatpad_LDADD = ../phat/libphat.la
 all: all-am
 
 .SUFFIXES:
@@ -265,15 +265,15 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
-phat2dpad$(EXEEXT): $(phat2dpad_OBJECTS) $(phat2dpad_DEPENDENCIES) 
-	@rm -f phat2dpad$(EXEEXT)
-	$(LINK) $(phat2dpad_LDFLAGS) $(phat2dpad_OBJECTS) $(phat2dpad_LDADD) $(LIBS)
 phatfanslider$(EXEEXT): $(phatfanslider_OBJECTS) $(phatfanslider_DEPENDENCIES) 
 	@rm -f phatfanslider$(EXEEXT)
 	$(LINK) $(phatfanslider_LDFLAGS) $(phatfanslider_OBJECTS) $(phatfanslider_LDADD) $(LIBS)
 phatkeyboard$(EXEEXT): $(phatkeyboard_OBJECTS) $(phatkeyboard_DEPENDENCIES) 
 	@rm -f phatkeyboard$(EXEEXT)
 	$(LINK) $(phatkeyboard_LDFLAGS) $(phatkeyboard_OBJECTS) $(phatkeyboard_LDADD) $(LIBS)
+phatpad$(EXEEXT): $(phatpad_OBJECTS) $(phatpad_DEPENDENCIES) 
+	@rm -f phatpad$(EXEEXT)
+	$(LINK) $(phatpad_LDFLAGS) $(phatpad_OBJECTS) $(phatpad_LDADD) $(LIBS)
 phatsliderbutton$(EXEEXT): $(phatsliderbutton_OBJECTS) $(phatsliderbutton_DEPENDENCIES) 
 	@rm -f phatsliderbutton$(EXEEXT)
 	$(LINK) $(phatsliderbutton_LDFLAGS) $(phatsliderbutton_OBJECTS) $(phatsliderbutton_LDADD) $(LIBS)
@@ -284,9 +284,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phat2dpad-2dpad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatfanslider-fanslider.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatkeyboard-keyboard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatpad-pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatsliderbutton-sliderbutton.Po@am__quote@
 
 .c.o:
@@ -309,20 +309,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
-
-phat2dpad-2dpad.o: 2dpad.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phat2dpad_CFLAGS) $(CFLAGS) -MT phat2dpad-2dpad.o -MD -MP -MF "$(DEPDIR)/phat2dpad-2dpad.Tpo" -c -o phat2dpad-2dpad.o `test -f '2dpad.c' || echo '$(srcdir)/'`2dpad.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phat2dpad-2dpad.Tpo" "$(DEPDIR)/phat2dpad-2dpad.Po"; else rm -f "$(DEPDIR)/phat2dpad-2dpad.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='2dpad.c' object='phat2dpad-2dpad.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phat2dpad_CFLAGS) $(CFLAGS) -c -o phat2dpad-2dpad.o `test -f '2dpad.c' || echo '$(srcdir)/'`2dpad.c
-
-phat2dpad-2dpad.obj: 2dpad.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phat2dpad_CFLAGS) $(CFLAGS) -MT phat2dpad-2dpad.obj -MD -MP -MF "$(DEPDIR)/phat2dpad-2dpad.Tpo" -c -o phat2dpad-2dpad.obj `if test -f '2dpad.c'; then $(CYGPATH_W) '2dpad.c'; else $(CYGPATH_W) '$(srcdir)/2dpad.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phat2dpad-2dpad.Tpo" "$(DEPDIR)/phat2dpad-2dpad.Po"; else rm -f "$(DEPDIR)/phat2dpad-2dpad.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='2dpad.c' object='phat2dpad-2dpad.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phat2dpad_CFLAGS) $(CFLAGS) -c -o phat2dpad-2dpad.obj `if test -f '2dpad.c'; then $(CYGPATH_W) '2dpad.c'; else $(CYGPATH_W) '$(srcdir)/2dpad.c'; fi`
 
 phatfanslider-fanslider.o: fanslider.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatfanslider_CFLAGS) $(CFLAGS) -MT phatfanslider-fanslider.o -MD -MP -MF "$(DEPDIR)/phatfanslider-fanslider.Tpo" -c -o phatfanslider-fanslider.o `test -f 'fanslider.c' || echo '$(srcdir)/'`fanslider.c; \
@@ -351,6 +337,20 @@ phatkeyboard-keyboard.obj: keyboard.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='keyboard.c' object='phatkeyboard-keyboard.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatkeyboard_CFLAGS) $(CFLAGS) -c -o phatkeyboard-keyboard.obj `if test -f 'keyboard.c'; then $(CYGPATH_W) 'keyboard.c'; else $(CYGPATH_W) '$(srcdir)/keyboard.c'; fi`
+
+phatpad-pad.o: pad.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatpad_CFLAGS) $(CFLAGS) -MT phatpad-pad.o -MD -MP -MF "$(DEPDIR)/phatpad-pad.Tpo" -c -o phatpad-pad.o `test -f 'pad.c' || echo '$(srcdir)/'`pad.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phatpad-pad.Tpo" "$(DEPDIR)/phatpad-pad.Po"; else rm -f "$(DEPDIR)/phatpad-pad.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pad.c' object='phatpad-pad.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatpad_CFLAGS) $(CFLAGS) -c -o phatpad-pad.o `test -f 'pad.c' || echo '$(srcdir)/'`pad.c
+
+phatpad-pad.obj: pad.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatpad_CFLAGS) $(CFLAGS) -MT phatpad-pad.obj -MD -MP -MF "$(DEPDIR)/phatpad-pad.Tpo" -c -o phatpad-pad.obj `if test -f 'pad.c'; then $(CYGPATH_W) 'pad.c'; else $(CYGPATH_W) '$(srcdir)/pad.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phatpad-pad.Tpo" "$(DEPDIR)/phatpad-pad.Po"; else rm -f "$(DEPDIR)/phatpad-pad.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pad.c' object='phatpad-pad.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatpad_CFLAGS) $(CFLAGS) -c -o phatpad-pad.obj `if test -f 'pad.c'; then $(CYGPATH_W) 'pad.c'; else $(CYGPATH_W) '$(srcdir)/pad.c'; fi`
 
 phatsliderbutton-sliderbutton.o: sliderbutton.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatsliderbutton_CFLAGS) $(CFLAGS) -MT phatsliderbutton-sliderbutton.o -MD -MP -MF "$(DEPDIR)/phatsliderbutton-sliderbutton.Tpo" -c -o phatsliderbutton-sliderbutton.o `test -f 'sliderbutton.c' || echo '$(srcdir)/'`sliderbutton.c; \
