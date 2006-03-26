@@ -150,11 +150,12 @@ static void phat_pad_init (PhatPad* pad)
      * (mapped) */
     //gtk_widget_set_redraw_on_allocate (GTK_WIDGET (box), TRUE);
     
-    pad->x = 0;
-    pad->y = 0;
-    pad->xtilt = 0;
-    pad->ytilt = 0;
-    pad->pressure = 0;
+    pad->x = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
+    pad->y = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
+    pad->xtilt = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
+    pad->ytilt = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
+    pad->pressure = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
+	
     pad->pixmap = NULL;
     gtk_widget_set_size_request (GTK_WIDGET (pad), 200, 200);
          
@@ -378,18 +379,20 @@ static gboolean phat_pad_button_press (GtkWidget* widget,
 						 GdkEventButton* event)
 {
     PhatPad* pad = PHAT_PAD(widget);
-
+    gdouble temppressure, tempxtilt, tempytilt;
+    
     debug ("pad press\n");
      
     if (event->type != GDK_BUTTON_PRESS)
 	return FALSE;
 
     if (event->button == 1 && pad->pixmap != NULL) {
-	pad->x = event->x;
-	pad->y = event->y;
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
+	
+	gtk_adjustment_set_value((GtkAdjustment *)pad->x, (event->x / widget->allocation.width) * (pad->x->upper - pad->x->lower) + pad->x->lower);
+	gtk_adjustment_set_value((GtkAdjustment *)pad->y, (event->y / widget->allocation.height) * (pad->y->upper - pad->y->lower) + pad->y->lower);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &tempxtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &tempytilt);
 
 	//draw_brush (widget, event->device->source, event->x, event->y, pressure);
     }
@@ -401,27 +404,32 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 						  GdkEventMotion* event)
 {
     PhatPad* pad = PHAT_PAD(widget);
+    gdouble tempx, tempy, temppressure, tempxtilt, tempytilt;
 
     GdkModifierType state;
 
     debug ("motion\n");
 
+    printf("xtilt min %f max %f \n", event->device->axes[GDK_AXIS_XTILT].min, event->device->axes[GDK_AXIS_XTILT].max);
+
     if (event->is_hint) 
     {
 	gdk_device_get_state (event->device, event->window, NULL, &state);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_X, &pad->x);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_Y, &pad->y);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_X, &tempx);
+	gtk_adjustment_set_value((GtkAdjustment *)pad->x, (tempx / widget->allocation.width) * (pad->x->upper - pad->x->lower) + pad->x->lower);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_Y, &tempy);
+	gtk_adjustment_set_value((GtkAdjustment *)pad->y, (tempy / widget->allocation.height) * (pad->y->upper - pad->y->lower) + pad->y->lower);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &tempxtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &tempytilt);
     }
     else
     {
-	pad->x = event->x;
-	pad->y = event->y;
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &pad->pressure);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &pad->xtilt);
-	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &pad->ytilt);
+	gtk_adjustment_set_value((GtkAdjustment *)pad->x, (event->x / widget->allocation.width) * (pad->x->upper - pad->x->lower) + pad->x->lower);
+	gtk_adjustment_set_value((GtkAdjustment *)pad->y, (event->y / widget->allocation.height) * (pad->y->upper - pad->y->lower) + pad->y->lower);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &tempxtilt);
+	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &tempytilt);
 	state = event->state;
     }
 	
@@ -447,7 +455,8 @@ gdouble phat_pad_get_x (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return pad->x;
+    return gtk_adjustment_get_value((GtkAdjustment *)pad->x);
+
 }
 
 /**
@@ -463,7 +472,7 @@ gdouble phat_pad_get_y (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return pad->y;
+    return gtk_adjustment_get_value((GtkAdjustment *)pad->y);
 }
 
 /**
@@ -479,7 +488,7 @@ gdouble phat_pad_get_pressure (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return pad->pressure;
+    return gtk_adjustment_get_value((GtkAdjustment *)pad->pressure);
 }
 
 /**
@@ -494,8 +503,8 @@ gdouble phat_pad_get_pressure (PhatPad* pad)
 gdouble phat_pad_get_xtilt (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
+    return gtk_adjustment_get_value((GtkAdjustment *)pad->xtilt);
 
-    return pad->xtilt;
 }
 
 
@@ -512,5 +521,6 @@ gdouble phat_pad_get_ytilt (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return pad->ytilt;
+    return gtk_adjustment_get_value((GtkAdjustment *)pad->ytilt);
+
 }

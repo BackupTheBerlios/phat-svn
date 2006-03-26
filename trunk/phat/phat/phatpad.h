@@ -18,11 +18,11 @@ struct _PhatPad
 {
     GtkDrawingArea parent; 
     GdkPixmap* pixmap;
-    gdouble pressure;
-    gdouble xtilt;
-    gdouble ytilt;
-    gdouble x;
-    gdouble y;
+    GtkAdjustment* pressure;
+    GtkAdjustment* xtilt;
+    GtkAdjustment* ytilt;
+    GtkAdjustment* x;
+    GtkAdjustment* y;
 };
 
 struct _PhatPadClass

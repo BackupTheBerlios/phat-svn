@@ -8,7 +8,7 @@ enum
 
 void motion_cb(PhatPad* pad)
 {
-    printf("for signals pressure %f x %f y %f\n", phat_pad_get_pressure(pad), phat_pad_get_x(pad), phat_pad_get_y(pad));
+    printf("for signals xtilt %f x %f y %f\n", phat_pad_get_xtilt(pad), phat_pad_get_x(pad), phat_pad_get_y(pad));
 }  
 
 
