@@ -19,10 +19,15 @@ struct _PhatPad
     GtkDrawingArea parent; 
     GdkPixmap* pixmap;
     GtkAdjustment* pressure;
+    gboolean p_is_log;
     GtkAdjustment* xtilt;
+    gboolean xt_is_log;
     GtkAdjustment* ytilt;
+    gboolean yt_is_log;
     GtkAdjustment* x;
+    gboolean x_is_log;
     GtkAdjustment* y;
+    gboolean y_is_log;
 };
 
 struct _PhatPadClass

@@ -1166,52 +1166,53 @@ static gboolean phat_slider_button_button_press (GtkWidget* widget,
     if (event->type != GDK_BUTTON_PRESS)
 	return FALSE;
 
-    switch (button->state)
-    {
-    case STATE_NORMAL:
-	button->xpress = event->x;
-	button->ypress = event->y;
-	button->xpress_root = event->x_root;
-	button->ypress_root = event->y_root;
-	button->slid = FALSE;
-     
-	if (button->hilite == LEFT_ARROW)
+    if(event->button == 1)
+    {	
+	switch (button->state)
 	{
-	    button->state = STATE_PRESSED;
-     
-	    gtk_adjustment_set_value (button->adjustment,
-				      (button->adjustment->value
-				       - button->adjustment->step_increment));
+	case STATE_NORMAL:
+	    button->xpress = event->x;
+	    button->ypress = event->y;
+	    button->xpress_root = event->x_root;
+	    button->ypress_root = event->y_root;
+	    button->slid = FALSE;
+	 
+	    if (button->hilite == LEFT_ARROW)
+	    {
+		button->state = STATE_PRESSED;
+	 
+		gtk_adjustment_set_value (button->adjustment,
+					  (button->adjustment->value
+					   - button->adjustment->step_increment));
+	    }
+	    else if (button->hilite == RIGHT_ARROW)
+	    {
+		button->state = STATE_PRESSED;
+	 
+		gtk_adjustment_set_value (button->adjustment,
+					  (button->adjustment->value
+					   + button->adjustment->step_increment));
+	    }
+	    else
+	    {
+		button->state = STATE_SLIDE;
+	    }
+	    break;
+	case STATE_SCROLL:
+	    button->state = STATE_NORMAL;
+	    update_cursor (button);
+	    break;
+	case STATE_ENTRY:
+	    entry_cancel (button);
+	    button->state = STATE_NORMAL;
+	    update_cursor (button);
+	    break;
 	}
-	else if (button->hilite == RIGHT_ARROW)
-	{
-	    button->state = STATE_PRESSED;
-     
-	    gtk_adjustment_set_value (button->adjustment,
-				      (button->adjustment->value
-				       + button->adjustment->step_increment));
-	}
-	else
-	{
-	    button->state = STATE_SLIDE;
-	}
-	break;
-    case STATE_SCROLL:
-	button->state = STATE_NORMAL;
+	
 	update_cursor (button);
-	break;
-    case STATE_ENTRY:
-	entry_cancel (button);
-	button->state = STATE_NORMAL;
-	update_cursor (button);
-	break;
+	gtk_widget_grab_focus (widget);
+	gtk_widget_queue_draw (widget);
     }
-
-
-    update_cursor (button);
-    gtk_widget_grab_focus (widget);
-    gtk_widget_queue_draw (widget);
-
     return FALSE;
 }
 	  

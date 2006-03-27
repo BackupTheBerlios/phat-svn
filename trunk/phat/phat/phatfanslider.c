@@ -998,62 +998,64 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
 
      slider = (PhatFanSlider*) widget;
 
-     gtk_widget_grab_focus (widget);
-     
-     if (slider->state == STATE_SCROLL)
+     if(event->button == 1)
      {
-	  slider->state = STATE_NORMAL;
-	  gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
-	  return FALSE;
+	 gtk_widget_grab_focus (widget);
+	 
+	 if (slider->state == STATE_SCROLL)
+	 {
+	      slider->state = STATE_NORMAL;
+	      gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
+	      return FALSE;
+	 }
+
+	 gdk_window_set_cursor (slider->event_window, slider->empty_cursor);
+
+	 slider->xclick_root = event->x_root;
+	 slider->xclick = event->x;
+	 slider->yclick_root = event->y_root;
+	 slider->yclick = event->y;
+	 slider->state = STATE_CLICKED;
+
+	 gtk_window_present (GTK_WINDOW (slider->hint_window0));
+	 gtk_window_present (GTK_WINDOW (slider->hint_window1));
+
+	 phat_fan_slider_update_hints (slider);
+
+	 gdk_window_get_geometry (slider->event_window,
+				  NULL, NULL, &width, &height, NULL);
+	      
+	 a = &slider->hint_window0->allocation;
+	 b = &slider->hint_window1->allocation;
+
+	 if (slider->orientation == GTK_ORIENTATION_VERTICAL)
+	 {
+	      gtk_window_move (GTK_WINDOW (slider->hint_window0),
+			       slider->xclick_root - slider->xclick - a->width,
+			       (slider->yclick_root - slider->yclick)
+			       + (height - a->height) / 2);
+
+	      gtk_window_move (GTK_WINDOW (slider->hint_window1),
+			       slider->xclick_root - slider->xclick + width,
+			       (slider->yclick_root - slider->yclick)
+			       + (height - b->height) / 2);
+	 }
+	 else
+	 {
+	      gtk_window_move (GTK_WINDOW (slider->hint_window0),
+			       (slider->xclick_root - slider->xclick)
+			       + (width - a->width) / 2,
+			       slider->yclick_root - slider->yclick - a->height);
+
+	      gtk_window_move (GTK_WINDOW (slider->hint_window1),
+			       (slider->xclick_root - slider->xclick)
+			       + (width - b->width) / 2,
+			       slider->yclick_root - slider->yclick + height);
+	 }
      }
-
-     gdk_window_set_cursor (slider->event_window, slider->empty_cursor);
-
-     slider->xclick_root = event->x_root;
-     slider->xclick = event->x;
-     slider->yclick_root = event->y_root;
-     slider->yclick = event->y;
-     slider->state = STATE_CLICKED;
-
-     gtk_window_present (GTK_WINDOW (slider->hint_window0));
-     gtk_window_present (GTK_WINDOW (slider->hint_window1));
-
-     phat_fan_slider_update_hints (slider);
-
-     gdk_window_get_geometry (slider->event_window,
-			      NULL, NULL, &width, &height, NULL);
-	  
-     a = &slider->hint_window0->allocation;
-     b = &slider->hint_window1->allocation;
-
-     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
-     {
-	  gtk_window_move (GTK_WINDOW (slider->hint_window0),
-			   slider->xclick_root - slider->xclick - a->width,
-			   (slider->yclick_root - slider->yclick)
-			   + (height - a->height) / 2);
-
-	  gtk_window_move (GTK_WINDOW (slider->hint_window1),
-			   slider->xclick_root - slider->xclick + width,
-			   (slider->yclick_root - slider->yclick)
-			   + (height - b->height) / 2);
-     }
-     else
-     {
-	  gtk_window_move (GTK_WINDOW (slider->hint_window0),
-			   (slider->xclick_root - slider->xclick)
-			   + (width - a->width) / 2,
-			   slider->yclick_root - slider->yclick - a->height);
-
-	  gtk_window_move (GTK_WINDOW (slider->hint_window1),
-			   (slider->xclick_root - slider->xclick)
-			   + (width - b->width) / 2,
-			   slider->yclick_root - slider->yclick + height);
-     }
-
      return FALSE;
 }
-
+    
 static gboolean phat_fan_slider_button_release (GtkWidget*      widget,
 					       GdkEventButton* event)
 {
