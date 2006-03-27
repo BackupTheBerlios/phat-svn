@@ -420,4 +420,61 @@
   (return-type "gdouble")
 )
 
+(define-method set_x_range
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_x_range")
+  (return-type "none")
+  (parameters
+    '("gdouble" "min")
+    '("gdouble" "max")
+  )
+)
+
+(define-method set_y_range
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_y_range")
+  (return-type "none")
+  (parameters
+    '("gdouble" "min")
+    '("gdouble" "max")
+  )
+)
+
+(define-method set_pressure_range
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_pressure_range")
+  (return-type "none")
+  (parameters
+    '("gdouble" "min")
+    '("gdouble" "max")
+  )
+)
+
+(define-method set_x_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_x_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
+(define-method set_y_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_y_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
+(define-method set_pressure_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_pressure_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
 

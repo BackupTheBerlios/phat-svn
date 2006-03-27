@@ -410,11 +410,16 @@ struct _PhatPad
 {
     GtkDrawingArea parent;
     GdkPixmap* pixmap;
-    gdouble pressure;
-    gdouble xtilt;
-    gdouble ytilt;
-    gdouble x;
-    gdouble y;
+    GtkAdjustment* pressure;
+    gboolean p_is_log;
+    GtkAdjustment* xtilt;
+    gboolean xt_is_log;
+    GtkAdjustment* ytilt;
+    gboolean yt_is_log;
+    GtkAdjustment* x;
+    gboolean x_is_log;
+    GtkAdjustment* y;
+    gboolean y_is_log;
 };
 
 struct _PhatPadClass
@@ -433,7 +438,12 @@ gdouble phat_pad_get_xtilt (PhatPad* pad);
 gdouble phat_pad_get_pressure (PhatPad* pad);
 gdouble phat_pad_get_y (PhatPad* pad);
 gdouble phat_pad_get_x (PhatPad* pad);
-
+void phat_pad_set_x_range (PhatPad* pad, gdouble min, gdouble max);
+void phat_pad_set_y_range (PhatPad* pad, gdouble min, gdouble max);
+void phat_pad_set_pressure_range (PhatPad* pad, gdouble min, gdouble max);
+void phat_pad_set_x_log (PhatPad* pad, gboolean is_log);
+void phat_pad_set_y_log (PhatPad* pad, gboolean is_log);
+void phat_pad_set_pressure_log (PhatPad* pad, gboolean is_log);
 
 G_END_DECLS
 # 12 "/usr/include/phat/phat.h" 2
