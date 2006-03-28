@@ -393,31 +393,31 @@
 (define-method get_ytilt
   (of-object "PhatPad")
   (c-name "phat_pad_get_ytilt")
-  (return-type "gdouble")
+  (return-type "GtkAdjustment*")
 )
 
 (define-method get_xtilt
   (of-object "PhatPad")
   (c-name "phat_pad_get_xtilt")
-  (return-type "gdouble")
+  (return-type "GtkAdjustment*")
 )
 
 (define-method get_pressure
   (of-object "PhatPad")
   (c-name "phat_pad_get_pressure")
-  (return-type "gdouble")
+  (return-type "GtkAdjustment*")
 )
 
 (define-method get_y
   (of-object "PhatPad")
   (c-name "phat_pad_get_y")
-  (return-type "gdouble")
+  (return-type "GtkAdjustment*")
 )
 
 (define-method get_x
   (of-object "PhatPad")
   (c-name "phat_pad_get_x")
-  (return-type "gdouble")
+  (return-type "GtkAdjustment*")
 )
 
 (define-method set_x_range

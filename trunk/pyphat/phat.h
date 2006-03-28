@@ -433,11 +433,11 @@ GType phat_pad_get_type ( );
 
 
 GtkWidget* phat_pad_new ( );
-gdouble phat_pad_get_ytilt (PhatPad* pad);
-gdouble phat_pad_get_xtilt (PhatPad* pad);
-gdouble phat_pad_get_pressure (PhatPad* pad);
-gdouble phat_pad_get_y (PhatPad* pad);
-gdouble phat_pad_get_x (PhatPad* pad);
+GtkAdjustment* phat_pad_get_ytilt (PhatPad* pad);
+GtkAdjustment* phat_pad_get_xtilt (PhatPad* pad);
+GtkAdjustment* phat_pad_get_pressure (PhatPad* pad);
+GtkAdjustment* phat_pad_get_y (PhatPad* pad);
+GtkAdjustment* phat_pad_get_x (PhatPad* pad);
 void phat_pad_set_x_range (PhatPad* pad, gdouble min, gdouble max);
 void phat_pad_set_y_range (PhatPad* pad, gdouble min, gdouble max);
 void phat_pad_set_pressure_range (PhatPad* pad, gdouble min, gdouble max);

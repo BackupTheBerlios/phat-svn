@@ -525,11 +525,11 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
  * Returns: current x value.
  *
  */
-gdouble phat_pad_get_x (PhatPad* pad)
+GtkAdjustment* phat_pad_get_x (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return gtk_adjustment_get_value((GtkAdjustment *)pad->x);
+    return (GtkAdjustment *)pad->x;
 
 }
 
@@ -591,11 +591,11 @@ void phat_pad_set_pressure_range (PhatPad* pad, gdouble min, gdouble max)
  * Returns: current y value.
  *
  */
-gdouble phat_pad_get_y (PhatPad* pad)
+GtkAdjustment* phat_pad_get_y (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return gtk_adjustment_get_value((GtkAdjustment *)pad->y);
+    return (GtkAdjustment *)pad->y;
 }
 
 /**
@@ -607,11 +607,11 @@ gdouble phat_pad_get_y (PhatPad* pad)
  * Returns: current pressure value.
  *
  */
-gdouble phat_pad_get_pressure (PhatPad* pad)
+GtkAdjustment* phat_pad_get_pressure (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return gtk_adjustment_get_value((GtkAdjustment *)pad->pressure);
+    return (GtkAdjustment *)pad->pressure;
 }
 
 /**
@@ -623,10 +623,10 @@ gdouble phat_pad_get_pressure (PhatPad* pad)
  * Returns: current xtilt value.
  *
  */
-gdouble phat_pad_get_xtilt (PhatPad* pad)
+GtkAdjustment* phat_pad_get_xtilt (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
-    return gtk_adjustment_get_value((GtkAdjustment *)pad->xtilt);
+    return (GtkAdjustment *)pad->xtilt;
 
 }
 
@@ -640,10 +640,10 @@ gdouble phat_pad_get_xtilt (PhatPad* pad)
  * Returns: current ytilt value.
  *
  */
-gdouble phat_pad_get_ytilt (PhatPad* pad)
+GtkAdjustment* phat_pad_get_ytilt (PhatPad* pad)
 {
     g_return_val_if_fail (PHAT_IS_PAD (pad), 0);
 
-    return gtk_adjustment_get_value((GtkAdjustment *)pad->ytilt);
+    return (GtkAdjustment *)pad->ytilt;
 
 }

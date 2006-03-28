@@ -8,7 +8,7 @@ enum
 
 void motion_cb(PhatPad* pad)
 {
-    printf("for signals xtilt %f x %f y %f\n", phat_pad_get_xtilt(pad), phat_pad_get_x(pad), phat_pad_get_y(pad));
+    printf("for signals xtilt %f x %f y %f\n", phat_pad_get_xtilt(pad)->value, phat_pad_get_x(pad)->value, phat_pad_get_y(pad)->value);
 }  
 
 
@@ -21,26 +21,26 @@ void create_input_dialog ()
 {
   static GtkWidget *inputd = NULL;
 
-  if (!inputd)
+    if (!inputd)
     {
-      inputd = gtk_input_dialog_new();
+	  inputd = gtk_input_dialog_new();
 
-      g_signal_connect (G_OBJECT (inputd), "destroy",
-                        G_CALLBACK (input_dialog_destroy), (gpointer) &inputd);
-      g_signal_connect_swapped (G_OBJECT (GTK_INPUT_DIALOG (inputd)->close_button),
-                                "clicked",
-                                G_CALLBACK (gtk_widget_hide),
-                                G_OBJECT (inputd));
-      gtk_widget_hide (GTK_INPUT_DIALOG (inputd)->save_button);
+	  g_signal_connect (G_OBJECT (inputd), "destroy",
+			    G_CALLBACK (input_dialog_destroy), (gpointer) &inputd);
+	  g_signal_connect_swapped (G_OBJECT (GTK_INPUT_DIALOG (inputd)->close_button),
+				    "clicked",
+				    G_CALLBACK (gtk_widget_hide),
+				    G_OBJECT (inputd));
+	  gtk_widget_hide (GTK_INPUT_DIALOG (inputd)->save_button);
 
-      gtk_widget_show (inputd);
+	  gtk_widget_show (inputd);
     }
-  else
+    else
     {
-      if (!GTK_WIDGET_MAPPED (inputd))
-        gtk_widget_show (inputd);
-      else
-        gdk_window_raise (inputd->window);
+	if (!GTK_WIDGET_MAPPED (inputd))
+	    gtk_widget_show (inputd);
+	else
+	    gdk_window_raise (inputd->window);
     }
 }
 
