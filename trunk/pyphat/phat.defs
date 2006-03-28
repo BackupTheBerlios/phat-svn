@@ -468,6 +468,24 @@
   )
 )
 
+(define-method set_xtilt_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_xtilt_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
+(define-method set_ytilt_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_set_ytilt_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
 (define-method set_pressure_log
   (of-object "PhatPad")
   (c-name "phat_pad_set_pressure_log")
@@ -475,6 +493,36 @@
   (parameters
     '("gboolean" "is_log")
   )
+)
+
+(define-method x_is_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_x_is_log")
+  (return-type "gboolean")
+)
+
+(define-method y_is_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_y_is_log")
+  (return-type "gboolean")
+)
+
+(define-method xtilt_is_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_xtilt_is_log")
+  (return-type "gboolean")
+)
+
+(define-method ytilt_is_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_ytilt_is_log")
+  (return-type "gboolean")
+)
+
+(define-method pressure_is_log
+  (of-object "PhatPad")
+  (c-name "phat_pad_pressure_is_log")
+  (return-type "gboolean")
 )
 
 

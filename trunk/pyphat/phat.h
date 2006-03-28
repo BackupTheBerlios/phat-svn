@@ -443,7 +443,14 @@ void phat_pad_set_y_range (PhatPad* pad, gdouble min, gdouble max);
 void phat_pad_set_pressure_range (PhatPad* pad, gdouble min, gdouble max);
 void phat_pad_set_x_log (PhatPad* pad, gboolean is_log);
 void phat_pad_set_y_log (PhatPad* pad, gboolean is_log);
+void phat_pad_set_xtilt_log (PhatPad* pad, gboolean is_log);
+void phat_pad_set_ytilt_log (PhatPad* pad, gboolean is_log);
 void phat_pad_set_pressure_log (PhatPad* pad, gboolean is_log);
+gboolean phat_pad_x_is_log (PhatPad* pad);
+gboolean phat_pad_y_is_log (PhatPad* pad);
+gboolean phat_pad_xtilt_is_log (PhatPad* pad);
+gboolean phat_pad_ytilt_is_log (PhatPad* pad);
+gboolean phat_pad_pressure_is_log (PhatPad* pad);
 
 G_END_DECLS
 # 12 "/usr/include/phat/phat.h" 2

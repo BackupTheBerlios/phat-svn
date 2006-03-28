@@ -560,10 +560,47 @@ void phat_pad_set_y_log (PhatPad* pad, gboolean is_log)
     return;
 }
 
+void phat_pad_set_xtilt_log (PhatPad* pad, gboolean is_log)
+{
+    pad->xt_is_log = is_log;
+    return;
+}
+
+void phat_pad_set_ytilt_log (PhatPad* pad, gboolean is_log)
+{
+    pad->yt_is_log = is_log;
+    return;
+}
+
 void phat_pad_set_pressure_log (PhatPad* pad, gboolean is_log)
 {
     pad->p_is_log = is_log;
     return;
+}
+
+gboolean phat_pad_x_is_log (PhatPad* pad)
+{
+    return pad->x_is_log;
+}
+
+gboolean phat_pad_y_is_log (PhatPad* pad)
+{
+    return pad->y_is_log;
+}
+
+gboolean phat_pad_xtilt_is_log (PhatPad* pad)
+{
+    return pad->xt_is_log;
+}
+
+gboolean phat_pad_ytilt_is_log (PhatPad* pad)
+{
+    return pad->yt_is_log;
+}
+
+gboolean phat_pad_pressure_is_log (PhatPad* pad)
+{
+    return pad->p_is_log;
 }
 
 
