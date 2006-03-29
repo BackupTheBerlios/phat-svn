@@ -380,6 +380,7 @@ static gboolean phat_pad_configure_event (GtkWidget *widget, GdkEventConfigure *
 static gboolean phat_pad_button_press (GtkWidget* widget,
 						 GdkEventButton* event)
 {
+    
     PhatPad* pad = PHAT_PAD(widget);
     gdouble temppressure, tempxtilt, tempytilt;
          
@@ -419,10 +420,14 @@ static gboolean phat_pad_button_press (GtkWidget* widget,
 	
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_XTILT, &tempxtilt);
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_YTILT, &tempytilt);
+	return TRUE;
 
 	//draw_brush (widget, event->device->source, event->x, event->y, pressure);
     }
-    return TRUE;
+    else
+    {
+	return FALSE;
+    }
 }
 
 
@@ -436,7 +441,7 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 
     debug ("motion\n");
 
-    printf("xtilt min %f max %f \n", event->device->axes[GDK_AXIS_XTILT].min, event->device->axes[GDK_AXIS_XTILT].max);
+    //printf("xtilt min %f max %f \n", event->device->axes[GDK_AXIS_XTILT].min, event->device->axes[GDK_AXIS_XTILT].max);
 
     if (event->is_hint) 
     {
