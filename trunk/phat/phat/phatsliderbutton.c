@@ -624,6 +624,7 @@ static void phat_slider_button_init (PhatSliderButton* button)
     button->ypress_root = 0;
     button->threshold = 3;
     button->slid = FALSE;
+    button->firstrun = 1;
      
     gtk_box_pack_start (box, button->left_arrow, FALSE, FALSE, 0);
     gtk_box_pack_start (box, button->label, TRUE, TRUE, 0);
@@ -897,7 +898,12 @@ static void phat_slider_button_size_allocate (GtkWidget* widget,
 				allocation->y,
 				allocation->width,
 				allocation->height);
-	gtk_widget_hide (PHAT_SLIDER_BUTTON (widget)->entry);
+	//make sure entry is hidden at start
+	if(PHAT_SLIDER_BUTTON (widget)->firstrun)
+	{
+	    gtk_widget_hide (PHAT_SLIDER_BUTTON (widget)->entry);
+	    PHAT_SLIDER_BUTTON (widget)->firstrun = 0;
+	}
     }
 }
 

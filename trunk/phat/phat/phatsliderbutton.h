@@ -35,6 +35,7 @@ struct _PhatSliderButton
     int state;
     int xpress_root, ypress_root;
     int xpress, ypress;
+    int firstrun;
     guint threshold;
     gboolean slid;
 };
