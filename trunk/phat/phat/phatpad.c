@@ -391,8 +391,8 @@ static gboolean phat_pad_button_press (GtkWidget* widget,
 	debug ("pad press\n");
 	if(pad->x_is_log)
 	{
-	    debug ("pad press\n");
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, exp((event->x / widget->allocation.width) * (log(pad->x->upper) - pad->x->lower) + pad->x->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, exp((event->x / widget->allocation.width) * 
+			(log(pad->x->upper - pad->x->lower))) + pad->x->lower);
 	} 
 	else 
 	{
@@ -400,17 +400,18 @@ static gboolean phat_pad_button_press (GtkWidget* widget,
 	}
 	if(pad->y_is_log)   
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, exp((event->y / widget->allocation.width) * 
-			(log(pad->y->upper) - pad->y->lower) + pad->y->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, exp((event->y / widget->allocation.height) * 
+			(log(pad->y->upper - pad->y->lower))) + pad->y->lower);
 	} 
 	else 
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, (event->x / widget->allocation.width) * (pad->x->upper - pad->x->lower) + pad->x->lower);
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, (event->y / widget->allocation.height) * (pad->y->upper - pad->y->lower) + pad->y->lower);
 	}
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
 	if(pad->p_is_log)
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp(temppressure * (log(pad->pressure->upper) - pad->pressure->lower) + pad->pressure->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp((temppressure) * (log(pad->pressure->upper - pad->pressure->lower))) + pad->pressure->lower);
+
 	} 
 	else 
 	{
@@ -449,7 +450,8 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_X, &tempx);
 	if(pad->x_is_log)
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, exp((tempx / widget->allocation.width) * (log(pad->x->upper) - pad->x->lower) + pad->x->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, exp((tempx / widget->allocation.width) * 
+			(log(pad->x->upper - pad->x->lower))) + pad->x->lower);
 	} 
 	else 
 	{
@@ -458,7 +460,8 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_Y, &tempy);
 	if(pad->y_is_log)
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, exp((tempy / widget->allocation.height) * (log(pad->y->upper) - pad->y->lower) + pad->y->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, exp((tempy / widget->allocation.height) * 
+			(log(pad->y->upper - pad->y->lower))) + pad->y->lower);
 	} 
 	else 
 	{
@@ -467,7 +470,8 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
 	if(pad->p_is_log)
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp(temppressure * (log(pad->pressure->upper) - pad->pressure->lower) + pad->pressure->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp((temppressure) * 
+			(log(pad->pressure->upper - pad->pressure->lower))) + pad->pressure->lower);
 	} 
 	else 
 	{
@@ -482,7 +486,7 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	if(pad->x_is_log)   
 	{
 	    gtk_adjustment_set_value((GtkAdjustment *)pad->x, exp((event->x / widget->allocation.width) * 
-			(log(pad->x->upper) - pad->x->lower) + pad->x->lower));
+			(log(pad->x->upper - pad->x->lower))) + pad->x->lower);
 	} 
 	else 
 	{
@@ -491,7 +495,7 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	if(pad->y_is_log)   
 	{
 	    gtk_adjustment_set_value((GtkAdjustment *)pad->y, exp((event->y / widget->allocation.height) * 
-			(log(pad->y->upper) - pad->y->lower) + pad->y->lower));
+			(log(pad->y->upper - pad->y->lower))) + pad->y->lower);
 	} 
 	else 
 	{
@@ -500,7 +504,8 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 	gdk_event_get_axis ((GdkEvent *)event, GDK_AXIS_PRESSURE, &temppressure);
 	if(pad->p_is_log)
 	{
-	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp(temppressure * (log(pad->pressure->upper) - pad->pressure->lower) + pad->pressure->lower));
+	    gtk_adjustment_set_value((GtkAdjustment *)pad->pressure, exp((temppressure) * 
+			(log(pad->pressure->upper - pad->pressure->lower))) + pad->pressure->lower);
 	} 
 	else 
 	{
