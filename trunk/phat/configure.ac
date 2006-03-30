@@ -112,6 +112,6 @@ echo
 echo
 ])
 
-AC_CONFIG_FILES([Makefile phat/Makefile demos/Makefile docs/Makefile phat.pc phat.spec])
+AC_CONFIG_FILES([Makefile phat/Makefile demos/Makefile docs/Makefile pixmaps/Makefile phat.pc phat.spec])
 AM_CONFIG_HEADER([phat/config.h])
 AC_OUTPUT

@@ -9,5 +9,6 @@
 #include <phat/phatvkeyboard.h>
 #include <phat/phathkeyboard.h>
 #include <phat/phatpad.h>
+#include <phat/phatknob.h>
 
 #endif /* __PHAT_H__ */

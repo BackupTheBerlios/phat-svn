@@ -21156,7 +21156,7 @@ LIBS="$LIBS $GTK_LIBS $MISC_LIBS"
 # print build summary
 
 
-                                                            ac_config_files="$ac_config_files Makefile phat/Makefile demos/Makefile docs/Makefile phat.pc phat.spec"
+                                                                      ac_config_files="$ac_config_files Makefile phat/Makefile demos/Makefile docs/Makefile pixmaps/Makefile phat.pc phat.spec"
 
           ac_config_headers="$ac_config_headers phat/config.h"
 
@@ -21734,6 +21734,7 @@ do
   "phat/Makefile" ) CONFIG_FILES="$CONFIG_FILES phat/Makefile" ;;
   "demos/Makefile" ) CONFIG_FILES="$CONFIG_FILES demos/Makefile" ;;
   "docs/Makefile" ) CONFIG_FILES="$CONFIG_FILES docs/Makefile" ;;
+  "pixmaps/Makefile" ) CONFIG_FILES="$CONFIG_FILES pixmaps/Makefile" ;;
   "phat.pc" ) CONFIG_FILES="$CONFIG_FILES phat.pc" ;;
   "phat.spec" ) CONFIG_FILES="$CONFIG_FILES phat.spec" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

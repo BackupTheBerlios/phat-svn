@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) $(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
+SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) $(phatknob_SOURCES) $(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -39,7 +39,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = phatfanslider$(EXEEXT) phatsliderbutton$(EXEEXT) \
-	phatkeyboard$(EXEEXT) phatpad$(EXEEXT)
+	phatkeyboard$(EXEEXT) phatpad$(EXEEXT) phatknob$(EXEEXT)
 subdir = demos
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -58,6 +58,9 @@ phatfanslider_DEPENDENCIES = ../phat/libphat.la
 am_phatkeyboard_OBJECTS = phatkeyboard-keyboard.$(OBJEXT)
 phatkeyboard_OBJECTS = $(am_phatkeyboard_OBJECTS)
 phatkeyboard_DEPENDENCIES = ../phat/libphat.la
+am_phatknob_OBJECTS = phatknob-knob.$(OBJEXT)
+phatknob_OBJECTS = $(am_phatknob_OBJECTS)
+phatknob_DEPENDENCIES = ../phat/libphat.la
 am_phatpad_OBJECTS = phatpad-pad.$(OBJEXT)
 phatpad_OBJECTS = $(am_phatpad_OBJECTS)
 phatpad_DEPENDENCIES = ../phat/libphat.la
@@ -76,9 +79,11 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) \
-	$(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
+	$(phatknob_SOURCES) $(phatpad_SOURCES) \
+	$(phatsliderbutton_SOURCES)
 DIST_SOURCES = $(phatfanslider_SOURCES) $(phatkeyboard_SOURCES) \
-	$(phatpad_SOURCES) $(phatsliderbutton_SOURCES)
+	$(phatknob_SOURCES) $(phatpad_SOURCES) \
+	$(phatsliderbutton_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -204,6 +209,10 @@ phatpad_SOURCES = pad.c
 phatpad_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
 phatpad_LIBS = `pkg-config --libs gtk+-2.0`
 phatpad_LDADD = ../phat/libphat.la
+phatknob_SOURCES = knob.c
+phatknob_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
+phatknob_LIBS = `pkg-config --libs gtk+-2.0`
+phatknob_LDADD = ../phat/libphat.la
 all: all-am
 
 .SUFFIXES:
@@ -271,6 +280,9 @@ phatfanslider$(EXEEXT): $(phatfanslider_OBJECTS) $(phatfanslider_DEPENDENCIES)
 phatkeyboard$(EXEEXT): $(phatkeyboard_OBJECTS) $(phatkeyboard_DEPENDENCIES) 
 	@rm -f phatkeyboard$(EXEEXT)
 	$(LINK) $(phatkeyboard_LDFLAGS) $(phatkeyboard_OBJECTS) $(phatkeyboard_LDADD) $(LIBS)
+phatknob$(EXEEXT): $(phatknob_OBJECTS) $(phatknob_DEPENDENCIES) 
+	@rm -f phatknob$(EXEEXT)
+	$(LINK) $(phatknob_LDFLAGS) $(phatknob_OBJECTS) $(phatknob_LDADD) $(LIBS)
 phatpad$(EXEEXT): $(phatpad_OBJECTS) $(phatpad_DEPENDENCIES) 
 	@rm -f phatpad$(EXEEXT)
 	$(LINK) $(phatpad_LDFLAGS) $(phatpad_OBJECTS) $(phatpad_LDADD) $(LIBS)
@@ -286,6 +298,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatfanslider-fanslider.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatkeyboard-keyboard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatknob-knob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatpad-pad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/phatsliderbutton-sliderbutton.Po@am__quote@
 
@@ -337,6 +350,20 @@ phatkeyboard-keyboard.obj: keyboard.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='keyboard.c' object='phatkeyboard-keyboard.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatkeyboard_CFLAGS) $(CFLAGS) -c -o phatkeyboard-keyboard.obj `if test -f 'keyboard.c'; then $(CYGPATH_W) 'keyboard.c'; else $(CYGPATH_W) '$(srcdir)/keyboard.c'; fi`
+
+phatknob-knob.o: knob.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatknob_CFLAGS) $(CFLAGS) -MT phatknob-knob.o -MD -MP -MF "$(DEPDIR)/phatknob-knob.Tpo" -c -o phatknob-knob.o `test -f 'knob.c' || echo '$(srcdir)/'`knob.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phatknob-knob.Tpo" "$(DEPDIR)/phatknob-knob.Po"; else rm -f "$(DEPDIR)/phatknob-knob.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='knob.c' object='phatknob-knob.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatknob_CFLAGS) $(CFLAGS) -c -o phatknob-knob.o `test -f 'knob.c' || echo '$(srcdir)/'`knob.c
+
+phatknob-knob.obj: knob.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatknob_CFLAGS) $(CFLAGS) -MT phatknob-knob.obj -MD -MP -MF "$(DEPDIR)/phatknob-knob.Tpo" -c -o phatknob-knob.obj `if test -f 'knob.c'; then $(CYGPATH_W) 'knob.c'; else $(CYGPATH_W) '$(srcdir)/knob.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/phatknob-knob.Tpo" "$(DEPDIR)/phatknob-knob.Po"; else rm -f "$(DEPDIR)/phatknob-knob.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='knob.c' object='phatknob-knob.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatknob_CFLAGS) $(CFLAGS) -c -o phatknob-knob.obj `if test -f 'knob.c'; then $(CYGPATH_W) 'knob.c'; else $(CYGPATH_W) '$(srcdir)/knob.c'; fi`
 
 phatpad-pad.o: pad.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(phatpad_CFLAGS) $(CFLAGS) -MT phatpad-pad.o -MD -MP -MF "$(DEPDIR)/phatpad-pad.Tpo" -c -o phatpad-pad.o `test -f 'pad.c' || echo '$(srcdir)/'`pad.c; \

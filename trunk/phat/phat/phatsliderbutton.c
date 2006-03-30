@@ -528,7 +528,7 @@ static void phat_slider_button_class_init (PhatSliderButtonClass* klass)
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
     GtkWidgetClass* widget_class = (GtkWidgetClass*) klass;
 
-    debug ("class init\n");
+    //debug ("class init\n");
      
     parent_class = gtk_type_class (gtk_hbox_get_type ());
 
@@ -589,7 +589,7 @@ static void phat_slider_button_class_init (PhatSliderButtonClass* klass)
 
 static void phat_slider_button_init (PhatSliderButton* button)
 {
-    debug ("init\n");
+    //debug ("init\n");
 
     GtkBox* box = GTK_BOX (button);
     GtkWidget* widget = GTK_WIDGET (button);
@@ -654,6 +654,7 @@ static void phat_slider_button_init (PhatSliderButton* button)
 
     gtk_misc_set_alignment (GTK_MISC (button->left_arrow), 0.5, 0.5);
     gtk_misc_set_alignment (GTK_MISC (button->right_arrow), 0.5, 0.5);
+       
 }
 
 
@@ -664,7 +665,7 @@ static void phat_slider_button_destroy (GtkObject* object)
     PhatSliderButton* button;
     GtkWidget* widget;
      
-    debug ("destroy %p\n", object);
+    //debug ("destroy %p\n", object);
      
     g_return_if_fail (object != NULL);
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (object));
@@ -834,7 +835,7 @@ static void phat_slider_button_map (GtkWidget *widget)
 {
     PhatSliderButton* button;
 
-    debug ("map\n");
+    //debug ("map\n");
      
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (widget));
     button = (PhatSliderButton*) widget;
@@ -859,7 +860,7 @@ static void phat_slider_button_unmap (GtkWidget *widget)
 {
     PhatSliderButton* button;
 
-    debug ("unmap\n");
+    //debug ("unmap\n");
      
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (widget));
     button = (PhatSliderButton*) widget;
@@ -896,6 +897,7 @@ static void phat_slider_button_size_allocate (GtkWidget* widget,
 				allocation->y,
 				allocation->width,
 				allocation->height);
+	gtk_widget_hide (PHAT_SLIDER_BUTTON (widget)->entry);
     }
 }
 
@@ -912,7 +914,7 @@ static gboolean phat_slider_button_expose (GtkWidget*      widget,
     g_return_val_if_fail (GTK_WIDGET_DRAWABLE (widget), FALSE);
     g_return_val_if_fail (event->count == 0, FALSE);
 
-    debug ("expose\n");
+    //debug ("expose\n");
 
     button = PHAT_SLIDER_BUTTON (widget);
     a = &widget->allocation;
@@ -1055,7 +1057,7 @@ static void phat_slider_button_adjustment_changed (GtkAdjustment* adjustment,
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
-    debug ("adjustment changed\n");
+    //debug ("adjustment changed\n");
      
     update_size (button);
     update_label (button);
@@ -1069,7 +1071,7 @@ static void phat_slider_button_adjustment_value_changed (GtkAdjustment* adjustme
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
-    debug ("adjustment value changed\n");
+    //debug ("adjustment value changed\n");
      
     update_label (button);
 
@@ -1225,46 +1227,49 @@ static gboolean phat_slider_button_button_release (GtkWidget* widget,
     char* t;
 
     debug ("button release\n");
-     
-    switch (button->state)
-    {
-    case STATE_SLIDE:
-	if (!button->slid)
+    /* react to left button only */
+    if(event->button == 1)
+    {	
+	switch (button->state)
 	{
-	    button->state = STATE_ENTRY;
+	case STATE_SLIDE:
+	    if (!button->slid)
+	    {
+		button->state = STATE_ENTRY;
 
-	    s = value_to_string(button, button->adjustment->value);
+		s = value_to_string(button, button->adjustment->value);
 
-	    for (t = s; *t == ' '; t++);
-	    gtk_entry_set_text (GTK_ENTRY (button->entry), t);
-	    g_free (s);
-	    s = t = NULL;
-			      
-	    gtk_widget_hide (button->label);
-	    if (button->prefix_label)
-		gtk_widget_hide (button->prefix_label);
-	    if (button->postfix_label)
-		gtk_widget_hide (button->postfix_label);
-	       
-	    gtk_widget_show (button->entry);
+		for (t = s; *t == ' '; t++);
+		gtk_entry_set_text (GTK_ENTRY (button->entry), t);
+		g_free (s);
+		s = t = NULL;
+				  
+		gtk_widget_hide (button->label);
+		if (button->prefix_label)
+		    gtk_widget_hide (button->prefix_label);
+		if (button->postfix_label)
+		    gtk_widget_hide (button->postfix_label);
+		   
+		gtk_widget_show (button->entry);
 
-	    gtk_widget_grab_focus (button->entry);
-	}
-	else
-	{
+		gtk_widget_grab_focus (button->entry);
+	    }
+	    else
+	    {
+		button->state = STATE_NORMAL;
+		phat_warp_pointer (event->x_root, event->y_root,
+				   button->xpress_root, button->ypress_root);
+		update_cursor (button);
+	    }
+	    break;
+	case STATE_PRESSED:
 	    button->state = STATE_NORMAL;
-	    phat_warp_pointer (event->x_root, event->y_root,
-			       button->xpress_root, button->ypress_root);
 	    update_cursor (button);
+	    break;
 	}
-	break;
-    case STATE_PRESSED:
-	button->state = STATE_NORMAL;
-	update_cursor (button);
-	break;
-    }
 
-    gtk_widget_queue_draw (widget);
+	gtk_widget_queue_draw (widget);
+    }
     return FALSE;
 }
 
@@ -1275,7 +1280,7 @@ static gboolean phat_slider_button_key_press (GtkWidget* widget,
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     GtkAdjustment* adj = button->adjustment;
 
-    debug ("key press\n");
+    //debug ("key press\n");
      
     switch (event->keyval)
     {
@@ -1303,7 +1308,7 @@ static gboolean phat_slider_button_scroll (GtkWidget* widget,
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
 
-    debug ("scroll\n");
+    //debug ("scroll\n");
      
     if (button->state != STATE_NORMAL
 	&& button->state != STATE_SCROLL)
@@ -1342,7 +1347,7 @@ static gboolean phat_slider_button_enter_notify (GtkWidget* widget,
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     int old = button->hilite;
 
-    debug ("enter\n");
+    //debug ("enter\n");
 
     button->hilite = check_pointer (button, event->x, event->y);
 
@@ -1361,7 +1366,7 @@ static gboolean phat_slider_button_leave_notify (GtkWidget* widget,
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
 
-    debug ("leave\n");
+    //debug ("leave\n");
      
     button->hilite = 0;
     if (button->state == STATE_SCROLL)
@@ -1381,7 +1386,7 @@ static gboolean phat_slider_button_motion_notify (GtkWidget* widget,
     int xdiff = 0;
     double inc;
      
-    debug ("motion\n");
+    //debug ("motion\n");
      
     button->hilite = check_pointer (button, event->x, event->y);
      

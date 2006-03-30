@@ -1,4 +1,4 @@
-SUBDIRS = phat demos docs
+SUBDIRS = phat demos docs pixmaps
 
 EXTRA_DIST = bootstrap BUGS phat.pc.in phat.spec.in
 
