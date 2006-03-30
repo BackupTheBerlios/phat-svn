@@ -50,6 +50,7 @@ enum
     LAST_SIGNAL,
 };
 
+static int signals[LAST_SIGNAL];
 static void phat_knob_class_init(PhatKnobClass *klass);
 static void phat_knob_init(PhatKnob *knob);
 static void phat_knob_destroy(GtkObject *object);
@@ -102,23 +103,40 @@ GType phat_knob_get_type(void)
 }
 
 static void phat_knob_class_init (PhatKnobClass *class) {
-  GtkObjectClass *object_class;
-  GtkWidgetClass *widget_class;
+    GtkObjectClass *object_class;
+    GtkWidgetClass *widget_class;
 
-  object_class = (GtkObjectClass*) class;
-  widget_class = (GtkWidgetClass*) class;
+    object_class = (GtkObjectClass*) class;
+    widget_class = (GtkWidgetClass*) class;
 
-  parent_class = gtk_type_class(gtk_widget_get_type());
+    parent_class = gtk_type_class(gtk_widget_get_type());
 
-  object_class->destroy = phat_knob_destroy;
+    object_class->destroy = phat_knob_destroy;
 
-  widget_class->realize = phat_knob_realize;
-  widget_class->expose_event = phat_knob_expose;
-  widget_class->size_request = phat_knob_size_request;
-  widget_class->size_allocate = phat_knob_size_allocate;
-  widget_class->button_press_event = phat_knob_button_press;
-  widget_class->button_release_event = phat_knob_button_release;
-  widget_class->motion_notify_event = phat_knob_motion_notify;
+    widget_class->realize = phat_knob_realize;
+    widget_class->expose_event = phat_knob_expose;
+    widget_class->size_request = phat_knob_size_request;
+    widget_class->size_allocate = phat_knob_size_allocate;
+    widget_class->button_press_event = phat_knob_button_press;
+    widget_class->button_release_event = phat_knob_button_release;
+    widget_class->motion_notify_event = phat_knob_motion_notify;
+
+     /**
+     * PhatKnob::value-changed:
+     * @knob: the object on which the signal was emitted
+     *
+     * The "value-changed" signal is emitted when the value of the
+     * knobbutton's adjustment changes.
+     *
+     */
+    signals[VALUE_CHANGED_SIGNAL] =
+	g_signal_new ("value-changed",
+		      G_TYPE_FROM_CLASS (class),
+		      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+		      G_STRUCT_OFFSET (PhatKnobClass, value_changed),
+		      NULL, NULL,
+		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+    class->value_changed = NULL;
 }
 
 static void phat_knob_init (PhatKnob *knob) {
@@ -441,11 +459,13 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
       switch (event->button) {
 	case 1:
 	  knob->adjustment->value -= knob->adjustment->page_increment;
+	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
 	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
 	  break;
 
 	case 3:
 	  knob->adjustment->value += knob->adjustment->page_increment;
+	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
 	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
 	  break;
 
@@ -459,8 +479,10 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
       knob->state = STATE_IDLE;
 
       if (knob->policy != GTK_UPDATE_CONTINUOUS && knob->old_value != knob->adjustment->value)
-	gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
-
+      {
+	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
+	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+      }
       break;
 
     default:
@@ -514,15 +536,21 @@ static gint phat_knob_timer(PhatKnob *knob) {
   g_return_val_if_fail(PHAT_IS_KNOB(knob), FALSE);
 
   if (knob->policy == GTK_UPDATE_DELAYED)
-    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
-
+  {
+	g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
+        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+  }
   return FALSE;	/* don't keep running this timer */
 }
 
 static void phat_knob_update_mouse_update(PhatKnob *knob) {
   if (knob->policy == GTK_UPDATE_CONTINUOUS)
+  {
     gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
-  else {
+    g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
+  }
+  else 
+  {
     gtk_widget_draw(GTK_WIDGET(knob), NULL);
 
     if (knob->policy == GTK_UPDATE_DELAYED) {
@@ -592,8 +620,6 @@ static void phat_knob_update(PhatKnob *knob) {
         
   g_return_if_fail(knob != NULL);
   g_return_if_fail(PHAT_IS_KNOB (knob));
-
-	// gjcp
 	
   new_value = knob->adjustment->value;
   if (knob->adjustment->step_increment == 1) new_value = (int)(knob->adjustment->value+0.5);
@@ -606,6 +632,7 @@ static void phat_knob_update(PhatKnob *knob) {
 
   if (new_value != knob->adjustment->value) {
     knob->adjustment->value = new_value;
+    g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
     gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
   }
 

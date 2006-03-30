@@ -6,9 +6,9 @@ enum
      SPACING = 5,
 };
 
-void motion_cb(GtkAdjustment* ajd)
+void motion_cb(PhatKnob* knob)
 {
-    printf("knob value %f \n", ajd->value);
+    printf("knob value %f \n", phat_knob_get_value(knob));
 }  
 
 int main (int argc, char* argv[])
@@ -16,7 +16,6 @@ int main (int argc, char* argv[])
      GtkWidget* window;
      GtkWidget* knob;
      GtkWidget* vbox;
-     PhatKnob*  knob_cast;
      gtk_init (&argc, &argv);
 
      /* main window */
@@ -33,10 +32,9 @@ int main (int argc, char* argv[])
      
      /*  knob */
      knob = phat_knob_new_with_range (2.0, 0.0, 20, 0.1);
-     knob_cast = (PhatKnob*) knob;
      gtk_box_pack_start (GTK_BOX (vbox), knob, TRUE, FALSE, 0);
      gtk_widget_show (knob);
-     g_signal_connect (G_OBJECT (knob_cast->adjustment), "value-changed",
+     g_signal_connect (G_OBJECT (knob), "value-changed",
 		       G_CALLBACK (motion_cb), NULL);
 
      gtk_widget_show (window);

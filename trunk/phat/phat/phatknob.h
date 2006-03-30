@@ -34,6 +34,8 @@ extern "C" {
 #define PHAT_KNOB(obj)		GTK_CHECK_CAST(obj, phat_knob_get_type(), PhatKnob)
 #define PHAT_KNOB_CLASS(klass)	GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
 #define PHAT_IS_KNOB(obj)	GTK_CHECK_TYPE(obj, phat_knob_get_type())
+#define PHAT_TYPE_KNOB          (phat_knob_get_type ( ))
+
 
 typedef struct _PhatKnob        PhatKnob;
 typedef struct _PhatKnobClass   PhatKnobClass;
@@ -72,7 +74,6 @@ struct _PhatKnobClass
   GtkWidgetClass parent_class;
 
   void (*value_changed) (PhatKnob* knob);
-  void (*changed)       (PhatKnob* knob);
 };
 
 GType phat_knob_get_type ( );

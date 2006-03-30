@@ -454,3 +454,59 @@ gboolean phat_pad_pressure_is_log (PhatPad* pad);
 
 G_END_DECLS
 # 12 "/usr/include/phat/phat.h" 2
+# 1 "/usr/include/phat/phatknob.h" 1 3 4
+# 40 "/usr/include/phat/phatknob.h" 3 4
+typedef struct _PhatKnob PhatKnob;
+typedef struct _PhatKnobClass PhatKnobClass;
+
+struct _PhatKnob {
+    GtkWidget widget;
+
+    GtkAdjustment *adjustment;
+
+
+
+    guint policy : 2;
+
+
+    guint8 state;
+    gint saved_x, saved_y;
+
+
+    guint32 timer;
+
+
+    GdkPixbuf *pixbuf;
+    GdkBitmap *mask;
+    GdkGC *mask_gc;
+    GdkGC *red_gc;
+
+
+    gfloat old_value;
+    gfloat old_lower;
+    gfloat old_upper;
+
+};
+
+struct _PhatKnobClass
+{
+  GtkWidgetClass parent_class;
+
+  void (*value_changed) (PhatKnob* knob);
+};
+
+GType phat_knob_get_type ( );
+
+GtkWidget* phat_knob_new (GtkAdjustment* adjustment);
+
+GtkWidget* phat_knob_new_with_range (double value,
+           double lower,
+           double upper,
+           double step);
+GtkAdjustment *phat_knob_get_adjustment(PhatKnob *knob);
+double phat_knob_get_value (PhatKnob* knob);
+void phat_knob_set_value (PhatKnob* knob, double value);
+
+void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy);
+void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
+# 13 "/usr/include/phat/phat.h" 2
