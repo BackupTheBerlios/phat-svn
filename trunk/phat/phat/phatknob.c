@@ -229,6 +229,34 @@ double phat_knob_get_value (PhatKnob* knob)
     return knob->adjustment->value;
 }
 
+/**
+ * phat_knob_set_range:
+ * @knob: a #PhatKnob
+ * @lower: lowest allowable value
+ * @upper: highest allowable value
+ * 
+ * Sets the range of allowable values for the knob, and clamps the
+ * knob's current value to be between @lower and @upper.
+ */
+void phat_knob_set_range (PhatKnob* knob,
+				   double lower, double upper)
+{
+    double value;
+     
+    g_return_if_fail (PHAT_IS_KNOB (knob));
+    g_return_if_fail (lower <= upper);
+
+    knob->adjustment->lower = lower;
+    knob->adjustment->upper = upper;
+
+    value = CLAMP (knob->adjustment->value,
+		   knob->adjustment->lower,
+		   knob->adjustment->upper);
+     
+    gtk_adjustment_changed (knob->adjustment);
+    gtk_adjustment_set_value (knob->adjustment, value);
+}
+
 
 static void phat_knob_destroy(GtkObject *object) {
   PhatKnob *knob;
@@ -423,7 +451,7 @@ static gint phat_knob_button_press(GtkWidget *widget, GdkEventButton *event) {
     case STATE_IDLE:
       switch (event->button) {
 	case 1:
-	case 3:
+	case 2:
 	  gtk_grab_add(widget);
 	  knob->state = STATE_PRESSED;
 	  knob->saved_x = event->x;

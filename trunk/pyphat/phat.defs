@@ -595,6 +595,16 @@
   )
 )
 
+(define-method set_range
+  (of-object "PhatKnob")
+  (c-name "phat_knob_set_range")
+  (return-type "none")
+  (parameters
+    '("double" "lower")
+    '("double" "upper")
+  )
+)
+
 (define-method set_update_policy
   (of-object "PhatKnob")
   (c-name "phat_knob_set_update_policy")
