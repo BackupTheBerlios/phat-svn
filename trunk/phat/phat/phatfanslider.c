@@ -163,7 +163,7 @@ void phat_fan_slider_set_log (PhatFanSlider* slider, gboolean is_log)
 
 gboolean phat_fan_slider_is_log (PhatFanSlider* slider)
 {
-     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
+     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), 0);
 
      return slider->is_log;
 }
