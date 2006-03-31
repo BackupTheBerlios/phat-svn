@@ -19,6 +19,7 @@ struct _PhatFanSlider
      GtkWidget parent;
 
      GtkAdjustment* adjustment;
+     GtkAdjustment* adjustment_prv;
      double         val;
      double         center_val;
      int            xclick_root;
@@ -28,6 +29,7 @@ struct _PhatFanSlider
      int            fan_max_thickness;
      int            state;
      gboolean       inverted;
+     gboolean	    is_log;
      GtkOrientation orientation;
      GtkWidget*     fan_window;
      GdkRegion*     fan_clip0;
@@ -52,6 +54,10 @@ struct _PhatFanSliderClass
 GType phat_fan_slider_get_type ( );
 
 void phat_fan_slider_set_value (PhatFanSlider* slider, double value);
+
+void phat_fan_slider_set_log (PhatFanSlider* slider, gboolean is_log);
+
+gboolean phat_fan_slider_is_log (PhatFanSlider* slider);
 
 double phat_fan_slider_get_value (PhatFanSlider* slider);
 

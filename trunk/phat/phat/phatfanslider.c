@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <math.h>
 #include "phatprivate.h"
 #include "phatfanslider.h"
 
@@ -153,6 +154,22 @@ void phat_fan_slider_set_value (PhatFanSlider* slider, double value)
      gtk_adjustment_set_value (slider->adjustment, value);
 }
 
+void phat_fan_slider_set_log (PhatFanSlider* slider, gboolean is_log)
+{
+     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
+
+     slider->is_log = is_log;
+}
+
+gboolean phat_fan_slider_is_log (PhatFanSlider* slider)
+{
+     g_return_if_fail (PHAT_IS_FAN_SLIDER (slider));
+
+     return slider->is_log;
+}
+
+    
+
 /**
  * phat_fan_slider_get_value:
  * @slider: a #PhatFanSlider
@@ -164,9 +181,19 @@ void phat_fan_slider_set_value (PhatFanSlider* slider, double value)
  */
 double phat_fan_slider_get_value (PhatFanSlider* slider)
 {
-     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), 0);
+    g_return_val_if_fail (PHAT_IS_FAN_SLIDER (slider), 0);
 
-     return slider->adjustment->value;
+    if(slider->is_log)
+    {
+	gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment, exp((slider->adjustment_prv->value) * 
+	    (log(slider->adjustment->upper - slider->adjustment->lower))) + slider->adjustment->lower);
+	//printf("setting val %f lower %f upper %f \n", slider->adjustment_prv->value, slider->adjustment->lower, slider->adjustment->upper);
+    }
+    else
+    {
+	gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment, (slider->adjustment_prv->value * (slider->adjustment->upper - slider->adjustment->lower) + slider->adjustment->lower));
+    }
+    return slider->adjustment->value;
 }
 
 /**
@@ -193,7 +220,7 @@ void phat_fan_slider_set_range (PhatFanSlider* slider,
      value = CLAMP (slider->adjustment->value,
 		    slider->adjustment->lower,
 		    slider->adjustment->upper);
-     
+     //XXX not sure about these
      gtk_adjustment_changed (slider->adjustment);
      gtk_adjustment_set_value (slider->adjustment, value);
 }
@@ -257,15 +284,6 @@ void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
      g_object_ref (adjustment);
      gtk_object_sink (GTK_OBJECT (adjustment));
 
-     g_signal_connect (adjustment, "changed",
-		       G_CALLBACK (phat_fan_slider_adjustment_changed),
-		       (gpointer) slider);
-     g_signal_connect (adjustment, "value_changed",
-		       G_CALLBACK (phat_fan_slider_adjustment_value_changed),
-		       (gpointer) slider);
-
-     phat_fan_slider_adjustment_changed (adjustment, slider);
-     phat_fan_slider_adjustment_value_changed (adjustment, slider);
 }
 
 /**
@@ -404,6 +422,7 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
      debug ("init\n");
 
      slider->adjustment = NULL;
+     slider->adjustment_prv = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
      slider->val = 0.69;
      slider->center_val = -1;
      slider->xclick_root = 0;
@@ -424,6 +443,18 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
      slider->hint_window1 = NULL;
      slider->hint_clip0 = NULL;
      slider->hint_clip1 = NULL;
+     slider->is_log = 0;
+
+     g_signal_connect (slider->adjustment_prv, "changed",
+		       G_CALLBACK (phat_fan_slider_adjustment_changed),
+		       (gpointer) slider);
+     g_signal_connect (slider->adjustment_prv, "value_changed",
+		       G_CALLBACK (phat_fan_slider_adjustment_value_changed),
+		       (gpointer) slider);
+
+     phat_fan_slider_adjustment_changed (slider->adjustment_prv, slider);
+     phat_fan_slider_adjustment_value_changed (slider->adjustment_prv, slider);
+
 }
 
 static void phat_fan_slider_destroy (GtkObject* object)
@@ -509,9 +540,24 @@ static void phat_fan_slider_destroy (GtkObject* object)
 	  g_signal_handlers_disconnect_by_func (slider->adjustment,
 						phat_fan_slider_adjustment_value_changed,
 						(gpointer) slider);
+	  // called ref on it so we must call unref
 	  g_object_unref (slider->adjustment);
 	  slider->adjustment = NULL;
      }
+
+     if (slider->adjustment_prv)
+     {
+	  g_signal_handlers_disconnect_by_func (slider->adjustment_prv,
+						phat_fan_slider_adjustment_changed,
+						(gpointer) slider);
+	  g_signal_handlers_disconnect_by_func (slider->adjustment_prv,
+						phat_fan_slider_adjustment_value_changed,
+						(gpointer) slider);
+          //didn't call ref on this one so just destroy
+	  gtk_object_destroy ((GtkObject*)slider->adjustment_prv);
+	  slider->adjustment_prv = NULL;
+     }
+
      
      if (klass->destroy)
 	  klass->destroy (object);
@@ -648,6 +694,8 @@ static void phat_fan_slider_unrealize (GtkWidget *widget)
      if (klass->unrealize)
 	  klass->unrealize (widget);
 }
+
+  
 
 static void phat_fan_slider_map (GtkWidget *widget)
 {
@@ -1094,7 +1142,7 @@ static gboolean phat_fan_slider_key_press (GtkWidget* widget,
 					   GdkEventKey* event)
 {
      PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
-     GtkAdjustment* adj = slider->adjustment;
+     GtkAdjustment* adj = slider->adjustment_prv;
      double inc;
 
      debug ("key press\n");
@@ -1148,15 +1196,15 @@ static gboolean phat_fan_slider_scroll (GtkWidget* widget,
 	 || ((event->direction == GDK_SCROLL_DOWN
 	      || event->direction == GDK_SCROLL_LEFT) && slider->inverted))
      {
-     	  gtk_adjustment_set_value (slider->adjustment,
-				    (slider->adjustment->value
-				     + slider->adjustment->page_increment));
+     	  gtk_adjustment_set_value (slider->adjustment_prv,
+				    (slider->adjustment_prv->value
+				     + slider->adjustment_prv->page_increment));
      }
      else
      {
-	  gtk_adjustment_set_value (slider->adjustment,
-				    (slider->adjustment->value
-				     - slider->adjustment->page_increment));
+	  gtk_adjustment_set_value (slider->adjustment_prv,
+				    (slider->adjustment_prv->value
+				     - slider->adjustment_prv->page_increment));
      }
 
      return FALSE;
@@ -1602,14 +1650,14 @@ static void phat_fan_slider_update_value (PhatFanSlider* slider,
 
      if (slider->val != oldval)
      {
-	  value = (slider->adjustment->lower * (1.0 - slider->val)
-		   + slider->adjustment->upper * slider->val);
+	  value = (slider->adjustment_prv->lower * (1.0 - slider->val)
+		   + slider->adjustment_prv->upper * slider->val);
 
 	  g_signal_handlers_block_by_func (G_OBJECT (slider),
 					   phat_fan_slider_adjustment_value_changed,
 					   (gpointer) slider);
 
-	  gtk_adjustment_set_value (slider->adjustment, value);
+	  gtk_adjustment_set_value (slider->adjustment_prv, value);
 	  
 	  g_signal_emit (G_OBJECT (slider),
 			 phat_fan_slider_signals[VALUE_CHANGED_SIGNAL], 0);

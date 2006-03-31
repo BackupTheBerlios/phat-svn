@@ -12,6 +12,11 @@ static void cb_inverted (GtkCheckButton* check, PhatFanSlider* slider)
      phat_fan_slider_set_inverted (slider, gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check)));
 }
 
+void cb_slider_value (PhatFanSlider* slider)
+{
+     printf("slider val %f \n", phat_fan_slider_get_value(slider));
+}
+
 static void cb_sensitive (GtkCheckButton* check, GtkWidget* slider)
 {
      gtk_widget_set_sensitive (slider, gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (check)));
@@ -80,8 +85,10 @@ int main (int argc, char* argv[])
      gtk_widget_show (vbox);
 
      /* horizontal slider */
-     adj = (GtkAdjustment*) gtk_adjustment_new (0, -1, 1, .01, .1, 0);
+     adj = (GtkAdjustment*) gtk_adjustment_new (0, 1, 2, .01, .1, 0);
      slider = phat_hfan_slider_new (adj);
+     g_signal_connect (G_OBJECT (slider), "value-changed",
+		       G_CALLBACK (cb_slider_value), (gpointer) slider);
      gtk_box_pack_start (GTK_BOX (vbox), slider, TRUE, TRUE, 0);
      gtk_widget_show (slider);
 
@@ -102,7 +109,7 @@ int main (int argc, char* argv[])
      gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
      gtk_widget_show (label);
 
-     spin_adj = (GtkAdjustment*) gtk_adjustment_new (-1, -5, 0, .01, 0, 0);
+     spin_adj = (GtkAdjustment*) gtk_adjustment_new (1, 1, 300, .01, 0, 0);
      g_signal_connect (G_OBJECT (spin_adj), "value-changed",
 		       G_CALLBACK (cb_lower), (gpointer) adj);
      spin = gtk_spin_button_new (spin_adj, 0, 2);
@@ -113,7 +120,7 @@ int main (int argc, char* argv[])
      gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
      gtk_widget_show (label);
 
-     spin_adj = (GtkAdjustment*) gtk_adjustment_new (1, 0, 5, .01, 0, 0);
+     spin_adj = (GtkAdjustment*) gtk_adjustment_new (20, 1, 20000, .01, 0, 0);
      g_signal_connect (G_OBJECT (spin_adj), "value-changed",
 		       G_CALLBACK (cb_upper), (gpointer) adj);
      spin = gtk_spin_button_new (spin_adj, 0, 2);
@@ -134,7 +141,7 @@ int main (int argc, char* argv[])
      gtk_widget_show (check);
 
      /* vertical slider */
-     adj = (GtkAdjustment*) gtk_adjustment_new (0, -1, 1, .01, .1, 0);
+     adj = (GtkAdjustment*) gtk_adjustment_new (0, 0, 1, .01, .1, 0);
      slider = phat_vfan_slider_new (adj);
      gtk_box_pack_start (GTK_BOX (vbox), slider, TRUE, TRUE, 0);
      gtk_widget_show (slider);
@@ -156,7 +163,7 @@ int main (int argc, char* argv[])
      gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
      gtk_widget_show (label);
 
-     spin_adj = (GtkAdjustment*) gtk_adjustment_new (-1, -5, 0, .01, 0, 0);
+     spin_adj = (GtkAdjustment*) gtk_adjustment_new (0, -5, 0, .01, 0, 0);
      g_signal_connect (G_OBJECT (spin_adj), "value-changed",
 		       G_CALLBACK (cb_lower), (gpointer) adj);
      spin = gtk_spin_button_new (spin_adj, 0, 2);

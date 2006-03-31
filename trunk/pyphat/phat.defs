@@ -84,6 +84,21 @@
   )
 )
 
+(define-method set_log
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
+(define-method is_log
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_is_log")
+  (return-type "gboolean")
+)
+
 (define-method get_value
   (of-object "PhatFanSlider")
   (c-name "phat_fan_slider_get_value")
