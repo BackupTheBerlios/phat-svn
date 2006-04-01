@@ -151,7 +151,10 @@ static void phat_knob_init (PhatKnob *knob) {
   knob->old_value = 0.0;
   knob->old_lower = 0.0;
   knob->old_upper = 0.0;
+  knob->is_log = 0;
   knob->adjustment = NULL;
+  knob->adjustment_prv = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
+  phat_knob_set_adjustment(knob, knob->adjustment_prv);
 }
 
 GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
@@ -162,8 +165,7 @@ GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
   if (!adjustment)
     adjustment = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-  phat_knob_set_adjustment(knob, adjustment);
-
+  knob->adjustment = adjustment;
   return GTK_WIDGET(knob);
 }
 
@@ -211,6 +213,18 @@ void phat_knob_set_value (PhatKnob* knob, double value)
 		   knob->adjustment->upper);
 
     gtk_adjustment_set_value (knob->adjustment, value);
+    
+    if(knob->is_log)
+    {		
+	//gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, exp((knob->adjustment_prv->value) * 
+	//    (log(knob->adjustment->upper - knob->adjustment->lower))) + knob->adjustment->lower);
+	//printf("setting prv val %f lower %f upper %f \n", knob->adjustment_prv->value, knob->adjustment->lower, knob->adjustment->upper);
+    }
+    else
+    {
+	gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment_prv, (value - knob->adjustment->lower) / (knob->adjustment->upper - knob->adjustment->lower));
+    }
+
 }
 
 /**
@@ -225,6 +239,17 @@ void phat_knob_set_value (PhatKnob* knob, double value)
 double phat_knob_get_value (PhatKnob* knob)
 {
     g_return_val_if_fail (PHAT_IS_KNOB (knob), 0);
+
+    if(knob->is_log)
+    {
+	gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, exp((knob->adjustment_prv->value) * 
+	    (log(knob->adjustment->upper - knob->adjustment->lower))) + knob->adjustment->lower);
+	//printf("setting prv val %f lower %f upper %f \n", knob->adjustment_prv->value, knob->adjustment->lower, knob->adjustment->upper);
+    }
+    else
+    {
+	gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, (knob->adjustment_prv->value * (knob->adjustment->upper - knob->adjustment->lower) + knob->adjustment->lower));
+    }
 
     return knob->adjustment->value;
 }
@@ -257,6 +282,19 @@ void phat_knob_set_range (PhatKnob* knob,
     gtk_adjustment_set_value (knob->adjustment, value);
 }
 
+void phat_knob_set_log (PhatKnob* knob, gboolean is_log)
+{
+     g_return_if_fail (PHAT_IS_KNOB (knob));
+
+     knob->is_log = is_log;
+}
+
+gboolean phat_knob_is_log (PhatKnob* knob)
+{
+     g_return_val_if_fail (PHAT_IS_KNOB (knob), 0);
+
+     return knob->is_log;
+}
 
 static void phat_knob_destroy(GtkObject *object) {
   PhatKnob *knob;
@@ -267,13 +305,20 @@ static void phat_knob_destroy(GtkObject *object) {
   knob = PHAT_KNOB(object);
 
   if (knob->adjustment) {
-    gtk_object_unref(GTK_OBJECT(knob->adjustment));
+    gtk_object_destroy(GTK_OBJECT(knob->adjustment));
     knob->adjustment = NULL;
   }
 
+  if (knob->adjustment_prv)
+  {
+	  //didn't call ref on this one so just destroy
+	  gtk_object_destroy ((GtkObject*)knob->adjustment_prv);
+	  knob->adjustment_prv = NULL;
+  }
+
   if (knob->pixbuf) {
-    gdk_pixbuf_unref(knob->pixbuf);
-    knob->pixbuf = NULL;
+	gdk_pixbuf_unref(knob->pixbuf);
+	knob->pixbuf = NULL;
   }
 
   if (knob->mask) {
@@ -311,15 +356,6 @@ void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy) {
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment) {
   g_return_if_fail (knob != NULL);
   g_return_if_fail (PHAT_IS_KNOB (knob));
-
-  if (knob->adjustment) {
-    gtk_signal_disconnect_by_data(GTK_OBJECT(knob->adjustment), (gpointer)knob);
-    gtk_object_unref(GTK_OBJECT(knob->adjustment));
-  }
-
-  knob->adjustment = adjustment;
-  gtk_object_ref(GTK_OBJECT(knob->adjustment));
-  gtk_object_sink(GTK_OBJECT( knob->adjustment ) ); 
 
   gtk_signal_connect(GTK_OBJECT(adjustment), "changed",
 		     GTK_SIGNAL_FUNC(phat_knob_adjustment_changed), (gpointer) knob);
@@ -418,11 +454,11 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event) {
   // basically we need to work out if the step size is integer
   // if it is, centre the knob about the vertical
   
-  dx = knob->adjustment->value - knob->adjustment->lower;	// value, from 0
-  dy = knob->adjustment->upper - knob->adjustment->lower;	// range
+  dx = knob->adjustment_prv->value - knob->adjustment_prv->lower;	// value, from 0
+  dy = knob->adjustment_prv->upper - knob->adjustment_prv->lower;	// range
 
   
-  if (knob->adjustment->step_increment != 1.0f) {
+  if (knob->adjustment_prv->step_increment != 1.0f) {
 	  dx=(int)(51*dx/dy)*50;
   } else {
 	  throw=4;
@@ -486,15 +522,15 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
 
       switch (event->button) {
 	case 1:
-	  knob->adjustment->value -= knob->adjustment->page_increment;
+	  knob->adjustment_prv->value -= knob->adjustment_prv->page_increment;
 	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
 	  break;
 
 	case 3:
-	  knob->adjustment->value += knob->adjustment->page_increment;
+	  knob->adjustment_prv->value += knob->adjustment_prv->page_increment;
 	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
 	  break;
 
 	default:
@@ -506,10 +542,10 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
       gtk_grab_remove(widget);
       knob->state = STATE_IDLE;
 
-      if (knob->policy != GTK_UPDATE_CONTINUOUS && knob->old_value != knob->adjustment->value)
+      if (knob->policy != GTK_UPDATE_CONTINUOUS && knob->old_value != knob->adjustment_prv->value)
       {
 	  g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+	  gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
       }
       break;
 
@@ -566,7 +602,7 @@ static gint phat_knob_timer(PhatKnob *knob) {
   if (knob->policy == GTK_UPDATE_DELAYED)
   {
 	g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
   }
   return FALSE;	/* don't keep running this timer */
 }
@@ -574,7 +610,7 @@ static gint phat_knob_timer(PhatKnob *knob) {
 static void phat_knob_update_mouse_update(PhatKnob *knob) {
   if (knob->policy == GTK_UPDATE_CONTINUOUS)
   {
-    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
     g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
   }
   else 
@@ -600,7 +636,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
     g_return_if_fail(knob != NULL);
     g_return_if_fail(PHAT_IS_KNOB(knob));
 
-    old_value = knob->adjustment->value;
+    old_value = knob->adjustment_prv->value;
 
     angle = atan2(-y + (KNOB_SIZE>>1), x - (KNOB_SIZE>>1));
 
@@ -611,8 +647,8 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
             angle += 2;
 
         new_value = -(2.0/3.0) * (angle - 1.25);   /* map [1.25pi, -0.25pi] onto [0, 1] */
-        new_value *= knob->adjustment->upper - knob->adjustment->lower;
-        new_value += knob->adjustment->lower;
+        new_value *= knob->adjustment_prv->upper - knob->adjustment_prv->lower;
+        new_value += knob->adjustment_prv->lower;
 
     } else {
 
@@ -628,18 +664,18 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
             dh *= angle * angle;
         }
 
-        new_value = knob->adjustment->value +
-                    dv * knob->adjustment->step_increment +
-                    dh * (knob->adjustment->upper -
-                          knob->adjustment->lower) / 200.0f;
+        new_value = knob->adjustment_prv->value +
+                    dv * knob->adjustment_prv->step_increment +
+                    dh * (knob->adjustment_prv->upper -
+                          knob->adjustment_prv->lower) / 200.0f;
     }
 
-    new_value = MAX(MIN(new_value, knob->adjustment->upper),
-                    knob->adjustment->lower);
+    new_value = MAX(MIN(new_value, knob->adjustment_prv->upper),
+                    knob->adjustment_prv->lower);
 
-    knob->adjustment->value = new_value;
+    knob->adjustment_prv->value = new_value;
 
-    if (knob->adjustment->value != old_value)
+    if (knob->adjustment_prv->value != old_value)
         phat_knob_update_mouse_update(knob);
 }
 
@@ -649,19 +685,19 @@ static void phat_knob_update(PhatKnob *knob) {
   g_return_if_fail(knob != NULL);
   g_return_if_fail(PHAT_IS_KNOB (knob));
 	
-  new_value = knob->adjustment->value;
-  if (knob->adjustment->step_increment == 1) new_value = (int)(knob->adjustment->value+0.5);
+  new_value = knob->adjustment_prv->value;
+  if (knob->adjustment_prv->step_increment == 1) new_value = (int)(knob->adjustment_prv->value+0.5);
         
-  if (new_value < knob->adjustment->lower)
-    new_value = knob->adjustment->lower;
+  if (new_value < knob->adjustment_prv->lower)
+    new_value = knob->adjustment_prv->lower;
 
-  if (new_value > knob->adjustment->upper)
-    new_value = knob->adjustment->upper;
+  if (new_value > knob->adjustment_prv->upper)
+    new_value = knob->adjustment_prv->upper;
 
-  if (new_value != knob->adjustment->value) {
-    knob->adjustment->value = new_value;
+  if (new_value != knob->adjustment_prv->value) {
+    knob->adjustment_prv->value = new_value;
     g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment), "value_changed");
+    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
   }
 
   gtk_widget_draw(GTK_WIDGET(knob), NULL);

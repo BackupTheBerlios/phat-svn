@@ -31,7 +31,8 @@ int main (int argc, char* argv[])
      gtk_widget_show (vbox);
      
      /*  knob */
-     knob = phat_knob_new_with_range (2.0, 0.0, 20, 0.1);
+     knob = phat_knob_new_with_range (4.0, 2.0, 20, 0.1);
+     phat_knob_set_log((PhatKnob*) knob, 1);
      gtk_box_pack_start (GTK_BOX (vbox), knob, TRUE, FALSE, 0);
      gtk_widget_show (knob);
      g_signal_connect (G_OBJECT (knob), "value-changed",
