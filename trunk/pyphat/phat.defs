@@ -623,4 +623,19 @@
   )
 )
 
+(define-method set_log
+  (of-object "PhatKnob")
+  (c-name "phat_knob_set_log")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_log")
+  )
+)
+
+(define-method is_log
+  (of-object "PhatKnob")
+  (c-name "phat_knob_is_log")
+  (return-type "gboolean")
+)
+
 

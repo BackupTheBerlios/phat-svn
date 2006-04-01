@@ -470,10 +470,12 @@ struct _PhatKnob {
     GtkWidget widget;
 
     GtkAdjustment *adjustment;
+    GtkAdjustment* adjustment_prv;
 
 
 
     guint policy : 2;
+    gboolean is_log;
 
 
     guint8 state;
@@ -516,4 +518,6 @@ void phat_knob_set_value (PhatKnob* knob, double value);
 void phat_knob_set_range (PhatKnob* slider, double lower, double upper);
 void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy);
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
+void phat_knob_set_log (PhatKnob* knob, gboolean is_log);
+gboolean phat_knob_is_log (PhatKnob* knob);
 # 13 "/usr/include/phat/phat.h" 2
