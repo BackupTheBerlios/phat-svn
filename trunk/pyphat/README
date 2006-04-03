@@ -1,4 +1,2 @@
-Python bindings for phat. To make and install type make, then make phat.so.
-Copy the phat.so file into your python site modules dir. 
-On my system that is /usr/lib64/python2.4/site-packages/
+Python bindings for phat. To make and install type ./configure; make.
 Look at khagan for a idea of how to use it. 
