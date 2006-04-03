@@ -155,9 +155,7 @@ void phat_fan_slider_set_value (PhatFanSlider* slider, double value)
 
     if(slider->is_log)
     {		
-	//gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment, exp((slider->adjustment_prv->value) * 
-	//    (log(slider->adjustment->upper - slider->adjustment->lower))) + slider->adjustment->lower);
-	//printf("setting prv val %f lower %f upper %f \n", slider->adjustment_prv->value, slider->adjustment->lower, slider->adjustment->upper);
+	gtk_adjustment_set_value((GtkAdjustment *)slider->adjustment_prv, log(value - slider->adjustment->lower) / log(slider->adjustment->upper - slider->adjustment->lower));		
     }
     else
     {

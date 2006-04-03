@@ -164,8 +164,10 @@ GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
 
     if (!adjustment)
 	adjustment = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-
+    
     knob->adjustment = adjustment;
+    //call to correlete internal adj to externally visable one
+    phat_knob_set_value(knob, adjustment->value);
     return GTK_WIDGET(knob);
 }
 
@@ -215,10 +217,8 @@ void phat_knob_set_value (PhatKnob* knob, double value)
     gtk_adjustment_set_value (knob->adjustment, value);
 
     if(knob->is_log)
-    {		
-	//gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, exp((knob->adjustment_prv->value) * 
-	//    (log(knob->adjustment->upper - knob->adjustment->lower))) + knob->adjustment->lower);
-	//printf("setting prv val %f lower %f upper %f \n", knob->adjustment_prv->value, knob->adjustment->lower, knob->adjustment->upper);
+    {	
+	gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment_prv, log(value - knob->adjustment->lower) / log(knob->adjustment->upper - knob->adjustment->lower));
     }
     else
     {
