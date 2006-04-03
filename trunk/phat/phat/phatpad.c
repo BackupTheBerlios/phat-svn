@@ -156,7 +156,13 @@ static void phat_pad_init (PhatPad* pad)
     pad->xtilt = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
     pad->ytilt = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
     pad->pressure = (GtkAdjustment *) gtk_adjustment_new(0.0, 0.0, 1.0, 0.1, 0.1, 0.1);
-    pad->x_is_log = 1; //XXX
+    pad->x_is_log = 0;
+    pad->y_is_log = 0;
+    pad->p_is_log = 0;
+    pad->xt_is_log = 0;
+    pad->yt_is_log = 0;
+  
+    
 	
     pad->pixmap = NULL;
     gtk_widget_set_size_request (GTK_WIDGET (pad), 200, 200);
