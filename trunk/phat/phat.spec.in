@@ -4,7 +4,7 @@ Version: @PHAT_VERSION@
 Release: 1
 License: GPL
 Group: Applications/Multimedia
-URL: http://www.gazuga.net/phat.php
+URL: http://phat.berlios.de
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: gtk2
@@ -61,6 +61,7 @@ rm -rf %{buildroot}
 %{_libdir}/libphat.so
 %{_libdir}/libphat.so.0
 %{_libdir}/libphat.so.0.0.*
+%{_datadir}/phat/pixmaps/knob.png
 %doc AUTHORS ChangeLog COPYING NEWS README TODO
 
 
@@ -75,6 +76,8 @@ rm -rf %{buildroot}
 %{_includedir}/phat/phathfanslider.h
 %{_includedir}/phat/phatvfanslider.h
 %{_includedir}/phat/phatsliderbutton.h
+%{_includedir}/phat/phatknob.h
+%{_includedir}/phat/phatpad.h
 %{_includedir}/phat/phatkeyboard.h
 %{_includedir}/phat/phathkeyboard.h
 %{_includedir}/phat/phatvkeyboard.h
@@ -85,6 +88,8 @@ rm -rf %{buildroot}
 %{_bindir}/phatsliderbutton
 %{_bindir}/phatfanslider
 %{_bindir}/phatkeyboard
+%{_bindir}/phatpad
+%{_bindir}/phatknob
 
 
 %files docs
@@ -95,6 +100,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Apr 4 2006 Loki Davison <loki.davison@gmail.com>
+- add new headers and update site address.
 
 * Wed Sep 29 2004 Pete Bessman <ninjadroid@gazuga.net>
 - initial file
