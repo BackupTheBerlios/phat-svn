@@ -358,6 +358,46 @@ static gboolean phat_pad_expose (GtkWidget*      widget,
     return TRUE;
 }
 
+gboolean draw_freq (GtkWidget *widget)
+{
+    PhatPad* pad;
+    gdouble initfreq = 16.351;
+    gdouble freq = initfreq;
+    gdouble x;
+
+    debug ("draw freq  \n");
+    pad = PHAT_PAD(widget);  
+    
+    if(pad->x_is_log)
+    {
+	debug ("x is log  \n");
+
+	while(freq < pad->x->upper)
+	{
+	    freq = freq * 1.0594631;
+	    if(freq > pad->x->lower)
+	    {
+		x = log(freq - pad->x->lower) / log(pad->x->upper - pad->x->lower) * widget->allocation.width;
+		gdk_draw_line (pad->pixmap, widget->style->white_gc, x, 0, x, widget->allocation.height);
+	    }
+	}
+    }
+    else
+    {
+	while(freq < pad->x->upper)
+	{
+	    freq = freq * 1.0594631;
+	    if(freq > pad->x->lower)
+	    {
+		x = log(freq - pad->x->lower) / log(pad->x->upper - pad->x->lower) * widget->allocation.width;
+		gdk_draw_line (pad->pixmap, widget->style->white_gc, x, 0, x, widget->allocation.height);
+	    }
+	}
+    }    
+    return TRUE;
+}
+
+
 /* Create a new backing pixmap of the appropriate size */
 static gboolean phat_pad_configure_event (GtkWidget *widget, GdkEventConfigure *event)
 {
@@ -378,10 +418,10 @@ static gboolean phat_pad_configure_event (GtkWidget *widget, GdkEventConfigure *
 			  0, 0,
 			  widget->allocation.width,
 			  widget->allocation.height);
+    draw_freq(widget);
 
     return TRUE;
 }
-
 
 static gboolean phat_pad_button_press (GtkWidget* widget,
 						 GdkEventButton* event)

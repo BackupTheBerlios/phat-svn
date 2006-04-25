@@ -67,6 +67,7 @@ int main (int argc, char* argv[])
      
      /*  pad */
      pad = phat_pad_new ();
+     PHAT_PAD(pad)->x_is_log = TRUE;
      gtk_box_pack_start (GTK_BOX (vbox), pad, TRUE, FALSE, 0);
      gtk_widget_show (pad);
      g_signal_connect (G_OBJECT (pad), "value-changed",

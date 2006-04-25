@@ -14,6 +14,27 @@ PHAT_IS_KEYBOARD_CLASS
 </SECTION>
 
 <SECTION>
+<FILE>phatknob</FILE>
+<TITLE>PhatKnob</TITLE>
+phat_knob_new
+phat_knob_new_with_range
+phat_knob_get_adjustment
+phat_knob_get_value
+phat_knob_set_value
+phat_knob_set_range
+phat_knob_set_update_policy
+phat_knob_set_adjustment
+phat_knob_set_log
+phat_knob_is_log
+<SUBSECTION Standard>
+PHAT_KNOB
+PHAT_IS_KNOB
+PHAT_TYPE_KNOB
+phat_knob_get_type
+PHAT_KNOB_CLASS
+</SECTION>
+
+<SECTION>
 <FILE>phathfanslider</FILE>
 <TITLE>PhatHFanSlider</TITLE>
 phat_hfan_slider_new
@@ -42,22 +63,11 @@ PHAT_IS_VFAN_SLIDER_CLASS
 </SECTION>
 
 <SECTION>
-<FILE>phat2dpad</FILE>
-<TITLE>Phat2dPad</TITLE>
-phat_2d_pad_new
-<SUBSECTION Standard>
-PHAT_2D_PAD
-PHAT_IS_2D_PAD
-PHAT_TYPE_2D_PAD
-phat_2d_pad_get_type
-PHAT_2D_PAD_CLASS
-PHAT_IS_2D_PAD_CLASS
-</SECTION>
-
-<SECTION>
 <FILE>phatfanslider</FILE>
 <TITLE>PhatFanSlider</TITLE>
 phat_fan_slider_set_value
+phat_fan_slider_set_log
+phat_fan_slider_is_log
 phat_fan_slider_get_value
 phat_fan_slider_set_range
 phat_fan_slider_get_range
@@ -85,6 +95,37 @@ PHAT_TYPE_HKEYBOARD
 phat_hkeyboard_get_type
 PHAT_HKEYBOARD_CLASS
 PHAT_IS_HKEYBOARD_CLASS
+</SECTION>
+
+<SECTION>
+<FILE>phatpad</FILE>
+<TITLE>PhatPad</TITLE>
+phat_pad_new
+phat_pad_get_ytilt
+phat_pad_get_xtilt
+phat_pad_get_pressure
+phat_pad_get_y
+phat_pad_get_x
+phat_pad_set_x_range
+phat_pad_set_y_range
+phat_pad_set_pressure_range
+phat_pad_set_x_log
+phat_pad_set_y_log
+phat_pad_set_xtilt_log
+phat_pad_set_ytilt_log
+phat_pad_set_pressure_log
+phat_pad_x_is_log
+phat_pad_y_is_log
+phat_pad_xtilt_is_log
+phat_pad_ytilt_is_log
+phat_pad_pressure_is_log
+<SUBSECTION Standard>
+PHAT_PAD
+PHAT_IS_PAD
+PHAT_TYPE_PAD
+phat_pad_get_type
+PHAT_PAD_CLASS
+PHAT_IS_PAD_CLASS
 </SECTION>
 
 <SECTION>

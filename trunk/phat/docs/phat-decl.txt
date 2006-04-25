@@ -80,6 +80,125 @@ PhatKeyboard* keyboard
 PhatKeyboard* keyboard, GtkAdjustment* adjustment
 </FUNCTION>
 <MACRO>
+<NAME>PHAT_KNOB</NAME>
+#define PHAT_KNOB(obj)		GTK_CHECK_CAST(obj, phat_knob_get_type(), PhatKnob)
+</MACRO>
+<MACRO>
+<NAME>PHAT_KNOB_CLASS</NAME>
+#define PHAT_KNOB_CLASS(klass)	GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_KNOB</NAME>
+#define PHAT_IS_KNOB(obj)	GTK_CHECK_TYPE(obj, phat_knob_get_type())
+</MACRO>
+<MACRO>
+<NAME>PHAT_TYPE_KNOB</NAME>
+#define PHAT_TYPE_KNOB          (phat_knob_get_type ( ))
+</MACRO>
+<STRUCT>
+<NAME>PhatKnob</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatKnobClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatKnob</NAME>
+struct _PhatKnob {
+    GtkWidget widget;
+    /* The adjustment object that stores the data for this knob */
+    GtkAdjustment *adjustment;
+    GtkAdjustment* adjustment_prv;
+
+
+    /* update policy (GTK_UPDATE_[CONTINUOUS/DELAYED/DISCONTINUOUS]) */
+    guint policy : 2;
+    gboolean is_log;
+
+    /* State of widget (to do with user interaction) */
+    guint8 state;
+    gint saved_x, saved_y;
+
+    /* ID of update timer, or 0 if none */
+    guint32 timer;
+
+    /* Pixmap for knob */
+    GdkPixbuf *pixbuf;
+    GdkBitmap *mask;
+    GdkGC *mask_gc;
+    GdkGC *red_gc;
+
+    /* Old values from adjustment stored so we know when something changes */
+    gfloat old_value;
+    gfloat old_lower;
+    gfloat old_upper;
+
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatKnobClass</NAME>
+struct _PhatKnobClass
+{
+  GtkWidgetClass parent_class;
+
+  void (*value_changed) (PhatKnob* knob);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_knob_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+GtkAdjustment* adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_new_with_range</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+double value,double lower,double upper,double step
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_get_adjustment</NAME>
+<RETURNS>GtkAdjustment *</RETURNS>
+PhatKnob *knob
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_get_value</NAME>
+<RETURNS>double </RETURNS>
+PhatKnob* knob
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_set_value</NAME>
+<RETURNS>void </RETURNS>
+PhatKnob* knob, double value
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_set_range</NAME>
+<RETURNS>void </RETURNS>
+PhatKnob* slider, double lower, double upper
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_set_update_policy</NAME>
+<RETURNS>void </RETURNS>
+PhatKnob *knob, GtkUpdateType  policy
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_set_adjustment</NAME>
+<RETURNS>void </RETURNS>
+PhatKnob *knob, GtkAdjustment *adjustment
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_set_log</NAME>
+<RETURNS>void </RETURNS>
+PhatKnob* knob, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_knob_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatKnob* knob
+</FUNCTION>
+<MACRO>
 <NAME>PHAT_TYPE_HFAN_SLIDER</NAME>
 #define PHAT_TYPE_HFAN_SLIDER            (phat_hfan_slider_get_type ( ))
 </MACRO>
@@ -190,62 +309,6 @@ GtkAdjustment* adjustment
 double value,double lower,double upper,double step
 </FUNCTION>
 <MACRO>
-<NAME>PHAT_TYPE_2D_PAD</NAME>
-#define PHAT_TYPE_2D_PAD            (phat_2d_pad_get_type ( ))
-</MACRO>
-<MACRO>
-<NAME>PHAT_2D_PAD</NAME>
-#define PHAT_2D_PAD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_2D_PAD, Phat2dPad))
-</MACRO>
-<MACRO>
-<NAME>PHAT_2D_PAD_CLASS</NAME>
-#define PHAT_2D_PAD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_2D_PAD, Phat2dPadClass))
-</MACRO>
-<MACRO>
-<NAME>PHAT_IS_2D_PAD</NAME>
-#define PHAT_IS_2D_PAD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_2D_PAD))
-</MACRO>
-<MACRO>
-<NAME>PHAT_IS_2D_PAD_CLASS</NAME>
-#define PHAT_IS_2D_PAD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_2D_PAD))
-</MACRO>
-<STRUCT>
-<NAME>Phat2dPadClass</NAME>
-</STRUCT>
-<STRUCT>
-<NAME>Phat2dPad</NAME>
-</STRUCT>
-<STRUCT>
-<NAME>Phat2dPad</NAME>
-struct _Phat2dPad
-{
-    GtkHBox parent;
-
-    GtkWidget* drawing_area;
-    GdkPixmap* pixmap;
-};
-</STRUCT>
-<STRUCT>
-<NAME>Phat2dPadClass</NAME>
-struct _Phat2dPadClass
-{
-    GtkHBoxClass parent_class;
-
-    void (*value_changed) (Phat2dPad* slider);
-    void (*changed)       (Phat2dPad* slider);
-};
-</STRUCT>
-<FUNCTION>
-<NAME>phat_2d_pad_get_type</NAME>
-<RETURNS>GType </RETURNS>
-
-</FUNCTION>
-<FUNCTION>
-<NAME>phat_2d_pad_new</NAME>
-<RETURNS>GtkWidget*</RETURNS>
-
-</FUNCTION>
-<MACRO>
 <NAME>PHAT_TYPE_FAN_SLIDER</NAME>
 #define PHAT_TYPE_FAN_SLIDER            (phat_fan_slider_get_type ( ))
 </MACRO>
@@ -278,6 +341,7 @@ struct _PhatFanSlider
      GtkWidget parent;
 
      GtkAdjustment* adjustment;
+     GtkAdjustment* adjustment_prv;
      double         val;
      double         center_val;
      int            xclick_root;
@@ -287,6 +351,7 @@ struct _PhatFanSlider
      int            fan_max_thickness;
      int            state;
      gboolean       inverted;
+     gboolean	    is_log;
      GtkOrientation orientation;
      GtkWidget*     fan_window;
      GdkRegion*     fan_clip0;
@@ -319,6 +384,16 @@ struct _PhatFanSliderClass
 <NAME>phat_fan_slider_set_value</NAME>
 <RETURNS>void </RETURNS>
 PhatFanSlider* slider, double value
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_set_log</NAME>
+<RETURNS>void </RETURNS>
+PhatFanSlider* slider, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_fan_slider_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatFanSlider* slider
 </FUNCTION>
 <FUNCTION>
 <NAME>phat_fan_slider_get_value</NAME>
@@ -406,6 +481,159 @@ void
 <NAME>phat_hkeyboard_new</NAME>
 <RETURNS>GtkWidget*</RETURNS>
 GtkAdjustment* adjustment, int numkeys, gboolean show_labels
+</FUNCTION>
+<MACRO>
+<NAME>PHAT_TYPE_PAD</NAME>
+#define PHAT_TYPE_PAD            (phat_pad_get_type ( ))
+</MACRO>
+<MACRO>
+<NAME>PHAT_PAD</NAME>
+#define PHAT_PAD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), PHAT_TYPE_PAD, PhatPad))
+</MACRO>
+<MACRO>
+<NAME>PHAT_PAD_CLASS</NAME>
+#define PHAT_PAD_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_PAD, PhatPadClass))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_PAD</NAME>
+#define PHAT_IS_PAD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_PAD))
+</MACRO>
+<MACRO>
+<NAME>PHAT_IS_PAD_CLASS</NAME>
+#define PHAT_IS_PAD_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), PHAT_TYPE_PAD))
+</MACRO>
+<STRUCT>
+<NAME>PhatPadClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatPad</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>PhatPad</NAME>
+struct _PhatPad
+{
+    GtkDrawingArea parent; 
+    GdkPixmap* pixmap;
+    GtkAdjustment* pressure;
+    gboolean p_is_log;
+    GtkAdjustment* xtilt;
+    gboolean xt_is_log;
+    GtkAdjustment* ytilt;
+    gboolean yt_is_log;
+    GtkAdjustment* x;
+    gboolean x_is_log;
+    GtkAdjustment* y;
+    gboolean y_is_log;
+};
+</STRUCT>
+<STRUCT>
+<NAME>PhatPadClass</NAME>
+struct _PhatPadClass
+{
+    GtkDrawingAreaClass parent_class;
+
+    void (*value_changed) (PhatPad* pad);
+};
+</STRUCT>
+<FUNCTION>
+<NAME>phat_pad_get_type</NAME>
+<RETURNS>GType </RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_new</NAME>
+<RETURNS>GtkWidget*</RETURNS>
+
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_get_ytilt</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_get_xtilt</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_get_pressure</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_get_y</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_get_x</NAME>
+<RETURNS>GtkAdjustment*</RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_x_range</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gdouble min, gdouble max
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_y_range</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gdouble min, gdouble max
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_pressure_range</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gdouble min, gdouble max
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_x_log</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_y_log</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_xtilt_log</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_ytilt_log</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_set_pressure_log</NAME>
+<RETURNS>void </RETURNS>
+PhatPad* pad, gboolean is_log
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_x_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_y_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_xtilt_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_ytilt_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatPad* pad
+</FUNCTION>
+<FUNCTION>
+<NAME>phat_pad_pressure_is_log</NAME>
+<RETURNS>gboolean </RETURNS>
+PhatPad* pad
 </FUNCTION>
 <MACRO>
 <NAME>PHAT_TYPE_VKEYBOARD</NAME>
@@ -508,6 +736,7 @@ struct _PhatSliderButton
     int state;
     int xpress_root, ypress_root;
     int xpress, ypress;
+    int firstrun;
     guint threshold;
     gboolean slid;
 };
