@@ -1,3 +1,4 @@
 aclocal -I m4/
+libtoolize --automake
 autoconf 
-automake
+automake --add-missing
