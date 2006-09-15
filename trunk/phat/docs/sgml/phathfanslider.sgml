@@ -1,15 +1,18 @@
 <refentry id="PhatHFanSlider">
 <refmeta>
-<refentrytitle>PhatHFanSlider</refentrytitle>
+<refentrytitle id="top_of_page">PhatHFanSlider</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>PHAT Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>PhatHFanSlider</refname><refpurpose>a horizontal fanslider widget for selecting a floating point value from a range</refpurpose>
+<refname>PhatHFanSlider</refname>
+<refpurpose>a horizontal fanslider widget for selecting a floating point value from a range</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
@@ -26,8 +29,8 @@
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1>
-<title>Object Hierarchy</title>
+<refsect1 id="object_hierarchy">
+<title id="object_hierarchy.title">Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -41,8 +44,8 @@
 
 
 
-<refsect1>
-<title>Implemented Interfaces</title>
+<refsect1 id="impl_interfaces">
+<title id="impl_interfaces.title">Implemented Interfaces</title>
 <para>
 PhatHFanSlider implements
  <link linkend="AtkImplementorIface">AtkImplementorIface</link>.</para>
@@ -53,8 +56,8 @@ PhatHFanSlider implements
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 <link linkend="PhatHFanSlider"><type>PhatHFanSlider</type></link> is a wrapper class for the abstract base
 <link linkend="PhatFanSlider"><type>PhatFanSlider</type></link> class.  After creating a <link linkend="PhatHFanSlider"><type>PhatHFanSlider</type></link>, you should
@@ -62,17 +65,17 @@ interact with it using the <link linkend="PhatFanSlider"><type>PhatFanSlider</ty
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="PhatHFanSlider-struct">PhatHFanSlider</title>
+<title><anchor id="PhatHFanSlider-struct" role="struct">PhatHFanSlider</title>
 <indexterm><primary>PhatHFanSlider</primary></indexterm><programlisting>typedef struct _PhatHFanSlider PhatHFanSlider;</programlisting>
 <para>
 The <link linkend="PhatHFanSlider-struct"><type>PhatHFanSlider-struct</type></link> struct contains private data only, and
 should be accessed using the functions below.
 </para></refsect2>
 <refsect2>
-<title><anchor id="phat-hfan-slider-new">phat_hfan_slider_new ()</title>
+<title><anchor id="phat-hfan-slider-new" role="function">phat_hfan_slider_new ()</title>
 <indexterm><primary>phat_hfan_slider_new</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  phat_hfan_slider_new            (<link linkend="GtkAdjustment">GtkAdjustment</link> *adjustment);</programlisting>
 <para>
 Creates a new <link linkend="PhatHFanSlider"><type>PhatHFanSlider</type></link>.</para>
@@ -87,7 +90,7 @@ Creates a new <link linkend="PhatHFanSlider"><type>PhatHFanSlider</type></link>.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="phat-hfan-slider-new-with-range">phat_hfan_slider_new_with_range ()</title>
+<title><anchor id="phat-hfan-slider-new-with-range" role="function">phat_hfan_slider_new_with_range ()</title>
 <indexterm><primary>phat_hfan_slider_new_with_range</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  phat_hfan_slider_new_with_range (<link linkend="double">double</link> value,
                                              <link linkend="double">double</link> lower,
                                              <link linkend="double">double</link> upper,

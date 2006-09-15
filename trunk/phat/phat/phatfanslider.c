@@ -293,6 +293,7 @@ void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
      g_object_ref (adjustment);
      gtk_object_sink (GTK_OBJECT (adjustment));
 
+     phat_fan_slider_adjustment_changed(slider->adjustment, slider);
 }
 
 /**

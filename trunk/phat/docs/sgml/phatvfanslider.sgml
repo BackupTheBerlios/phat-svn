@@ -1,15 +1,18 @@
 <refentry id="PhatVFanSlider">
 <refmeta>
-<refentrytitle>PhatVFanSlider</refentrytitle>
+<refentrytitle id="top_of_page">PhatVFanSlider</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>PHAT Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>PhatVFanSlider</refname><refpurpose>a vertical fanslider widget for selecting a floating point value from a range</refpurpose>
+<refname>PhatVFanSlider</refname>
+<refpurpose>a vertical fanslider widget for selecting a floating point value from a range</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
@@ -26,8 +29,8 @@
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1>
-<title>Object Hierarchy</title>
+<refsect1 id="object_hierarchy">
+<title id="object_hierarchy.title">Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -41,8 +44,8 @@
 
 
 
-<refsect1>
-<title>Implemented Interfaces</title>
+<refsect1 id="impl_interfaces">
+<title id="impl_interfaces.title">Implemented Interfaces</title>
 <para>
 PhatVFanSlider implements
  <link linkend="AtkImplementorIface">AtkImplementorIface</link>.</para>
@@ -53,8 +56,8 @@ PhatVFanSlider implements
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 <link linkend="PhatVFanSlider"><type>PhatVFanSlider</type></link> is a wrapper class for the abstract base
 <link linkend="PhatFanSlider"><type>PhatFanSlider</type></link> class.  After creating a <link linkend="PhatVFanSlider"><type>PhatVFanSlider</type></link>, you should
@@ -62,17 +65,17 @@ interact with it using the <link linkend="PhatFanSlider"><type>PhatFanSlider</ty
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="PhatVFanSlider-struct">PhatVFanSlider</title>
+<title><anchor id="PhatVFanSlider-struct" role="struct">PhatVFanSlider</title>
 <indexterm><primary>PhatVFanSlider</primary></indexterm><programlisting>typedef struct _PhatVFanSlider PhatVFanSlider;</programlisting>
 <para>
 The <link linkend="PhatVFanSlider-struct"><type>PhatVFanSlider-struct</type></link> struct contains private data only, and
 should be accessed using the functions below.
 </para></refsect2>
 <refsect2>
-<title><anchor id="phat-vfan-slider-new">phat_vfan_slider_new ()</title>
+<title><anchor id="phat-vfan-slider-new" role="function">phat_vfan_slider_new ()</title>
 <indexterm><primary>phat_vfan_slider_new</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  phat_vfan_slider_new            (<link linkend="GtkAdjustment">GtkAdjustment</link> *adjustment);</programlisting>
 <para>
 Creates a new <link linkend="PhatVFanSlider"><type>PhatVFanSlider</type></link>.</para>
@@ -87,7 +90,7 @@ Creates a new <link linkend="PhatVFanSlider"><type>PhatVFanSlider</type></link>.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="phat-vfan-slider-new-with-range">phat_vfan_slider_new_with_range ()</title>
+<title><anchor id="phat-vfan-slider-new-with-range" role="function">phat_vfan_slider_new_with_range ()</title>
 <indexterm><primary>phat_vfan_slider_new_with_range</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  phat_vfan_slider_new_with_range (<link linkend="double">double</link> value,
                                              <link linkend="double">double</link> lower,
                                              <link linkend="double">double</link> upper,

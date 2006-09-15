@@ -1,15 +1,18 @@
 <refentry id="PhatVKeyboard">
 <refmeta>
-<refentrytitle>PhatVKeyboard</refentrytitle>
+<refentrytitle id="top_of_page">PhatVKeyboard</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>PHAT Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>PhatVKeyboard</refname><refpurpose>a vertical keyboard widget</refpurpose>
+<refname>PhatVKeyboard</refname>
+<refpurpose>a vertical keyboard widget</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv><title>Synopsis</title>
+<refsynopsisdiv id="synopsis">
+<title id="synopsis.title">Synopsis</title>
 
 <synopsis>
 
@@ -24,8 +27,8 @@
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1>
-<title>Object Hierarchy</title>
+<refsect1 id="object_hierarchy">
+<title id="object_hierarchy.title">Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -42,8 +45,8 @@
 
 
 
-<refsect1>
-<title>Implemented Interfaces</title>
+<refsect1 id="impl_interfaces">
+<title id="impl_interfaces.title">Implemented Interfaces</title>
 <para>
 PhatVKeyboard implements
  <link linkend="AtkImplementorIface">AtkImplementorIface</link>.</para>
@@ -54,8 +57,8 @@ PhatVKeyboard implements
 
 
 
-<refsect1>
-<title>Description</title>
+<refsect1 id="desc">
+<title id="desc.title">Description</title>
 <para>
 <link linkend="PhatVKeyboard"><type>PhatVKeyboard</type></link> is a wrapper for the abstract <link linkend="PhatKeyboard"><type>PhatKeyboard</type></link> class.
 After creating a <link linkend="PhatVKeyboard"><type>PhatVKeyboard</type></link>, you should interact with it using the
@@ -63,17 +66,17 @@ After creating a <link linkend="PhatVKeyboard"><type>PhatVKeyboard</type></link>
 </para>
 </refsect1>
 
-<refsect1>
-<title>Details</title>
+<refsect1 id="details">
+<title id="details.title">Details</title>
 <refsect2>
-<title><anchor id="PhatVKeyboard-struct">PhatVKeyboard</title>
+<title><anchor id="PhatVKeyboard-struct" role="struct">PhatVKeyboard</title>
 <indexterm><primary>PhatVKeyboard</primary></indexterm><programlisting>typedef struct _PhatVKeyboard PhatVKeyboard;</programlisting>
 <para>
 The <link linkend="PhatVKeyboard-struct"><type>PhatVKeyboard-struct</type></link> struct contains private data only, and
 should be accessed using the functions below.
 </para></refsect2>
 <refsect2>
-<title><anchor id="phat-vkeyboard-new">phat_vkeyboard_new ()</title>
+<title><anchor id="phat-vkeyboard-new" role="function">phat_vkeyboard_new ()</title>
 <indexterm><primary>phat_vkeyboard_new</primary></indexterm><programlisting><link linkend="GtkWidget">GtkWidget</link>*  phat_vkeyboard_new              (<link linkend="GtkAdjustment">GtkAdjustment</link> *adjustment,
                                              <link linkend="int">int</link> numkeys,
                                              <link linkend="gboolean">gboolean</link> show_labels);</programlisting>
