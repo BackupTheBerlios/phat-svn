@@ -31,9 +31,9 @@
 extern "C" {
 #endif
 
-#define PHAT_KNOB(obj)		GTK_CHECK_CAST(obj, phat_knob_get_type(), PhatKnob)
-#define PHAT_KNOB_CLASS(klass)	GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
-#define PHAT_IS_KNOB(obj)	GTK_CHECK_TYPE(obj, phat_knob_get_type())
+#define PHAT_KNOB(obj)          GTK_CHECK_CAST(obj, phat_knob_get_type(), PhatKnob)
+#define PHAT_KNOB_CLASS(klass)  GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
+#define PHAT_IS_KNOB(obj)       GTK_CHECK_TYPE(obj, phat_knob_get_type())
 #define PHAT_TYPE_KNOB          (phat_knob_get_type ( ))
 
 
@@ -73,9 +73,9 @@ struct _PhatKnob {
 
 struct _PhatKnobClass
 {
-  GtkWidgetClass parent_class;
+    GtkWidgetClass parent_class;
 
-  void (*value_changed) (PhatKnob* knob);
+    void (*value_changed) (PhatKnob* knob);
 };
 
 GType phat_knob_get_type ( );
@@ -83,9 +83,9 @@ GType phat_knob_get_type ( );
 GtkWidget* phat_knob_new (GtkAdjustment* adjustment);
 
 GtkWidget* phat_knob_new_with_range (double value,
-					      double lower,
-					      double upper,
-					      double step);
+                                     double lower,
+                                     double upper,
+                                     double step);
 GtkAdjustment *phat_knob_get_adjustment(PhatKnob *knob);
 double phat_knob_get_value (PhatKnob* knob);
 void phat_knob_set_value (PhatKnob* knob, double value);

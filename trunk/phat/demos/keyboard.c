@@ -43,7 +43,7 @@ int main (int argc, char* argv[])
     gtk_container_set_border_width (GTK_CONTAINER (window), 12);
     gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
     g_signal_connect (G_OBJECT (window), "delete-event",
-		      G_CALLBACK (gtk_main_quit), NULL);
+                      G_CALLBACK (gtk_main_quit), NULL);
 
     /* main hbox */
     main_hbox = gtk_hbox_new (FALSE, 12);
@@ -62,9 +62,9 @@ int main (int argc, char* argv[])
     gtk_widget_show(keyboard);
 
     g_signal_connect(G_OBJECT(keyboard), "key-pressed",
-		     G_CALLBACK(pressed), NULL);
+                     G_CALLBACK(pressed), NULL);
     g_signal_connect(G_OBJECT(keyboard), "key-released",
-		     G_CALLBACK(released), NULL);
+                     G_CALLBACK(released), NULL);
 
     /* scrollbar */
     scroll = gtk_vscrollbar_new(adj);
@@ -83,9 +83,9 @@ int main (int argc, char* argv[])
     gtk_widget_show(keyboard);
 
     g_signal_connect(G_OBJECT(keyboard), "key-pressed",
-		     G_CALLBACK(pressed), NULL);
+                     G_CALLBACK(pressed), NULL);
     g_signal_connect(G_OBJECT(keyboard), "key-released",
-		     G_CALLBACK(released), NULL);
+                     G_CALLBACK(released), NULL);
 
     /* scrollbar */
     scroll = gtk_hscrollbar_new(adj);

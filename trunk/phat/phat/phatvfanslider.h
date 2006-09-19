@@ -17,12 +17,12 @@ typedef struct _PhatVFanSlider      PhatVFanSlider;
 
 struct _PhatVFanSlider
 {
-     PhatFanSlider parent;
+    PhatFanSlider parent;
 };
 
 struct _PhatVFanSliderClass
 {
-     PhatFanSliderClass parent_class;
+    PhatFanSliderClass parent_class;
 };
 
 GType phat_vfan_slider_get_type ( );
@@ -30,9 +30,9 @@ GType phat_vfan_slider_get_type ( );
 GtkWidget* phat_vfan_slider_new (GtkAdjustment* adjustment);
 
 GtkWidget* phat_vfan_slider_new_with_range (double value,
-					    double lower,
-					    double upper,
-					    double step);
+                                            double lower,
+                                            double upper,
+                                            double step);
 G_END_DECLS
 
 #endif /* __PHAT_VFAN_SLIDER_H__ */

@@ -16,39 +16,39 @@ typedef struct _PhatFanSlider      PhatFanSlider;
 
 struct _PhatFanSlider
 {
-     GtkWidget parent;
+    GtkWidget parent;
 
-     GtkAdjustment* adjustment;
-     GtkAdjustment* adjustment_prv;
-     double         val;
-     double         center_val;
-     int            xclick_root;
-     int            yclick_root;
-     int            xclick;
-     int            yclick;
-     int            fan_max_thickness;
-     int            state;
-     gboolean       inverted;
-     gboolean	    is_log;
-     GtkOrientation orientation;
-     GtkWidget*     fan_window;
-     GdkRegion*     fan_clip0;
-     GdkRegion*     fan_clip1;
-     GdkCursor*     arrow_cursor;
-     GdkCursor*     empty_cursor;
-     GdkWindow*     event_window;
-     GtkWidget*     hint_window0;
-     GtkWidget*     hint_window1;
-     GdkRegion*     hint_clip0;
-     GdkRegion*     hint_clip1;
+    GtkAdjustment* adjustment;
+    GtkAdjustment* adjustment_prv;
+    double         val;
+    double         center_val;
+    int            xclick_root;
+    int            yclick_root;
+    int            xclick;
+    int            yclick;
+    int            fan_max_thickness;
+    int            state;
+    gboolean       inverted;
+    gboolean       is_log;
+    GtkOrientation orientation;
+    GtkWidget*     fan_window;
+    GdkRegion*     fan_clip0;
+    GdkRegion*     fan_clip1;
+    GdkCursor*     arrow_cursor;
+    GdkCursor*     empty_cursor;
+    GdkWindow*     event_window;
+    GtkWidget*     hint_window0;
+    GtkWidget*     hint_window1;
+    GdkRegion*     hint_clip0;
+    GdkRegion*     hint_clip1;
 };
 
 struct _PhatFanSliderClass
 {
-     GtkWidgetClass parent_class;
+    GtkWidgetClass parent_class;
 
-     void (*value_changed) (PhatFanSlider* slider);
-     void (*changed)       (PhatFanSlider* slider);
+    void (*value_changed) (PhatFanSlider* slider);
+    void (*changed)       (PhatFanSlider* slider);
 };
 
 GType phat_fan_slider_get_type ( );
@@ -62,13 +62,13 @@ gboolean phat_fan_slider_is_log (PhatFanSlider* slider);
 double phat_fan_slider_get_value (PhatFanSlider* slider);
 
 void phat_fan_slider_set_range (PhatFanSlider* slider,
-			       double lower, double upper);
+                                double lower, double upper);
 
 void phat_fan_slider_get_range (PhatFanSlider* slider,
-			       double* lower, double* upper);
+                                double* lower, double* upper);
 
 void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
-				    GtkAdjustment* adjustment);
+                                     GtkAdjustment* adjustment);
 
 GtkAdjustment* phat_fan_slider_get_adjustment (PhatFanSlider* slider);
 

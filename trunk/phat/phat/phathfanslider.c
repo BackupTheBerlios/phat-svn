@@ -11,30 +11,30 @@ static void phat_hfan_slider_destroy (GtkObject* object);
 
 GType phat_hfan_slider_get_type ( )
 {
-     static GType type = 0;
+    static GType type = 0;
 
-     if (!type)
-     {
-	  static const GTypeInfo info =
-	       {
-		    sizeof (PhatHFanSliderClass),
-		    NULL,
-		    NULL,
-		    (GClassInitFunc) phat_hfan_slider_class_init,
-		    NULL,
-		    NULL,
-		    sizeof (PhatHFanSlider),
-		    0,
-		    (GInstanceInitFunc) phat_hfan_slider_init,
-	       };
+    if (!type)
+    {
+        static const GTypeInfo info =
+            {
+                sizeof (PhatHFanSliderClass),
+                NULL,
+                NULL,
+                (GClassInitFunc) phat_hfan_slider_class_init,
+                NULL,
+                NULL,
+                sizeof (PhatHFanSlider),
+                0,
+                (GInstanceInitFunc) phat_hfan_slider_init,
+            };
 
-	  type = g_type_register_static (PHAT_TYPE_FAN_SLIDER,
-					 "PhatHFanSlider",
-					 &info,
-					 0);
-     }
+        type = g_type_register_static (PHAT_TYPE_FAN_SLIDER,
+                                       "PhatHFanSlider",
+                                       &info,
+                                       0);
+    }
 
-     return type;
+    return type;
 }
 
 /**
@@ -48,21 +48,21 @@ GType phat_hfan_slider_get_type ( )
  */
 GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
 {
-     PhatHFanSlider* slider;
+    PhatHFanSlider* slider;
 
-     g_assert (adjustment->lower < adjustment->upper);
-     g_assert ((adjustment->value >= adjustment->lower)
-	       && (adjustment->value <= adjustment->upper));
+    g_assert (adjustment->lower < adjustment->upper);
+    g_assert ((adjustment->value >= adjustment->lower)
+              && (adjustment->value <= adjustment->upper));
 
-     slider = g_object_new (PHAT_TYPE_HFAN_SLIDER, NULL);
+    slider = g_object_new (PHAT_TYPE_HFAN_SLIDER, NULL);
 
-     PHAT_FAN_SLIDER (slider)->orientation = GTK_ORIENTATION_HORIZONTAL;
+    PHAT_FAN_SLIDER (slider)->orientation = GTK_ORIENTATION_HORIZONTAL;
 
-     phat_fan_slider_set_adjustment (PHAT_FAN_SLIDER (slider), adjustment);
+    phat_fan_slider_set_adjustment (PHAT_FAN_SLIDER (slider), adjustment);
 
-     phat_fan_slider_set_value(PHAT_FAN_SLIDER (slider), adjustment->value);
+    phat_fan_slider_set_value(PHAT_FAN_SLIDER (slider), adjustment->value);
 
-     return (GtkWidget*) slider;
+    return (GtkWidget*) slider;
 }
      
 /**
@@ -80,38 +80,38 @@ GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
  *
  */
 GtkWidget* phat_hfan_slider_new_with_range (double value, double lower,
-					    double upper, double step)
+                                            double upper, double step)
 {
-     GtkAdjustment* adj;
+    GtkAdjustment* adj;
 
-     adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
+    adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
      
-     return phat_hfan_slider_new (adj);
+    return phat_hfan_slider_new (adj);
 }
 
 static void phat_hfan_slider_class_init (PhatHFanSliderClass* klass)
 {
-     GtkObjectClass* object_class = (GtkObjectClass*) klass;
+    GtkObjectClass* object_class = (GtkObjectClass*) klass;
 
-     parent_class = gtk_type_class (PHAT_TYPE_FAN_SLIDER);
+    parent_class = gtk_type_class (PHAT_TYPE_FAN_SLIDER);
 
-     object_class->destroy = phat_hfan_slider_destroy;
+    object_class->destroy = phat_hfan_slider_destroy;
 }
 
 static void phat_hfan_slider_init (PhatHFanSlider* slider)
 {
-     return;
+    return;
 }
 
 static void phat_hfan_slider_destroy (GtkObject* object)
 {
-     GtkObjectClass* klass;
+    GtkObjectClass* klass;
      
-     g_return_if_fail (object != NULL);
-     g_return_if_fail (PHAT_IS_HFAN_SLIDER (object));
+    g_return_if_fail (object != NULL);
+    g_return_if_fail (PHAT_IS_HFAN_SLIDER (object));
 
-     klass = GTK_OBJECT_CLASS (parent_class);
+    klass = GTK_OBJECT_CLASS (parent_class);
 
-     if (klass->destroy)
-	  klass->destroy (object);
+    if (klass->destroy)
+        klass->destroy (object);
 }

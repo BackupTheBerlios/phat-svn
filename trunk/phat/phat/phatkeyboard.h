@@ -27,11 +27,11 @@ enum
 struct __Key
 {
     int index;
-    PhatKeyboard* keyboard;	/* the keyboard we belong to */
-    GnomeCanvasGroup* group;	/* the group this key belongs to */
-    GnomeCanvasItem* pre;	/* prelight rectangle */
-    GnomeCanvasItem* on;	/* active (depressed) rectangle */
-    GnomeCanvasItem* shad;	/* active shadow */
+    PhatKeyboard* keyboard;     /* the keyboard we belong to */
+    GnomeCanvasGroup* group;    /* the group this key belongs to */
+    GnomeCanvasItem* pre;       /* prelight rectangle */
+    GnomeCanvasItem* on;        /* active (depressed) rectangle */
+    GnomeCanvasItem* shad;      /* active shadow */
 };
 
 struct _PhatKeyboard

@@ -51,35 +51,35 @@ static void phat_slider_button_unrealize                (GtkWidget* widget);
 static void phat_slider_button_map                      (GtkWidget* widget);
 static void phat_slider_button_unmap                    (GtkWidget* widget);
 static void phat_slider_button_size_allocate            (GtkWidget* widget,
-							 GtkAllocation* allocation);
+                                                         GtkAllocation* allocation);
 static gboolean phat_slider_button_expose               (GtkWidget* widget,
-							 GdkEventExpose* event);
+                                                         GdkEventExpose* event);
 static void phat_slider_button_adjustment_changed       (GtkAdjustment* adjustment,
-							 PhatSliderButton* button);
+                                                         PhatSliderButton* button);
 static void phat_slider_button_adjustment_value_changed (GtkAdjustment* adjustment,
-							 PhatSliderButton* button);
+                                                         PhatSliderButton* button);
 static void phat_slider_button_entry_activate           (GtkEntry* widget,
-							 PhatSliderButton* button);
+                                                         PhatSliderButton* button);
 static gboolean phat_slider_button_entry_focus_out      (GtkEntry* entry,
-							 GdkEventFocus* event,
-							 PhatSliderButton* button);
+                                                         GdkEventFocus* event,
+                                                         PhatSliderButton* button);
 static gboolean phat_slider_button_entry_key_press      (GtkEntry* entry,
-							 GdkEventKey* event,
-							 PhatSliderButton* button);
+                                                         GdkEventKey* event,
+                                                         PhatSliderButton* button);
 static gboolean phat_slider_button_button_press         (GtkWidget* widget,
-							 GdkEventButton* event);
+                                                         GdkEventButton* event);
 static gboolean phat_slider_button_button_release       (GtkWidget* widget,
-							 GdkEventButton* event);
+                                                         GdkEventButton* event);
 static gboolean phat_slider_button_key_press            (GtkWidget* widget,
-							 GdkEventKey* event);
+                                                         GdkEventKey* event);
 static gboolean phat_slider_button_scroll               (GtkWidget* widget,
-							 GdkEventScroll* event);
+                                                         GdkEventScroll* event);
 static gboolean phat_slider_button_enter_notify         (GtkWidget* widget,
-							 GdkEventCrossing* event);
+                                                         GdkEventCrossing* event);
 static gboolean phat_slider_button_leave_notify         (GtkWidget* widget,
-							 GdkEventCrossing* event);
+                                                         GdkEventCrossing* event);
 static gboolean phat_slider_button_motion_notify        (GtkWidget* widget,
-							 GdkEventMotion* event);
+                                                         GdkEventMotion* event);
 
 /* internal utility functions */
 static int check_pointer (PhatSliderButton* button, int x, int y);
@@ -96,23 +96,23 @@ GType phat_slider_button_get_type ( )
 
     if (!type)
     {
-	static const GTypeInfo info =
-	    {
-		sizeof (PhatSliderButtonClass),
-		NULL,
-		NULL,
-		(GClassInitFunc) phat_slider_button_class_init,
-		NULL,
-		NULL,
-		sizeof (PhatSliderButton),
-		0,
-		(GInstanceInitFunc) phat_slider_button_init,
-	    };
+        static const GTypeInfo info =
+            {
+                sizeof (PhatSliderButtonClass),
+                NULL,
+                NULL,
+                (GClassInitFunc) phat_slider_button_class_init,
+                NULL,
+                NULL,
+                sizeof (PhatSliderButton),
+                0,
+                (GInstanceInitFunc) phat_slider_button_init,
+            };
 
-	type = g_type_register_static (GTK_TYPE_HBOX,
-				       "PhatSliderButton",
-				       &info,
-				       0);
+        type = g_type_register_static (GTK_TYPE_HBOX,
+                                       "PhatSliderButton",
+                                       &info,
+                                       0);
     }
 
     return type;
@@ -131,7 +131,7 @@ GType phat_slider_button_get_type ( )
  * 
  */
 GtkWidget* phat_slider_button_new (GtkAdjustment* adjustment,
-				   int            digits)
+                                   int            digits)
 {
     PhatSliderButton* button;
 
@@ -139,14 +139,14 @@ GtkWidget* phat_slider_button_new (GtkAdjustment* adjustment,
      
     g_assert (adjustment->lower <= adjustment->upper);
     g_assert ((adjustment->value >= adjustment->lower)
-	      && (adjustment->value <= adjustment->upper));
+              && (adjustment->value <= adjustment->upper));
 
     button = g_object_new (PHAT_TYPE_SLIDER_BUTTON, NULL);
 
     button->digits = (digits >= 0)? digits: DIGITS;
 
     if (button->digits > MAXDIGITS)
-	button->digits = MAXDIGITS;
+        button->digits = MAXDIGITS;
     
 
     phat_slider_button_set_adjustment (button, adjustment);
@@ -173,8 +173,8 @@ GtkWidget* phat_slider_button_new (GtkAdjustment* adjustment,
  *
  */
 GtkWidget* phat_slider_button_new_with_range (double value, double lower,
-					      double upper, double step,
-					      int    digits)
+                                              double upper, double step,
+                                              int    digits)
 {
     GtkAdjustment* adj;
 
@@ -196,25 +196,25 @@ GtkWidget* phat_slider_button_new_with_range (double value, double lower,
  *
  */
 void phat_slider_button_set_adjustment (PhatSliderButton* button,
-					GtkAdjustment* adjustment)
+                                        GtkAdjustment* adjustment)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
     g_return_if_fail (button->adjustment != adjustment);
 
     if (!adjustment)
-	adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, -1.0, 1.0, 1.0, 1.0, 0.0);
+        adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, -1.0, 1.0, 1.0, 1.0, 0.0);
     else
-	g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
+        g_return_if_fail (GTK_IS_ADJUSTMENT (adjustment));
 
     if (button->adjustment)
     {
-	g_signal_handlers_disconnect_by_func (button->adjustment,
-					      phat_slider_button_adjustment_changed,
-					      (gpointer) button);
-	g_signal_handlers_disconnect_by_func (button->adjustment,
-					      phat_slider_button_adjustment_value_changed,
-					      (gpointer) button);
-	g_object_unref (button->adjustment);
+        g_signal_handlers_disconnect_by_func (button->adjustment,
+                                              phat_slider_button_adjustment_changed,
+                                              (gpointer) button);
+        g_signal_handlers_disconnect_by_func (button->adjustment,
+                                              phat_slider_button_adjustment_value_changed,
+                                              (gpointer) button);
+        g_object_unref (button->adjustment);
     }
 
     button->adjustment = adjustment;
@@ -222,11 +222,11 @@ void phat_slider_button_set_adjustment (PhatSliderButton* button,
     gtk_object_sink (GTK_OBJECT (adjustment));
 
     g_signal_connect (adjustment, "changed",
-		      G_CALLBACK (phat_slider_button_adjustment_changed),
-		      (gpointer) button);
+                      G_CALLBACK (phat_slider_button_adjustment_changed),
+                      (gpointer) button);
     g_signal_connect (adjustment, "value_changed",
-		      G_CALLBACK (phat_slider_button_adjustment_value_changed),
-		      (gpointer) button);
+                      G_CALLBACK (phat_slider_button_adjustment_value_changed),
+                      (gpointer) button);
 
     phat_slider_button_adjustment_changed (adjustment, button);
     phat_slider_button_adjustment_value_changed (adjustment, button);
@@ -247,7 +247,7 @@ GtkAdjustment* phat_slider_button_get_adjustment (PhatSliderButton* button)
     g_return_val_if_fail (PHAT_IS_SLIDER_BUTTON (button), NULL);
 
     if (!button->adjustment)
-	phat_slider_button_set_adjustment (button, NULL);
+        phat_slider_button_set_adjustment (button, NULL);
 
     return button->adjustment;
 }
@@ -269,8 +269,8 @@ void phat_slider_button_set_value (PhatSliderButton* button, double value)
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
     value = CLAMP (value,
-		   button->adjustment->lower,
-		   button->adjustment->upper);
+                   button->adjustment->lower,
+                   button->adjustment->upper);
 
     gtk_adjustment_set_value (button->adjustment, value);
 }
@@ -305,7 +305,7 @@ double phat_slider_button_get_value (PhatSliderButton* button)
  * button's current value to be between @lower and @upper.
  */
 void phat_slider_button_set_range (PhatSliderButton* button,
-				   double lower, double upper)
+                                   double lower, double upper)
 {
     double value;
      
@@ -316,8 +316,8 @@ void phat_slider_button_set_range (PhatSliderButton* button,
     button->adjustment->upper = upper;
 
     value = CLAMP (button->adjustment->value,
-		   button->adjustment->lower,
-		   button->adjustment->upper);
+                   button->adjustment->lower,
+                   button->adjustment->upper);
      
     gtk_adjustment_changed (button->adjustment);
     gtk_adjustment_set_value (button->adjustment, value);
@@ -337,14 +337,14 @@ void phat_slider_button_set_range (PhatSliderButton* button,
  *
  */
 void phat_slider_button_get_range (PhatSliderButton* button,
-				   double* lower, double* upper)
+                                   double* lower, double* upper)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
     if (lower)
-	*lower = button->adjustment->lower;
+        *lower = button->adjustment->lower;
     if (upper)
-	*upper = button->adjustment->upper;
+        *upper = button->adjustment->upper;
 }
 
 
@@ -359,7 +359,7 @@ void phat_slider_button_get_range (PhatSliderButton* button,
  *
  */
 void phat_slider_button_set_increment (PhatSliderButton* button,
-				       double step, double page)
+                                       double step, double page)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
@@ -381,14 +381,14 @@ void phat_slider_button_set_increment (PhatSliderButton* button,
  *
  */
 void phat_slider_button_get_increment (PhatSliderButton* button,
-				       double* step, double* page)
+                                       double* step, double* page)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
     if (step)
-	*step = button->adjustment->step_increment;
+        *step = button->adjustment->step_increment;
     if (page)
-	*page = button->adjustment->page_increment;
+        *page = button->adjustment->page_increment;
 }
 
 
@@ -408,46 +408,46 @@ void phat_slider_button_get_increment (PhatSliderButton* button,
  *
  */
 void phat_slider_button_set_format (PhatSliderButton* button,
-				    int         digits,
-				    const char* prefix,
-				    const char* postfix)
+                                    int         digits,
+                                    const char* prefix,
+                                    const char* postfix)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
     if (digits >= 0)
     {
-	button->digits = digits;
+        button->digits = digits;
 
-	if (button->digits > MAXDIGITS)
-	    button->digits = MAXDIGITS;
+        if (button->digits > MAXDIGITS)
+            button->digits = MAXDIGITS;
     }
 
     if (prefix)
     {
-	g_free (button->prefix);
+        g_free (button->prefix);
 
-	if (*prefix == '\0')
-	{
-	    button->prefix = NULL;
-	}
-	else
-	{
-	    button->prefix = g_strdup (prefix);
-	}
+        if (*prefix == '\0')
+        {
+            button->prefix = NULL;
+        }
+        else
+        {
+            button->prefix = g_strdup (prefix);
+        }
     }
 
     if (postfix)
     {
-	g_free (button->postfix);
+        g_free (button->postfix);
 
-	if (*postfix == '\0')
-	{
-	    button->postfix = NULL;
-	}
-	else
-	{
-	    button->postfix = g_strdup (postfix);
-	}
+        if (*postfix == '\0')
+        {
+            button->postfix = NULL;
+        }
+        else
+        {
+            button->postfix = g_strdup (postfix);
+        }
     }
 
     update_size (button);
@@ -470,20 +470,20 @@ void phat_slider_button_set_format (PhatSliderButton* button,
  * 
  */
 void phat_slider_button_get_format (PhatSliderButton* button,
-				    int*   digits,
-				    char** prefix,
-				    char** postfix)
+                                    int*   digits,
+                                    char** prefix,
+                                    char** postfix)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
     if (digits)
-	*digits = button->digits;
+        *digits = button->digits;
 
     if (prefix)
-	*prefix = button->prefix;
+        *prefix = button->prefix;
 
     if (postfix)
-	*postfix = button->postfix;
+        *postfix = button->postfix;
 }
 
 
@@ -497,7 +497,7 @@ void phat_slider_button_get_format (PhatSliderButton* button,
  * 
  */
 void phat_slider_button_set_threshold (PhatSliderButton* button,
-				       guint threshold)
+                                       guint threshold)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
     g_return_if_fail (threshold != 0);
@@ -557,12 +557,12 @@ static void phat_slider_button_class_init (PhatSliderButtonClass* klass)
      *
      */
     signals[VALUE_CHANGED_SIGNAL] =
-	g_signal_new ("value-changed",
-		      G_TYPE_FROM_CLASS (klass),
-		      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-		      G_STRUCT_OFFSET (PhatSliderButtonClass, value_changed),
-		      NULL, NULL,
-		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+        g_signal_new ("value-changed",
+                      G_TYPE_FROM_CLASS (klass),
+                      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                      G_STRUCT_OFFSET (PhatSliderButtonClass, value_changed),
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
     /**
      * PhatSliderButton::changed:
@@ -573,12 +573,12 @@ static void phat_slider_button_class_init (PhatSliderButtonClass* klass)
      *
      */
     signals[CHANGED_SIGNAL] =
-	g_signal_new ("changed",
-		      G_TYPE_FROM_CLASS (klass),
-		      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-		      G_STRUCT_OFFSET (PhatSliderButtonClass, changed),
-		      NULL, NULL,
-		      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+        g_signal_new ("changed",
+                      G_TYPE_FROM_CLASS (klass),
+                      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+                      G_STRUCT_OFFSET (PhatSliderButtonClass, changed),
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
      
     klass->value_changed = NULL;
@@ -632,13 +632,13 @@ static void phat_slider_button_init (PhatSliderButton* button)
     gtk_box_pack_start (box, button->right_arrow, FALSE, FALSE, 0);
 
     gtk_widget_style_get (widget,
-			  "focus-line-width", &focus_width,
-			  "focus-padding", &focus_pad,
-			  NULL);
+                          "focus-line-width", &focus_width,
+                          "focus-padding", &focus_pad,
+                          NULL);
     gtk_container_set_border_width (container,
-				    MAX (MAX (widget->style->xthickness,
-					      widget->style->ythickness),
-					 focus_width + focus_pad));
+                                    MAX (MAX (widget->style->xthickness,
+                                              widget->style->ythickness),
+                                         focus_width + focus_pad));
 
     gtk_entry_set_has_frame (GTK_ENTRY (button->entry), FALSE);
 
@@ -647,11 +647,11 @@ static void phat_slider_button_init (PhatSliderButton* button)
 #endif
      
     g_signal_connect (G_OBJECT (button->entry), "activate",
-		      G_CALLBACK (phat_slider_button_entry_activate), (gpointer) button);
+                      G_CALLBACK (phat_slider_button_entry_activate), (gpointer) button);
     g_signal_connect (G_OBJECT (button->entry), "focus-out-event",
-		      G_CALLBACK (phat_slider_button_entry_focus_out), (gpointer) button);
+                      G_CALLBACK (phat_slider_button_entry_focus_out), (gpointer) button);
     g_signal_connect (G_OBJECT (button->entry), "key-press-event",
-		      G_CALLBACK (phat_slider_button_entry_key_press), (gpointer) button);
+                      G_CALLBACK (phat_slider_button_entry_key_press), (gpointer) button);
 
     gtk_misc_set_alignment (GTK_MISC (button->left_arrow), 0.5, 0.5);
     gtk_misc_set_alignment (GTK_MISC (button->right_arrow), 0.5, 0.5);
@@ -677,85 +677,85 @@ static void phat_slider_button_destroy (GtkObject* object)
 
     if (button->arrow_cursor)
     {
-	gdk_cursor_unref (button->arrow_cursor);
-	button->arrow_cursor = NULL;
+        gdk_cursor_unref (button->arrow_cursor);
+        button->arrow_cursor = NULL;
     }
 
     if (button->empty_cursor)
     {
-	gdk_cursor_unref (button->empty_cursor);
-	button->empty_cursor = NULL;
+        gdk_cursor_unref (button->empty_cursor);
+        button->empty_cursor = NULL;
     }
 
     if (button->event_window)
     {
-	gdk_window_set_user_data (button->event_window, NULL);
-	gdk_window_destroy (button->event_window);
-	button->event_window = NULL;
+        gdk_window_set_user_data (button->event_window, NULL);
+        gdk_window_destroy (button->event_window);
+        button->event_window = NULL;
     }
 
     if (button->left_arrow)
     {
-	gtk_widget_destroy (button->left_arrow);
-	button->left_arrow = NULL;
+        gtk_widget_destroy (button->left_arrow);
+        button->left_arrow = NULL;
     }
 
     if (button->right_arrow)
     {
-	gtk_widget_destroy (button->right_arrow);
-	button->right_arrow = NULL;
+        gtk_widget_destroy (button->right_arrow);
+        button->right_arrow = NULL;
     }
      
     if (button->label)
     {
-	gtk_widget_destroy (button->label);
-	button->label = NULL;
+        gtk_widget_destroy (button->label);
+        button->label = NULL;
     }
 
     if (button->prefix_label)
     {
-	gtk_widget_destroy (button->prefix_label);
-	button->prefix_label = NULL;
+        gtk_widget_destroy (button->prefix_label);
+        button->prefix_label = NULL;
     }
 
     if (button->postfix_label)
     {
-	gtk_widget_destroy (button->postfix_label);
-	button->postfix_label = NULL;
+        gtk_widget_destroy (button->postfix_label);
+        button->postfix_label = NULL;
     }
 
     if (button->entry)
     {
-	gtk_widget_destroy (button->entry);
-	button->entry = NULL;
+        gtk_widget_destroy (button->entry);
+        button->entry = NULL;
     }
 
     if (button->adjustment)
     {
-	g_signal_handlers_disconnect_by_func (button->adjustment,
-					      phat_slider_button_adjustment_changed,
-					      (gpointer) button);
-	g_signal_handlers_disconnect_by_func (button->adjustment,
-					      phat_slider_button_adjustment_value_changed,
-					      (gpointer) button);
-	g_object_unref (button->adjustment);
-	button->adjustment = NULL;
+        g_signal_handlers_disconnect_by_func (button->adjustment,
+                                              phat_slider_button_adjustment_changed,
+                                              (gpointer) button);
+        g_signal_handlers_disconnect_by_func (button->adjustment,
+                                              phat_slider_button_adjustment_value_changed,
+                                              (gpointer) button);
+        g_object_unref (button->adjustment);
+        button->adjustment = NULL;
     }
 
     if (button->prefix)
     {
-	g_free (button->prefix);
-	button->prefix = NULL;
+        g_free (button->prefix);
+        button->prefix = NULL;
     }
 
     if (button->postfix)
     {
-	g_free (button->postfix);
-	button->postfix = NULL;
+        g_free (button->postfix);
+        button->postfix = NULL;
     }
      
     if (klass->destroy)
-	klass->destroy (object);
+        klass->destroy (object);
 }
 
 
@@ -776,19 +776,19 @@ static void phat_slider_button_realize (GtkWidget* widget)
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (widget));
 
     if (klass->realize)
-	klass->realize (widget);
+        klass->realize (widget);
 
     attributes.window_type = GDK_WINDOW_CHILD;
     attributes.wclass      = GDK_INPUT_ONLY;
     attributes.event_mask  = gtk_widget_get_events (widget);
     attributes.event_mask |= (GDK_BUTTON_PRESS_MASK
-			      | GDK_BUTTON_RELEASE_MASK
-			      | GDK_POINTER_MOTION_MASK
-			      | GDK_POINTER_MOTION_HINT_MASK
-			      | GDK_ENTER_NOTIFY_MASK
-			      | GDK_LEAVE_NOTIFY_MASK
-			      | GDK_SCROLL_MASK
-			      | GDK_KEY_PRESS_MASK);
+                              | GDK_BUTTON_RELEASE_MASK
+                              | GDK_POINTER_MOTION_MASK
+                              | GDK_POINTER_MOTION_HINT_MASK
+                              | GDK_ENTER_NOTIFY_MASK
+                              | GDK_LEAVE_NOTIFY_MASK
+                              | GDK_SCROLL_MASK
+                              | GDK_KEY_PRESS_MASK);
     attributes.x = widget->allocation.x;
     attributes.y = widget->allocation.y;
     attributes.width = widget->allocation.width;
@@ -796,15 +796,15 @@ static void phat_slider_button_realize (GtkWidget* widget)
     attributes_mask = GDK_WA_X | GDK_WA_Y;
 
     button->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
-					   &attributes, attributes_mask);
+                                           &attributes, attributes_mask);
     gdk_window_set_user_data (button->event_window, widget);
 
-	  
+          
     pixmap = gdk_bitmap_create_from_data (NULL, &data, 1, 1);
     button->arrow_cursor = gdk_cursor_new (GDK_SB_H_DOUBLE_ARROW);
     button->empty_cursor = gdk_cursor_new_from_pixmap (pixmap, pixmap,
-						       &color,	&color,
-						       0, 0);
+                                                       &color,  &color,
+                                                       0, 0);
     gdk_pixmap_unref (pixmap);
 }
 
@@ -828,7 +828,7 @@ static void phat_slider_button_unrealize (GtkWidget *widget)
     button->event_window = NULL;
      
     if (klass->unrealize)
-	klass->unrealize (widget);
+        klass->unrealize (widget);
 }
 
 
@@ -847,9 +847,9 @@ static void phat_slider_button_map (GtkWidget *widget)
     gdk_window_show (button->event_window);
      
     if (button->prefix_label)
-	gtk_widget_show (button->prefix_label);
+        gtk_widget_show (button->prefix_label);
     if (button->postfix_label)
-	gtk_widget_show (button->postfix_label);
+        gtk_widget_show (button->postfix_label);
 
     GTK_WIDGET_CLASS (parent_class)->map (widget);
 
@@ -872,16 +872,16 @@ static void phat_slider_button_unmap (GtkWidget *widget)
     gdk_window_hide (button->event_window);
      
     if (button->prefix_label)
-	gtk_widget_hide (button->prefix_label);
+        gtk_widget_hide (button->prefix_label);
     if (button->postfix_label)
-	gtk_widget_hide (button->postfix_label);
+        gtk_widget_hide (button->postfix_label);
      
     GTK_WIDGET_CLASS (parent_class)->unmap (widget);
 }
 
 
 static void phat_slider_button_size_allocate (GtkWidget* widget,
-					      GtkAllocation* allocation)
+                                              GtkAllocation* allocation)
 {
     g_return_if_fail (widget != NULL);
     g_return_if_fail (allocation != NULL);
@@ -893,26 +893,26 @@ static void phat_slider_button_size_allocate (GtkWidget* widget,
 
     if (GTK_WIDGET_REALIZED (widget))
     {
-	gdk_window_move_resize (PHAT_SLIDER_BUTTON (widget)->event_window,
-				allocation->x,
-				allocation->y,
-				allocation->width,
-				allocation->height);
-	//make sure entry is hidden at start
-	if(PHAT_SLIDER_BUTTON (widget)->firstrun)
-	{
-	    gtk_widget_hide (PHAT_SLIDER_BUTTON (widget)->entry);
-	    PHAT_SLIDER_BUTTON (widget)->firstrun = 0;
-	}
+        gdk_window_move_resize (PHAT_SLIDER_BUTTON (widget)->event_window,
+                                allocation->x,
+                                allocation->y,
+                                allocation->width,
+                                allocation->height);
+        //make sure entry is hidden at start
+        if(PHAT_SLIDER_BUTTON (widget)->firstrun)
+        {
+            gtk_widget_hide (PHAT_SLIDER_BUTTON (widget)->entry);
+            PHAT_SLIDER_BUTTON (widget)->firstrun = 0;
+        }
     }
 }
 
 static gboolean phat_slider_button_expose (GtkWidget*      widget,
-					   GdkEventExpose* event)
+                                           GdkEventExpose* event)
 {
     PhatSliderButton* button;
     GtkAllocation* a;
-    int p;			/* pad */
+    int p;                      /* pad */
      
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_SLIDER_BUTTON (widget), FALSE);
@@ -929,126 +929,126 @@ static gboolean phat_slider_button_expose (GtkWidget*      widget,
 
     /* clear the box */
     gtk_paint_box (widget->style,
-		   widget->window,
-		   GTK_STATE_NORMAL,
-		   GTK_SHADOW_NONE,
-		   NULL,
-		   widget,
-		   NULL,	/* if this is "buttondefault" the
-				 * smooth engine crashes */
-		   a->x, a->y, a->width, a->height);
+                   widget->window,
+                   GTK_STATE_NORMAL,
+                   GTK_SHADOW_NONE,
+                   NULL,
+                   widget,
+                   NULL,        /* if this is "buttondefault" the
+                                 * smooth engine crashes */
+                   a->x, a->y, a->width, a->height);
 
     /* paint any applicable hilites */
     if (button->state == STATE_NORMAL)
     {
-	if (button->hilite == LEFT_ARROW)
-	{
-	    GtkAllocation* b = &button->left_arrow->allocation;
-	  
-	    gtk_paint_box (widget->style,
-			   widget->window,
-			   GTK_STATE_PRELIGHT,
-			   GTK_SHADOW_NONE,
-			   NULL,
-			   widget,
-			   "button",
-			   a->x,
-			   a->y,
-			   b->width + p,
-			   a->height);
-	}
-	else if (button->hilite == RIGHT_ARROW)
-	{
-	    int offset;
-	    int width;
+        if (button->hilite == LEFT_ARROW)
+        {
+            GtkAllocation* b = &button->left_arrow->allocation;
+          
+            gtk_paint_box (widget->style,
+                           widget->window,
+                           GTK_STATE_PRELIGHT,
+                           GTK_SHADOW_NONE,
+                           NULL,
+                           widget,
+                           "button",
+                           a->x,
+                           a->y,
+                           b->width + p,
+                           a->height);
+        }
+        else if (button->hilite == RIGHT_ARROW)
+        {
+            int offset;
+            int width;
 
-	    offset = (a->x + button->left_arrow->allocation.width
-		      + button->label->allocation.width + p);
+            offset = (a->x + button->left_arrow->allocation.width
+                      + button->label->allocation.width + p);
 
-	    width = a->x + a->width - offset;
-	       
-	    if (button->prefix_label)
-		offset += button->prefix_label->allocation.width;
-	    if (button->postfix_label)
-		offset += button->postfix_label->allocation.width;
-	       
-	    gtk_paint_box (widget->style,
-			   widget->window,
-			   GTK_STATE_PRELIGHT,
-			   GTK_SHADOW_NONE,
-			   NULL,
-			   widget,
-			   "button",
-			   offset,
-			   a->y,
-			   width,
-			   a->height);
-	}
-	else if (button->hilite == LABEL)
-	{
-	    int offset;
-	    int width;
+            width = a->x + a->width - offset;
+               
+            if (button->prefix_label)
+                offset += button->prefix_label->allocation.width;
+            if (button->postfix_label)
+                offset += button->postfix_label->allocation.width;
+               
+            gtk_paint_box (widget->style,
+                           widget->window,
+                           GTK_STATE_PRELIGHT,
+                           GTK_SHADOW_NONE,
+                           NULL,
+                           widget,
+                           "button",
+                           offset,
+                           a->y,
+                           width,
+                           a->height);
+        }
+        else if (button->hilite == LABEL)
+        {
+            int offset;
+            int width;
 
-	    offset = a->x + button->left_arrow->allocation.width + p;
+            offset = a->x + button->left_arrow->allocation.width + p;
 
-	    width = button->label->allocation.width;
-	       
-	    if (button->prefix_label)
-		width += button->prefix_label->allocation.width;
-	    if (button->postfix_label)
-		width += button->postfix_label->allocation.width;
+            width = button->label->allocation.width;
+               
+            if (button->prefix_label)
+                width += button->prefix_label->allocation.width;
+            if (button->postfix_label)
+                width += button->postfix_label->allocation.width;
 
-	    gtk_paint_box (widget->style,
-			   widget->window,
-			   GTK_STATE_PRELIGHT,
-			   GTK_SHADOW_NONE,
-			   NULL,
-			   widget,
-			   "button",
-			   offset,
-			   a->y,
-			   width,
-			   a->height);
-	}
+            gtk_paint_box (widget->style,
+                           widget->window,
+                           GTK_STATE_PRELIGHT,
+                           GTK_SHADOW_NONE,
+                           NULL,
+                           widget,
+                           "button",
+                           offset,
+                           a->y,
+                           width,
+                           a->height);
+        }
     }
      
     /* paint our border */
     gtk_paint_shadow (widget->style,
-		      widget->window,
-		      GTK_STATE_NORMAL,
-		      GTK_SHADOW_OUT,
-		      NULL,
-		      widget,
-		      "buttondefault",
-		      a->x, a->y, a->width, a->height);
+                      widget->window,
+                      GTK_STATE_NORMAL,
+                      GTK_SHADOW_OUT,
+                      NULL,
+                      widget,
+                      "buttondefault",
+                      a->x, a->y, a->width, a->height);
     gtk_paint_shadow (widget->style,
-		      widget->window,
-		      GTK_STATE_NORMAL,
-		      GTK_SHADOW_OUT,
-		      NULL,
-		      widget,
-		      "button",
-		      a->x, a->y, a->width, a->height);
+                      widget->window,
+                      GTK_STATE_NORMAL,
+                      GTK_SHADOW_OUT,
+                      NULL,
+                      widget,
+                      "button",
+                      a->x, a->y, a->width, a->height);
 
     /* paint the focus if we have it */
     if (GTK_WIDGET_HAS_FOCUS (widget))
     {
-	int x, y;
-	int width, height;
+        int x, y;
+        int width, height;
 
-	x = widget->allocation.x;
-	y = widget->allocation.y;
-	width = widget->allocation.width;
-	height = widget->allocation.height;
-	  
-	x += p;
-	y += p;
-	width -= 2*p;
-	height -= 2*p;
+        x = widget->allocation.x;
+        y = widget->allocation.y;
+        width = widget->allocation.width;
+        height = widget->allocation.height;
+          
+        x += p;
+        y += p;
+        width -= 2*p;
+        height -= 2*p;
 
-	gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
-			 NULL, widget, "button",
-			 x, y, width, height);
+        gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
+                         NULL, widget, "button",
+                         x, y, width, height);
     } 
 
     GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
@@ -1059,7 +1059,7 @@ static gboolean phat_slider_button_expose (GtkWidget*      widget,
 
 
 static void phat_slider_button_adjustment_changed (GtkAdjustment* adjustment,
-						   PhatSliderButton* button)
+                                                   PhatSliderButton* button)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
@@ -1073,7 +1073,7 @@ static void phat_slider_button_adjustment_changed (GtkAdjustment* adjustment,
 
 
 static void phat_slider_button_adjustment_value_changed (GtkAdjustment* adjustment,
-							 PhatSliderButton* button)
+                                                         PhatSliderButton* button)
 {
     g_return_if_fail (PHAT_IS_SLIDER_BUTTON (button));
 
@@ -1086,7 +1086,7 @@ static void phat_slider_button_adjustment_value_changed (GtkAdjustment* adjustme
 
 
 static void phat_slider_button_entry_activate (GtkEntry* entry,
-					       PhatSliderButton* button)
+                                               PhatSliderButton* button)
 {
     double newval;
 
@@ -1105,8 +1105,8 @@ static void phat_slider_button_entry_activate (GtkEntry* entry,
 
 
 static gboolean phat_slider_button_entry_focus_out (GtkEntry* entry,
-						    GdkEventFocus* event,
-						    PhatSliderButton* button)
+                                                    GdkEventFocus* event,
+                                                    PhatSliderButton* button)
 {
     GtkWidget* widget = GTK_WIDGET (button);
     GtkWidget* toplevel;
@@ -1125,39 +1125,39 @@ static gboolean phat_slider_button_entry_focus_out (GtkEntry* entry,
     toplevel = gtk_widget_get_toplevel (widget);
     if (GTK_WIDGET_TOPLEVEL (toplevel))
     {
-	screen = gtk_window_get_screen (GTK_WINDOW (toplevel));
-	display = gdk_screen_get_display (screen);
-	curwindow = gdk_display_get_window_at_pointer (display, NULL, NULL);
+        screen = gtk_window_get_screen (GTK_WINDOW (toplevel));
+        display = gdk_screen_get_display (screen);
+        curwindow = gdk_display_get_window_at_pointer (display, NULL, NULL);
 
-	if (curwindow)
-	{
-	    curwindow = gdk_window_get_toplevel (curwindow);
-	    if (curwindow != toplevel->window)
-	    {
-		debug ("%p, %p\n", curwindow, toplevel->window);
-		gtk_widget_grab_focus (widget);
-	    }
-	}
-	else
-	{
-	    gtk_widget_grab_focus (widget);
-	}
+        if (curwindow)
+        {
+            curwindow = gdk_window_get_toplevel (curwindow);
+            if (curwindow != toplevel->window)
+            {
+                debug ("%p, %p\n", curwindow, toplevel->window);
+                gtk_widget_grab_focus (widget);
+            }
+        }
+        else
+        {
+            gtk_widget_grab_focus (widget);
+        }
     }
 
     return FALSE;
 }
 
-	  
+          
 static gboolean phat_slider_button_entry_key_press (GtkEntry* entry,
-						    GdkEventKey* event,
-						    PhatSliderButton* button)
+                                                    GdkEventKey* event,
+                                                    PhatSliderButton* button)
 {
     debug ("entry key press\n");
      
     if (event->keyval == GDK_Escape)
     {
-	entry_cancel (button);
-	gtk_widget_grab_focus (GTK_WIDGET (button));
+        entry_cancel (button);
+        gtk_widget_grab_focus (GTK_WIDGET (button));
     }
 
     return FALSE;
@@ -1165,68 +1165,68 @@ static gboolean phat_slider_button_entry_key_press (GtkEntry* entry,
 
 
 static gboolean phat_slider_button_button_press (GtkWidget* widget,
-						 GdkEventButton* event)
+                                                 GdkEventButton* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
 
     debug ("button press\n");
      
     if (event->type != GDK_BUTTON_PRESS)
-	return FALSE;
+        return FALSE;
 
     if(event->button == 1)
-    {	
-	switch (button->state)
-	{
-	case STATE_NORMAL:
-	    button->xpress = event->x;
-	    button->ypress = event->y;
-	    button->xpress_root = event->x_root;
-	    button->ypress_root = event->y_root;
-	    button->slid = FALSE;
-	 
-	    if (button->hilite == LEFT_ARROW)
-	    {
-		button->state = STATE_PRESSED;
-	 
-		gtk_adjustment_set_value (button->adjustment,
-					  (button->adjustment->value
-					   - button->adjustment->step_increment));
-	    }
-	    else if (button->hilite == RIGHT_ARROW)
-	    {
-		button->state = STATE_PRESSED;
-	 
-		gtk_adjustment_set_value (button->adjustment,
-					  (button->adjustment->value
-					   + button->adjustment->step_increment));
-	    }
-	    else
-	    {
-		button->state = STATE_SLIDE;
-	    }
-	    break;
-	case STATE_SCROLL:
-	    button->state = STATE_NORMAL;
-	    update_cursor (button);
-	    break;
-	case STATE_ENTRY:
-	    entry_cancel (button);
-	    button->state = STATE_NORMAL;
-	    update_cursor (button);
-	    break;
-	}
-	
-	update_cursor (button);
-	gtk_widget_grab_focus (widget);
-	gtk_widget_queue_draw (widget);
+    {   
+        switch (button->state)
+        {
+        case STATE_NORMAL:
+            button->xpress = event->x;
+            button->ypress = event->y;
+            button->xpress_root = event->x_root;
+            button->ypress_root = event->y_root;
+            button->slid = FALSE;
+         
+            if (button->hilite == LEFT_ARROW)
+            {
+                button->state = STATE_PRESSED;
+         
+                gtk_adjustment_set_value (button->adjustment,
+                                          (button->adjustment->value
+                                           - button->adjustment->step_increment));
+            }
+            else if (button->hilite == RIGHT_ARROW)
+            {
+                button->state = STATE_PRESSED;
+         
+                gtk_adjustment_set_value (button->adjustment,
+                                          (button->adjustment->value
+                                           + button->adjustment->step_increment));
+            }
+            else
+            {
+                button->state = STATE_SLIDE;
+            }
+            break;
+        case STATE_SCROLL:
+            button->state = STATE_NORMAL;
+            update_cursor (button);
+            break;
+        case STATE_ENTRY:
+            entry_cancel (button);
+            button->state = STATE_NORMAL;
+            update_cursor (button);
+            break;
+        }
+        
+        update_cursor (button);
+        gtk_widget_grab_focus (widget);
+        gtk_widget_queue_draw (widget);
     }
     return FALSE;
 }
-	  
+          
 
 static gboolean phat_slider_button_button_release (GtkWidget* widget,
-						   GdkEventButton* event)
+                                                   GdkEventButton* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     char* s;
@@ -1235,53 +1235,53 @@ static gboolean phat_slider_button_button_release (GtkWidget* widget,
     debug ("button release\n");
     /* react to left button only */
     if(event->button == 1)
-    {	
-	switch (button->state)
-	{
-	case STATE_SLIDE:
-	    if (!button->slid)
-	    {
-		button->state = STATE_ENTRY;
+    {   
+        switch (button->state)
+        {
+        case STATE_SLIDE:
+            if (!button->slid)
+            {
+                button->state = STATE_ENTRY;
 
-		s = value_to_string(button, button->adjustment->value);
+                s = value_to_string(button, button->adjustment->value);
 
-		for (t = s; *t == ' '; t++);
-		gtk_entry_set_text (GTK_ENTRY (button->entry), t);
-		g_free (s);
-		s = t = NULL;
-				  
-		gtk_widget_hide (button->label);
-		if (button->prefix_label)
-		    gtk_widget_hide (button->prefix_label);
-		if (button->postfix_label)
-		    gtk_widget_hide (button->postfix_label);
-		   
-		gtk_widget_show (button->entry);
+                for (t = s; *t == ' '; t++);
+                gtk_entry_set_text (GTK_ENTRY (button->entry), t);
+                g_free (s);
+                s = t = NULL;
+                                  
+                gtk_widget_hide (button->label);
+                if (button->prefix_label)
+                    gtk_widget_hide (button->prefix_label);
+                if (button->postfix_label)
+                    gtk_widget_hide (button->postfix_label);
+                   
+                gtk_widget_show (button->entry);
 
-		gtk_widget_grab_focus (button->entry);
-	    }
-	    else
-	    {
-		button->state = STATE_NORMAL;
-		phat_warp_pointer (event->x_root, event->y_root,
-				   button->xpress_root, button->ypress_root);
-		update_cursor (button);
-	    }
-	    break;
-	case STATE_PRESSED:
-	    button->state = STATE_NORMAL;
-	    update_cursor (button);
-	    break;
-	}
+                gtk_widget_grab_focus (button->entry);
+            }
+            else
+            {
+                button->state = STATE_NORMAL;
+                phat_warp_pointer (event->x_root, event->y_root,
+                                   button->xpress_root, button->ypress_root);
+                update_cursor (button);
+            }
+            break;
+        case STATE_PRESSED:
+            button->state = STATE_NORMAL;
+            update_cursor (button);
+            break;
+        }
 
-	gtk_widget_queue_draw (widget);
+        gtk_widget_queue_draw (widget);
     }
     return FALSE;
 }
 
 
 static gboolean phat_slider_button_key_press (GtkWidget* widget,
-					      GdkEventKey* event)
+                                              GdkEventKey* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     GtkAdjustment* adj = button->adjustment;
@@ -1291,34 +1291,34 @@ static gboolean phat_slider_button_key_press (GtkWidget* widget,
     switch (event->keyval)
     {
     case GDK_Up:
-	gtk_adjustment_set_value (adj, adj->value + adj->step_increment);
-	break;
+        gtk_adjustment_set_value (adj, adj->value + adj->step_increment);
+        break;
     case GDK_Down:
-	gtk_adjustment_set_value (adj, adj->value - adj->step_increment);
-	break;
+        gtk_adjustment_set_value (adj, adj->value - adj->step_increment);
+        break;
     case GDK_Page_Up:
-	gtk_adjustment_set_value (adj, adj->value + adj->page_increment);
-	break;
+        gtk_adjustment_set_value (adj, adj->value + adj->page_increment);
+        break;
     case GDK_Page_Down:
-	gtk_adjustment_set_value (adj, adj->value - adj->page_increment);
-	break;
+        gtk_adjustment_set_value (adj, adj->value - adj->page_increment);
+        break;
     default:
-	return FALSE;
+        return FALSE;
     }
 
     return TRUE;
 }
      
 static gboolean phat_slider_button_scroll (GtkWidget* widget,
-					   GdkEventScroll* event)
+                                           GdkEventScroll* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
 
     //debug ("scroll\n");
      
     if (button->state != STATE_NORMAL
-	&& button->state != STATE_SCROLL)
-	return FALSE;
+        && button->state != STATE_SCROLL)
+        return FALSE;
      
     button->state = STATE_SCROLL;
     update_cursor (button);
@@ -1329,17 +1329,17 @@ static gboolean phat_slider_button_scroll (GtkWidget* widget,
     button->ypress = event->y;
      
     if (event->direction == GDK_SCROLL_UP
-	|| event->direction == GDK_SCROLL_RIGHT)
+        || event->direction == GDK_SCROLL_RIGHT)
     {
-	gtk_adjustment_set_value (button->adjustment,
-				  (button->adjustment->value
-				   + button->adjustment->page_increment));
+        gtk_adjustment_set_value (button->adjustment,
+                                  (button->adjustment->value
+                                   + button->adjustment->page_increment));
     }
     else
     {
-	gtk_adjustment_set_value (button->adjustment,
-				  (button->adjustment->value
-				   - button->adjustment->page_increment));
+        gtk_adjustment_set_value (button->adjustment,
+                                  (button->adjustment->value
+                                   - button->adjustment->page_increment));
     }
 
     gtk_widget_grab_focus (widget);
@@ -1348,7 +1348,7 @@ static gboolean phat_slider_button_scroll (GtkWidget* widget,
 
 
 static gboolean phat_slider_button_enter_notify (GtkWidget* widget,
-						 GdkEventCrossing* event)
+                                                 GdkEventCrossing* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     int old = button->hilite;
@@ -1359,8 +1359,8 @@ static gboolean phat_slider_button_enter_notify (GtkWidget* widget,
 
     if (button->hilite != old)
     {
-	update_cursor (button);
-	gtk_widget_queue_draw (widget);
+        update_cursor (button);
+        gtk_widget_queue_draw (widget);
     }
      
     return FALSE;
@@ -1368,7 +1368,7 @@ static gboolean phat_slider_button_enter_notify (GtkWidget* widget,
 
 
 static gboolean phat_slider_button_leave_notify (GtkWidget* widget,
-						 GdkEventCrossing* event)
+                                                 GdkEventCrossing* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
 
@@ -1376,7 +1376,7 @@ static gboolean phat_slider_button_leave_notify (GtkWidget* widget,
      
     button->hilite = 0;
     if (button->state == STATE_SCROLL)
-	button->state = STATE_NORMAL;
+        button->state = STATE_NORMAL;
     update_cursor (button);
     gtk_widget_queue_draw (widget);
 
@@ -1385,7 +1385,7 @@ static gboolean phat_slider_button_leave_notify (GtkWidget* widget,
 
 
 static gboolean phat_slider_button_motion_notify (GtkWidget* widget,
-						  GdkEventMotion* event)
+                                                  GdkEventMotion* event)
 {
     PhatSliderButton* button = PHAT_SLIDER_BUTTON (widget);
     int old = button->hilite;
@@ -1398,8 +1398,8 @@ static gboolean phat_slider_button_motion_notify (GtkWidget* widget,
      
     if (button->hilite != old)
     {
-	update_cursor (button);
-	gtk_widget_queue_draw (widget);
+        update_cursor (button);
+        gtk_widget_queue_draw (widget);
     }
 
     xdiff = (event->x - button->xpress) / button->threshold;
@@ -1407,45 +1407,45 @@ static gboolean phat_slider_button_motion_notify (GtkWidget* widget,
     old = button->state;
     if (ABS (xdiff) >= 1)
     {
-	switch (button->state)
-	{
-	case STATE_SLIDE:
-	    button->slid = TRUE;
-	       
-	    inc = button->adjustment->step_increment * xdiff;
+        switch (button->state)
+        {
+        case STATE_SLIDE:
+            button->slid = TRUE;
+               
+            inc = button->adjustment->step_increment * xdiff;
 
-	    gtk_adjustment_set_value (button->adjustment,
-				      button->adjustment->value + inc);
-	  
-	    phat_warp_pointer (event->x_root, event->y_root,
-			       button->xpress_root, button->ypress_root);
-	    break;
-	case STATE_PRESSED:
-	    button->state = STATE_SLIDE;
+            gtk_adjustment_set_value (button->adjustment,
+                                      button->adjustment->value + inc);
+          
+            phat_warp_pointer (event->x_root, event->y_root,
+                               button->xpress_root, button->ypress_root);
+            break;
+        case STATE_PRESSED:
+            button->state = STATE_SLIDE;
 
-	    button->xpress_root = event->x_root;
-	    button->ypress_root = event->y_root;
-	    button->xpress = event->x;
-	    button->ypress = event->y;
-	       
-	    update_cursor (button);
-	    break;
-	case STATE_SCROLL:
-	    button->state = STATE_NORMAL;
-	    update_cursor (button);
-	    break;
-	}
+            button->xpress_root = event->x_root;
+            button->ypress_root = event->y_root;
+            button->xpress = event->x;
+            button->ypress = event->y;
+               
+            update_cursor (button);
+            break;
+        case STATE_SCROLL:
+            button->state = STATE_NORMAL;
+            update_cursor (button);
+            break;
+        }
     }
     else if (button->state == STATE_SCROLL
-	     && (ABS (event->x - button->xpress) >= SCROLL_THRESHOLD
-		 || ABS (event->y - button->ypress) >= SCROLL_THRESHOLD))
+             && (ABS (event->x - button->xpress) >= SCROLL_THRESHOLD
+                 || ABS (event->y - button->ypress) >= SCROLL_THRESHOLD))
     {
-	button->state = STATE_NORMAL;
-	update_cursor (button);
+        button->state = STATE_NORMAL;
+        update_cursor (button);
     }
 
     if (button->state != old)
-	gtk_widget_queue_draw (widget);
+        gtk_widget_queue_draw (widget);
      
     /* signal that we want more events */
     gdk_window_get_pointer (NULL, NULL, NULL, NULL);
@@ -1461,23 +1461,23 @@ static int check_pointer (PhatSliderButton* button, int x, int y)
     int val;
 
     if ((y < 0 || y > widget->allocation.height)
-	|| (x < 0 || x > widget->allocation.width))
+        || (x < 0 || x > widget->allocation.width))
     {
-	val = 0;
+        val = 0;
     }
     else if (x <= button->left_arrow->allocation.width + p)
     {
-	val = LEFT_ARROW;
+        val = LEFT_ARROW;
     }
     else if (x >= (widget->allocation.width
-		   - button->right_arrow->allocation.width
-		   - p))
+                   - button->right_arrow->allocation.width
+                   - p))
     {
-	val = RIGHT_ARROW;
+        val = RIGHT_ARROW;
     }
     else
     {
-	val = LABEL;
+        val = LABEL;
     }
 
     return val;
@@ -1490,18 +1490,18 @@ static void entry_cancel (PhatSliderButton* button)
 
 
     g_signal_handlers_block_by_func (button->entry,
-				     phat_slider_button_entry_focus_out,
-				     button);
+                                     phat_slider_button_entry_focus_out,
+                                     button);
     gtk_widget_hide (button->entry);
     g_signal_handlers_unblock_by_func (button->entry,
-				       phat_slider_button_entry_focus_out,
-				       button);
+                                       phat_slider_button_entry_focus_out,
+                                       button);
     gtk_widget_show (button->label);
 
     if (button->prefix_label)
-	gtk_widget_show (button->prefix_label);
+        gtk_widget_show (button->prefix_label);
     if (button->postfix_label)
-	gtk_widget_show (button->postfix_label);
+        gtk_widget_show (button->postfix_label);
      
     gtk_widget_queue_draw (GTK_WIDGET (button));
 }     
@@ -1513,22 +1513,22 @@ static void update_cursor (PhatSliderButton* button)
     {
     case STATE_ENTRY:
     case STATE_PRESSED:
-	gdk_window_set_cursor (button->event_window, NULL);
-	break;
+        gdk_window_set_cursor (button->event_window, NULL);
+        break;
     case STATE_SLIDE:
     case STATE_SCROLL:
-	gdk_window_set_cursor (button->event_window, button->empty_cursor);
-	break;
+        gdk_window_set_cursor (button->event_window, button->empty_cursor);
+        break;
     default:
-	if (button->hilite == LABEL)
-	{
-	    gdk_window_set_cursor (button->event_window, button->arrow_cursor);
-	}
-	else
-	{
-	    gdk_window_set_cursor (button->event_window, NULL);
-	}
-	break;
+        if (button->hilite == LABEL)
+        {
+            gdk_window_set_cursor (button->event_window, button->arrow_cursor);
+        }
+        else
+        {
+            gdk_window_set_cursor (button->event_window, NULL);
+        }
+        break;
     }
 }
 
@@ -1577,10 +1577,10 @@ static void update_size (PhatSliderButton* button)
     label_len = MAX (s->len, t->len);
 
     if (button->prefix)
-	prefix_len = strlen (button->prefix);
+        prefix_len = strlen (button->prefix);
 
     if (button->postfix)
-	postfix_len = strlen (button->postfix);
+        postfix_len = strlen (button->postfix);
 
     width = label_len + prefix_len + postfix_len;
     gtk_entry_set_width_chars (GTK_ENTRY (button->entry), width);
@@ -1594,67 +1594,67 @@ static void update_size (PhatSliderButton* button)
 
     if (button->prefix)
     {
-	if (!button->prefix_label)
-	{
-	    button->prefix_label = gtk_label_new (NULL);
-	    gtk_misc_set_alignment(GTK_MISC(button->prefix_label), 0.0, 0.5);
-	    gtk_box_pack_start (GTK_BOX (button), button->prefix_label,
-				TRUE, TRUE, 0);
-	    gtk_box_reorder_child (GTK_BOX (button), button->prefix_label, 1);
+        if (!button->prefix_label)
+        {
+            button->prefix_label = gtk_label_new (NULL);
+            gtk_misc_set_alignment(GTK_MISC(button->prefix_label), 0.0, 0.5);
+            gtk_box_pack_start (GTK_BOX (button), button->prefix_label,
+                                TRUE, TRUE, 0);
+            gtk_box_reorder_child (GTK_BOX (button), button->prefix_label, 1);
 
-	    if (GTK_WIDGET_MAPPED (GTK_WIDGET (button)))
-		gtk_widget_show (button->prefix_label);
-	}
-	  
-	gtk_label_set_text (GTK_LABEL (button->prefix_label),
-			    button->prefix);
+            if (GTK_WIDGET_MAPPED (GTK_WIDGET (button)))
+                gtk_widget_show (button->prefix_label);
+        }
+          
+        gtk_label_set_text (GTK_LABEL (button->prefix_label),
+                            button->prefix);
 
-	width_alloc = req.width * prefix_frac;
-	gtk_widget_set_size_request (button->prefix_label,
-				     width_alloc,
-				     req.height);
-	width_avail -= width_alloc;
+        width_alloc = req.width * prefix_frac;
+        gtk_widget_set_size_request (button->prefix_label,
+                                     width_alloc,
+                                     req.height);
+        width_avail -= width_alloc;
     }
     else if (button->prefix_label)
     {
-	gtk_widget_destroy (button->prefix_label);
-	button->prefix_label = NULL;
+        gtk_widget_destroy (button->prefix_label);
+        button->prefix_label = NULL;
     }
 
     if (button->postfix)
     {
-	if (!button->postfix_label)
-	{
-	    button->postfix_label = gtk_label_new (NULL);
-	    gtk_misc_set_alignment(GTK_MISC(button->postfix_label), 1.0, 0.5);
-	    gtk_box_pack_start (GTK_BOX (button), button->postfix_label,
-				TRUE, TRUE, 0);
-	    gtk_box_reorder_child (GTK_BOX (button), button->postfix_label,
-				   (button->prefix_label)? 3: 2);
+        if (!button->postfix_label)
+        {
+            button->postfix_label = gtk_label_new (NULL);
+            gtk_misc_set_alignment(GTK_MISC(button->postfix_label), 1.0, 0.5);
+            gtk_box_pack_start (GTK_BOX (button), button->postfix_label,
+                                TRUE, TRUE, 0);
+            gtk_box_reorder_child (GTK_BOX (button), button->postfix_label,
+                                   (button->prefix_label)? 3: 2);
 
-	    if (GTK_WIDGET_MAPPED (GTK_WIDGET (button)))
-		gtk_widget_show (button->postfix_label);
-	}
-	  
-	gtk_label_set_text (GTK_LABEL (button->postfix_label),
-			    button->postfix);
+            if (GTK_WIDGET_MAPPED (GTK_WIDGET (button)))
+                gtk_widget_show (button->postfix_label);
+        }
+          
+        gtk_label_set_text (GTK_LABEL (button->postfix_label),
+                            button->postfix);
 
-	width_alloc = req.width * postfix_frac;
-	gtk_widget_set_size_request (button->postfix_label,
-				     width_alloc,
-				     req.height);
-	width_avail -= width_alloc;
+        width_alloc = req.width * postfix_frac;
+        gtk_widget_set_size_request (button->postfix_label,
+                                     width_alloc,
+                                     req.height);
+        width_avail -= width_alloc;
     }
     else if (button->postfix_label)
     {
-	gtk_widget_destroy (button->postfix_label);
-	button->postfix_label = NULL;
+        gtk_widget_destroy (button->postfix_label);
+        button->postfix_label = NULL;
     }
 
     /* we allocate the remainder to avoid floating point errors */
     gtk_widget_set_size_request (button->label,
-				 width_avail,
-				 req.height);
+                                 width_avail,
+                                 req.height);
     gtk_widget_queue_draw (GTK_WIDGET (button));
 
     g_string_free (s, TRUE);

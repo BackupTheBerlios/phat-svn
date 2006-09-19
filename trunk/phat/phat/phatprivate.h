@@ -7,6 +7,6 @@
 #define debug(...) if (DEBUG) fprintf (stderr, __VA_ARGS__)
 
 void phat_warp_pointer (int xsrc, int ysrc,
-			int xdest, int ydest);
+                        int xdest, int ydest);
 
 #endif /* __PHAT_PRIVATE_H__ */
