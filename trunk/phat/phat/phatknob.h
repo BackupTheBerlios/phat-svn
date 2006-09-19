@@ -27,9 +27,7 @@
 #include <gtk/gtkadjustment.h>
 #include <gtk/gtkwidget.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+G_BEGIN_DECLS
 
 #define PHAT_KNOB(obj)          GTK_CHECK_CAST(obj, phat_knob_get_type(), PhatKnob)
 #define PHAT_KNOB_CLASS(klass)  GTK_CHECK_CLASS_CAST(klass, phat_knob_get_type(), PhatKnobClass)
@@ -95,8 +93,6 @@ void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
 void phat_knob_set_log (PhatKnob* knob, gboolean is_log);
 gboolean phat_knob_is_log (PhatKnob* knob);
 
-#ifdef __cplusplus
-}
-#endif
+G_END_DECLS
 
 #endif
