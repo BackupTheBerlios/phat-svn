@@ -69,8 +69,6 @@ should be accessed using the functions below.
 @adjustment: 
 @digits: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@format: 
 
 
 <!-- ##### FUNCTION phat_slider_button_new_with_range ##### -->
@@ -84,8 +82,6 @@ should be accessed using the functions below.
 @step: 
 @digits: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@format: 
 
 
 <!-- ##### FUNCTION phat_slider_button_set_value ##### -->
@@ -173,8 +169,6 @@ should be accessed using the functions below.
 @digits: 
 @prefix: 
 @postfix: 
-<!-- # Unused Parameters # -->
-@format: 
 
 
 <!-- ##### FUNCTION phat_slider_button_get_format ##### -->
@@ -186,8 +180,6 @@ should be accessed using the functions below.
 @digits: 
 @prefix: 
 @postfix: 
-<!-- # Unused Parameters # -->
-@format: 
 
 
 <!-- ##### FUNCTION phat_slider_button_set_threshold ##### -->

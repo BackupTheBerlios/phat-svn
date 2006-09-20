@@ -1,21 +1,25 @@
-<!-- ##### SECTION ./tmpl/phatprivate.sgml:Long_Description ##### -->
+<!-- ##### SECTION ./tmpl/phat.sgml:Long_Description ##### -->
 <para>
 
 </para>
 
 
-<!-- ##### SECTION ./tmpl/phatprivate.sgml:See_Also ##### -->
+<!-- ##### SECTION ./tmpl/phat.sgml:See_Also ##### -->
 <para>
 
 </para>
 
 
-<!-- ##### SECTION ./tmpl/phatprivate.sgml:Short_Description ##### -->
+<!-- ##### SECTION ./tmpl/phat.sgml:Short_Description ##### -->
 
 
 
-<!-- ##### SECTION ./tmpl/phatprivate.sgml:Title ##### -->
-phatprivate
+<!-- ##### SECTION ./tmpl/phat.sgml:Stability_Level ##### -->
+
+
+
+<!-- ##### SECTION ./tmpl/phat.sgml:Title ##### -->
+phat
 
 
 <!-- ##### SIGNAL PhatFanslider::changed ##### -->
@@ -46,7 +50,8 @@ phatprivate
 
 </para>
 
-@...: 
+@...:
+
 
 <!-- ##### FUNCTION phat_fanslider_get_adjustment ##### -->
 <para>

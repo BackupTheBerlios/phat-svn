@@ -27,6 +27,18 @@ phat_hkeyboard_new() or phat_vkeyboard_new().
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### STRUCT _Key ##### -->
+<para>
+
+</para>
+
+@index: 
+@keyboard: 
+@group: 
+@pre: 
+@on: 
+@shad: 
+
 <!-- ##### STRUCT PhatKeyboard ##### -->
 <para>
 The #PhatKeyboard-struct struct contains private data only, and should
@@ -65,15 +77,6 @@ be accessed using the functions below.
 
 </para>
 
-<!-- ##### FUNCTION phat_keyboard_set_adjustment ##### -->
-<para>
-
-</para>
-
-@keyboard: 
-@adjustment: 
-
-
 <!-- ##### FUNCTION phat_keyboard_get_adjustment ##### -->
 <para>
 
@@ -81,5 +84,14 @@ be accessed using the functions below.
 
 @keyboard: 
 @Returns: 
+
+
+<!-- ##### FUNCTION phat_keyboard_set_adjustment ##### -->
+<para>
+
+</para>
+
+@keyboard: 
+@adjustment: 
 
 

@@ -87,7 +87,7 @@ GtkWidget* phat_knob_new_with_range (double value,
 GtkAdjustment *phat_knob_get_adjustment(PhatKnob *knob);
 double phat_knob_get_value (PhatKnob* knob);
 void phat_knob_set_value (PhatKnob* knob, double value);
-void phat_knob_set_range (PhatKnob* slider, double lower, double upper);
+void phat_knob_set_range (PhatKnob* knob, double lower, double upper);
 void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType  policy);
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
 void phat_knob_set_log (PhatKnob* knob, gboolean is_log);

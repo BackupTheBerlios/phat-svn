@@ -1,14 +1,7 @@
-<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
-<!ENTITY PhatFanSlider SYSTEM "sgml/phatfanslider.sgml">
-<!ENTITY PhatHFanSlider SYSTEM "sgml/phathfanslider.sgml">
-<!ENTITY PhatVFanSlider SYSTEM "sgml/phatvfanslider.sgml">
-<!ENTITY PhatSliderButton SYSTEM "sgml/phatsliderbutton.sgml">
-<!ENTITY PhatKeyboard SYSTEM "sgml/phatkeyboard.sgml">
-<!ENTITY PhatVKeyboard SYSTEM "sgml/phatvkeyboard.sgml">
-<!ENTITY PhatHKeyboard SYSTEM "sgml/phathkeyboard.sgml">
-]>
-
-<book id="index">
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
     <title>PHAT Reference Manual</title>
   </bookinfo>
@@ -16,7 +9,7 @@
   <part id="phat">
     <title>PHAT Overview</title>
 
-    <partintro>
+    <partintro id="phatintro">
 
       <para>PHAT is a library of <ulink
       url="http://www.gtk.org">GTK+</ulink> widgets which are useful
@@ -94,13 +87,15 @@
 
   <part id="phatwidgets">
     <title>PHAT Widgets</title>
-      &PhatFanSlider;
-      &PhatHFanSlider;
-      &PhatVFanSlider;
-      &PhatSliderButton;
-      &PhatKeyboard;
-      &PhatHKeyboard;
-      &PhatVKeyboard;
+    <xi:include href="xml/phatsliderbutton.xml"/>
+    <xi:include href="xml/phathfanslider.xml"/>
+    <xi:include href="xml/phatvkeyboard.xml"/>
+    <xi:include href="xml/phatknob.xml"/>
+    <xi:include href="xml/phatvfanslider.xml"/>
+    <xi:include href="xml/phatkeyboard.xml"/>
+    <xi:include href="xml/phatpad.xml"/>
+    <xi:include href="xml/phatfanslider.xml"/>
+    <xi:include href="xml/phathkeyboard.xml"/>
   </part>
 
 </book>

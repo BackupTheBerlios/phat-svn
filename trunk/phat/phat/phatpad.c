@@ -76,7 +76,6 @@ GType phat_pad_get_type ( )
 
 /**
  * phat_pad_new:
- * @digits: number of decimal digits to display
  * 
  * Creates a new #PhatPad.
  *
@@ -574,7 +573,7 @@ static gboolean phat_pad_motion_notify (GtkWidget* widget,
 
 /**
  * phat_pad_get_x:
- * @button: a #PhatPad
+ * @pad: a #PhatPad
  *
  * Retrieves the current x value of the pad.
  *
@@ -677,7 +676,7 @@ void phat_pad_set_pressure_range (PhatPad* pad, gdouble min, gdouble max)
 
 /**
  * phat_pad_get_y:
- * @button: a #PhatPad
+ * @pad: a #PhatPad
  *
  * Retrieves the current y value of the pad.
  *
@@ -693,7 +692,7 @@ GtkAdjustment* phat_pad_get_y (PhatPad* pad)
 
 /**
  * phat_pad_get_pressure:
- * @button: a #PhatPad
+ * @pad: a #PhatPad
  *
  * Retrieves the current pressure value of the pad.
  *
@@ -709,7 +708,7 @@ GtkAdjustment* phat_pad_get_pressure (PhatPad* pad)
 
 /**
  * phat_pad_get_xtilt:
- * @button: a #PhatPad
+ * @pad: a #PhatPad
  *
  * Retrieves the current xtilt value of the pad.
  *
@@ -726,7 +725,7 @@ GtkAdjustment* phat_pad_get_xtilt (PhatPad* pad)
 
 /**
  * phat_pad_get_ytilt:
- * @button: a #PhatPad
+ * @pad: a #PhatPad
  *
  * Retrieves the current ytilt value of the pad.
  *

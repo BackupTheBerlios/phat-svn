@@ -75,6 +75,24 @@ should be accessed using the functions below.
 @value: 
 
 
+<!-- ##### FUNCTION phat_fan_slider_set_log ##### -->
+<para>
+
+</para>
+
+@slider: 
+@is_log: 
+
+
+<!-- ##### FUNCTION phat_fan_slider_is_log ##### -->
+<para>
+
+</para>
+
+@slider: 
+@Returns: 
+
+
 <!-- ##### FUNCTION phat_fan_slider_get_value ##### -->
 <para>
 
