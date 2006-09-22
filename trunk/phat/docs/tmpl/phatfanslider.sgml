@@ -158,3 +158,12 @@ should be accessed using the functions below.
 @Returns: 
 
 
+<!-- ##### FUNCTION phat_fan_slider_set_default_value ##### -->
+<para>
+
+</para>
+
+@slider: 
+@value: 
+
+

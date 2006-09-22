@@ -352,6 +352,22 @@ gboolean phat_fan_slider_get_inverted (PhatFanSlider* slider)
     return slider->inverted;
 }
 
+/**
+ * phat_fan_slider_set_default_value:
+ * @slider: a #PhatFanSlider
+ * @value: the default value
+ *  
+ * Set default value of the slider. Slider is reset to this value
+ * when middle mouse button is pressed.
+ */
+void phat_fan_slider_set_default_value(PhatFanSlider* slider, gdouble value)
+{
+    g_return_if_fail(PHAT_IS_FAN_SLIDER(slider));
+
+    slider->use_default_value = TRUE;
+    slider->default_value = value;
+}
+
 static void phat_fan_slider_class_init (PhatFanSliderClass* klass)
 {
     GtkObjectClass* object_class = (GtkObjectClass*) klass;
@@ -454,6 +470,7 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
     slider->hint_clip0 = NULL;
     slider->hint_clip1 = NULL;
     slider->is_log = 0;
+    slider->use_default_value = FALSE;
 
     g_signal_connect (slider->adjustment_prv, "changed",
                       G_CALLBACK (phat_fan_slider_adjustment_changed),
@@ -1111,6 +1128,13 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
                              slider->yclick_root - slider->yclick + height);
         }
     }
+    else if (event->button == 2 && slider->use_default_value)
+    {
+        /* reset to default value */
+        phat_fan_slider_set_value(slider, slider->default_value);
+        return TRUE;
+    }
+
     return FALSE;
 }
     

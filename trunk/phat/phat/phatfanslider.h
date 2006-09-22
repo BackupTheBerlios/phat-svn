@@ -41,6 +41,8 @@ struct _PhatFanSlider
     GtkWidget*     hint_window1;
     GdkRegion*     hint_clip0;
     GdkRegion*     hint_clip1;
+    gboolean       use_default_value;
+    gdouble        default_value;
 };
 
 struct _PhatFanSliderClass
@@ -75,6 +77,8 @@ GtkAdjustment* phat_fan_slider_get_adjustment (PhatFanSlider* slider);
 void phat_fan_slider_set_inverted (PhatFanSlider* slider, gboolean inverted);
 
 gboolean phat_fan_slider_get_inverted (PhatFanSlider* slider);
+
+void phat_fan_slider_set_default_value(PhatFanSlider* slider, gdouble value);
 
 G_END_DECLS
 

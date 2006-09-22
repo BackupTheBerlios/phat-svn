@@ -162,6 +162,15 @@
   )
 )
 
+(define-method set_default_value
+  (of-object "PhatFanSlider")
+  (c-name "phat_fan_slider_set_default_value")
+  (return-type "none")
+  (parameters
+    '("gdouble" "value")
+  )
+)
+
 (define-function phat_vfan_slider_new
   (c-name "phat_vfan_slider_new")
   (is-constructor-of "PhatVfanSlider")
