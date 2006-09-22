@@ -1217,7 +1217,7 @@ static gboolean phat_fan_slider_scroll (GtkWidget* widget,
                                    - slider->adjustment_prv->page_increment));
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 /* ctrl locks precision, shift locks value */
@@ -2051,4 +2051,9 @@ static void phat_fan_slider_adjustment_value_changed (GtkAdjustment* adjustment,
 
     g_signal_emit (G_OBJECT (slider),
                    phat_fan_slider_signals[VALUE_CHANGED_SIGNAL], 0);
+
+    if (slider->adjustment != NULL)
+    {
+        phat_fan_slider_get_value(slider); /* update value of external adjustment */
+    }
 }
