@@ -294,6 +294,8 @@ void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
     gtk_object_sink (GTK_OBJECT (adjustment));
 
     phat_fan_slider_adjustment_changed(slider->adjustment, slider);
+
+    phat_fan_slider_set_value(PHAT_FAN_SLIDER (slider), adjustment->value);
 }
 
 /**

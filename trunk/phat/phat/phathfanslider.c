@@ -60,8 +60,6 @@ GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment)
 
     phat_fan_slider_set_adjustment (PHAT_FAN_SLIDER (slider), adjustment);
 
-    phat_fan_slider_set_value(PHAT_FAN_SLIDER (slider), adjustment->value);
-
     return (GtkWidget*) slider;
 }
      
