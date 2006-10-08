@@ -1180,23 +1180,46 @@ static gboolean phat_fan_slider_key_press (GtkWidget* widget,
     double inc;
 
     debug ("key press\n");
-     
-    switch (event->keyval)
+
+    if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-    case GDK_Up:
-        inc = adj->step_increment;
-        break;
-    case GDK_Down:
-        inc = -adj->step_increment;
-        break;
-    case GDK_Page_Up:
-        inc = adj->page_increment;
-        break;
-    case GDK_Page_Down:
-        inc = -adj->page_increment;
-        break;
-    default:
-        return FALSE;
+        switch (event->keyval)
+        {
+        case GDK_Up:
+            inc = adj->step_increment;
+            break;
+        case GDK_Down:
+            inc = -adj->step_increment;
+            break;
+        case GDK_Page_Up:
+            inc = adj->page_increment;
+            break;
+        case GDK_Page_Down:
+            inc = -adj->page_increment;
+            break;
+        default:
+            return FALSE;
+        }
+    }
+    else
+    {
+        switch (event->keyval)
+        {
+        case GDK_Right:
+            inc = adj->step_increment;
+            break;
+        case GDK_Left:
+            inc = -adj->step_increment;
+            break;
+        case GDK_Page_Up:
+            inc = adj->page_increment;
+            break;
+        case GDK_Page_Down:
+            inc = -adj->page_increment;
+            break;
+        default:
+            return FALSE;
+        }
     }
 
     if (slider->inverted)
