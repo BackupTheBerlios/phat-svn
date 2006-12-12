@@ -69,6 +69,11 @@ static void phat_knob_update(PhatKnob *knob);
 static void phat_knob_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
 static void phat_knob_adjustment_value_changed(GtkAdjustment *adjustment, gpointer data);
 
+static void phat_knob_external_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
+static void phat_knob_external_adjustment_value_changed(GtkAdjustment *adjustment, gpointer data);
+
+static void phat_knob_update_internal_adjustment(PhatKnob * knob);
+
 GError *gerror;
 
 /* Local data */
@@ -166,8 +171,22 @@ GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
         adjustment = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     
     knob->adjustment = adjustment;
-    //call to correlete internal adj to externally visable one
-    phat_knob_set_value(knob, adjustment->value);
+
+    gtk_signal_connect(
+        GTK_OBJECT(adjustment),
+        "changed",
+        GTK_SIGNAL_FUNC(phat_knob_external_adjustment_changed),
+        (gpointer)knob);
+    gtk_signal_connect(
+        GTK_OBJECT(adjustment),
+        "value_changed",
+        GTK_SIGNAL_FUNC(phat_knob_external_adjustment_value_changed),
+        (gpointer)knob);
+
+
+    // correlate internal adj to externally visable one
+    phat_knob_update_internal_adjustment(knob);
+    
     return GTK_WIDGET(knob);
 }
 
@@ -196,6 +215,25 @@ GtkWidget* phat_knob_new_with_range (double value, double lower,
     return phat_knob_new (adj);
 }
 
+/* Update internal adjustment from external one */
+static void
+phat_knob_update_internal_adjustment(
+    PhatKnob * knob)
+{
+    if (knob->is_log)
+    {   
+        gtk_adjustment_set_value(
+            (GtkAdjustment *)knob->adjustment_prv,
+            log(knob->adjustment->value - knob->adjustment->lower) / log(knob->adjustment->upper - knob->adjustment->lower));
+    }
+    else
+    {
+        gtk_adjustment_set_value(
+            (GtkAdjustment *)knob->adjustment_prv,
+            (knob->adjustment->value - knob->adjustment->lower) / (knob->adjustment->upper - knob->adjustment->lower));
+    }
+}
+
 /**
  * phat_knob_set_value:
  * @knob: a #PhatKnob
@@ -216,15 +254,7 @@ void phat_knob_set_value (PhatKnob* knob, double value)
 
     gtk_adjustment_set_value (knob->adjustment, value);
 
-    if(knob->is_log)
-    {   
-        gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment_prv, log(value - knob->adjustment->lower) / log(knob->adjustment->upper - knob->adjustment->lower));
-    }
-    else
-    {
-        gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment_prv, (value - knob->adjustment->lower) / (knob->adjustment->upper - knob->adjustment->lower));
-    }
-
+    phat_knob_update_internal_adjustment(knob);
 }
 
 /**
@@ -737,4 +767,28 @@ static void phat_knob_adjustment_value_changed (GtkAdjustment *adjustment, gpoin
     }
 
     phat_knob_get_value(knob);  /* update value of external adjustment */
+}
+
+static void
+phat_knob_external_adjustment_changed(
+    GtkAdjustment * adjustment,
+    gpointer data)
+{
+    PhatKnob *knob;
+
+    knob = PHAT_KNOB(data);
+
+    phat_knob_set_range(knob, knob->adjustment->lower, knob->adjustment->upper);
+}
+
+static void
+phat_knob_external_adjustment_value_changed(
+    GtkAdjustment * adjustment,
+    gpointer data)
+{
+    PhatKnob *knob;
+
+    knob = PHAT_KNOB(data);
+
+    phat_knob_update_internal_adjustment(knob);
 }
