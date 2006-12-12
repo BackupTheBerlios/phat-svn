@@ -735,4 +735,6 @@ static void phat_knob_adjustment_value_changed (GtkAdjustment *adjustment, gpoin
 
         knob->old_value = adjustment->value;
     }
+
+    phat_knob_get_value(knob);  /* update value of external adjustment */
 }
