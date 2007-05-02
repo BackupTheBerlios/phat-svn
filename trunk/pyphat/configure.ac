@@ -1,6 +1,6 @@
 AC_PREREQ(2.52)
 
-AC_INIT([pyphat], [0.1], [loki.davison@gmail.com])
+AC_INIT([pyphat], [0.4.1], [loki.davison@gmail.com])
 AC_SUBST(ACLOCAL_AMFLAGS, "-I m4 -I .")
 
 AC_CONFIG_SRCDIR([phatmodule.c])
@@ -38,7 +38,7 @@ PYGTK_DEFSDIR=`$PKG_CONFIG --variable=defsdir pygtk-2.0`
 AC_SUBST(PYGTK_DEFSDIR)
 AC_MSG_RESULT($PYGTK_DEFSDIR)
 
-PKG_CHECK_MODULES(PHAT, phat >= 0.4)
+PKG_CHECK_MODULES(PHAT, phat >= 0.4.1)
 AC_SUBST(PHAT_LIBS)
 AC_SUBST(PHAT_CFLAGS)
 

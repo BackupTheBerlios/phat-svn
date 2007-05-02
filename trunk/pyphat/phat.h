@@ -29,39 +29,41 @@ typedef struct _PhatFanSlider PhatFanSlider;
 
 struct _PhatFanSlider
 {
-     GtkWidget parent;
+    GtkWidget parent;
 
-     GtkAdjustment* adjustment;
-     GtkAdjustment* adjustment_prv;
-     double val;
-     double center_val;
-     int xclick_root;
-     int yclick_root;
-     int xclick;
-     int yclick;
-     int fan_max_thickness;
-     int state;
-     gboolean inverted;
-     gboolean is_log;
-     GtkOrientation orientation;
-     GtkWidget* fan_window;
-     GdkRegion* fan_clip0;
-     GdkRegion* fan_clip1;
-     GdkCursor* arrow_cursor;
-     GdkCursor* empty_cursor;
-     GdkWindow* event_window;
-     GtkWidget* hint_window0;
-     GtkWidget* hint_window1;
-     GdkRegion* hint_clip0;
-     GdkRegion* hint_clip1;
+    GtkAdjustment* adjustment;
+    GtkAdjustment* adjustment_prv;
+    double val;
+    double center_val;
+    int xclick_root;
+    int yclick_root;
+    int xclick;
+    int yclick;
+    int fan_max_thickness;
+    int state;
+    gboolean inverted;
+    gboolean is_log;
+    GtkOrientation orientation;
+    GtkWidget* fan_window;
+    GdkRegion* fan_clip0;
+    GdkRegion* fan_clip1;
+    GdkCursor* arrow_cursor;
+    GdkCursor* empty_cursor;
+    GdkWindow* event_window;
+    GtkWidget* hint_window0;
+    GtkWidget* hint_window1;
+    GdkRegion* hint_clip0;
+    GdkRegion* hint_clip1;
+    gboolean use_default_value;
+    gdouble default_value;
 };
 
 struct _PhatFanSliderClass
 {
-     GtkWidgetClass parent_class;
+    GtkWidgetClass parent_class;
 
-     void (*value_changed) (PhatFanSlider* slider);
-     void (*changed) (PhatFanSlider* slider);
+    void (*value_changed) (PhatFanSlider* slider);
+    void (*changed) (PhatFanSlider* slider);
 };
 
 GType phat_fan_slider_get_type ( );
@@ -75,19 +77,21 @@ gboolean phat_fan_slider_is_log (PhatFanSlider* slider);
 double phat_fan_slider_get_value (PhatFanSlider* slider);
 
 void phat_fan_slider_set_range (PhatFanSlider* slider,
-          double lower, double upper);
+                                double lower, double upper);
 
 void phat_fan_slider_get_range (PhatFanSlider* slider,
-          double* lower, double* upper);
+                                double* lower, double* upper);
 
 void phat_fan_slider_set_adjustment (PhatFanSlider* slider,
-        GtkAdjustment* adjustment);
+                                     GtkAdjustment* adjustment);
 
 GtkAdjustment* phat_fan_slider_get_adjustment (PhatFanSlider* slider);
 
 void phat_fan_slider_set_inverted (PhatFanSlider* slider, gboolean inverted);
 
 gboolean phat_fan_slider_get_inverted (PhatFanSlider* slider);
+
+void phat_fan_slider_set_default_value(PhatFanSlider* slider, gdouble value);
 
 G_END_DECLS
 # 6 "/usr/include/phat/phatvfanslider.h" 2 3 4
@@ -105,12 +109,12 @@ typedef struct _PhatVFanSlider PhatVFanSlider;
 
 struct _PhatVFanSlider
 {
-     PhatFanSlider parent;
+    PhatFanSlider parent;
 };
 
 struct _PhatVFanSliderClass
 {
-     PhatFanSliderClass parent_class;
+    PhatFanSliderClass parent_class;
 };
 
 GType phat_vfan_slider_get_type ( );
@@ -118,9 +122,9 @@ GType phat_vfan_slider_get_type ( );
 GtkWidget* phat_vfan_slider_new (GtkAdjustment* adjustment);
 
 GtkWidget* phat_vfan_slider_new_with_range (double value,
-         double lower,
-         double upper,
-         double step);
+                                            double lower,
+                                            double upper,
+                                            double step);
 G_END_DECLS
 # 5 "/usr/include/phat/phat.h" 2
 # 1 "/usr/include/phat/phathfanslider.h" 1 3 4
@@ -143,12 +147,12 @@ typedef struct _PhatHFanSlider PhatHFanSlider;
 
 struct _PhatHFanSlider
 {
-     PhatFanSlider parent;
+    PhatFanSlider parent;
 };
 
 struct _PhatHFanSliderClass
 {
-     PhatFanSliderClass parent_class;
+    PhatFanSliderClass parent_class;
 };
 
 GType phat_hfan_slider_get_type ( );
@@ -156,9 +160,9 @@ GType phat_hfan_slider_get_type ( );
 GtkWidget* phat_hfan_slider_new (GtkAdjustment* adjustment);
 
 GtkWidget* phat_hfan_slider_new_with_range (double value,
-         double lower,
-         double upper,
-         double step);
+                                            double lower,
+                                            double upper,
+                                            double step);
 G_END_DECLS
 # 6 "/usr/include/phat/phat.h" 2
 
@@ -216,47 +220,47 @@ struct _PhatSliderButtonClass
 GType phat_slider_button_get_type ( );
 
 GtkWidget* phat_slider_button_new (GtkAdjustment* adjustment,
-       int digits);
+                                   int digits);
 
 GtkWidget* phat_slider_button_new_with_range (double value,
-           double lower,
-           double upper,
-           double step,
-           int digits);
+                                              double lower,
+                                              double upper,
+                                              double step,
+                                              int digits);
 
 void phat_slider_button_set_value (PhatSliderButton* button, double value);
 
 double phat_slider_button_get_value (PhatSliderButton* button);
 
 void phat_slider_button_set_range (PhatSliderButton* button,
-       double lower, double upper);
+                                   double lower, double upper);
 
 void phat_slider_button_get_range (PhatSliderButton* button,
-       double* lower, double* upper);
+                                   double* lower, double* upper);
 
 void phat_slider_button_set_adjustment (PhatSliderButton* button,
-     GtkAdjustment* adjustment);
+                                        GtkAdjustment* adjustment);
 
 GtkAdjustment* phat_slider_button_get_adjustment (PhatSliderButton* button);
 
 void phat_slider_button_set_increment (PhatSliderButton* button,
-           double step, double page);
+                                       double step, double page);
 
 void phat_slider_button_get_increment (PhatSliderButton* button,
-           double* step, double* page);
+                                       double* step, double* page);
 
 void phat_slider_button_set_format (PhatSliderButton* button,
-        int digits,
-        const char* prefix,
-        const char* postfix);
+                                    int digits,
+                                    const char* prefix,
+                                    const char* postfix);
 
 void phat_slider_button_get_format (PhatSliderButton* button,
-        int* digits,
-        char** prefix,
-        char** postfix);
+                                    int* digits,
+                                    char** prefix,
+                                    char** postfix);
 
 void phat_slider_button_set_threshold (PhatSliderButton* button,
-           guint threshold);
+                                       guint threshold);
 
 int phat_slider_button_get_threshold (PhatSliderButton* button);
 
@@ -462,7 +466,15 @@ gboolean phat_pad_pressure_is_log (PhatPad* pad);
 G_END_DECLS
 # 12 "/usr/include/phat/phat.h" 2
 # 1 "/usr/include/phat/phatknob.h" 1 3 4
-# 40 "/usr/include/phat/phatknob.h" 3 4
+# 30 "/usr/include/phat/phatknob.h" 3 4
+G_BEGIN_DECLS
+
+
+
+
+
+
+
 typedef struct _PhatKnob PhatKnob;
 typedef struct _PhatKnobClass PhatKnobClass;
 
@@ -499,9 +511,9 @@ struct _PhatKnob {
 
 struct _PhatKnobClass
 {
-  GtkWidgetClass parent_class;
+    GtkWidgetClass parent_class;
 
-  void (*value_changed) (PhatKnob* knob);
+    void (*value_changed) (PhatKnob* knob);
 };
 
 GType phat_knob_get_type ( );
@@ -509,15 +521,17 @@ GType phat_knob_get_type ( );
 GtkWidget* phat_knob_new (GtkAdjustment* adjustment);
 
 GtkWidget* phat_knob_new_with_range (double value,
-           double lower,
-           double upper,
-           double step);
+                                     double lower,
+                                     double upper,
+                                     double step);
 GtkAdjustment *phat_knob_get_adjustment(PhatKnob *knob);
 double phat_knob_get_value (PhatKnob* knob);
 void phat_knob_set_value (PhatKnob* knob, double value);
-void phat_knob_set_range (PhatKnob* slider, double lower, double upper);
+void phat_knob_set_range (PhatKnob* knob, double lower, double upper);
 void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy);
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment);
 void phat_knob_set_log (PhatKnob* knob, gboolean is_log);
 gboolean phat_knob_is_log (PhatKnob* knob);
+
+G_END_DECLS
 # 13 "/usr/include/phat/phat.h" 2

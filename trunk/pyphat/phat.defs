@@ -155,19 +155,19 @@
   (return-type "gboolean")
 )
 
-(define-function phat_vfan_slider_get_type
-  (c-name "phat_vfan_slider_get_type")
-  (return-type "GType")
-  (parameters
-  )
-)
-
 (define-method set_default_value
   (of-object "PhatFanSlider")
   (c-name "phat_fan_slider_set_default_value")
   (return-type "none")
   (parameters
     '("gdouble" "value")
+  )
+)
+
+(define-function phat_vfan_slider_get_type
+  (c-name "phat_vfan_slider_get_type")
+  (return-type "GType")
+  (parameters
   )
 )
 
