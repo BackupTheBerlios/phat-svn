@@ -53,6 +53,9 @@ struct _PhatKnob {
     guint8 state;
     gint saved_x, saved_y;
 
+    /* size of the widget */
+    gint size;
+
     /* ID of update timer, or 0 if none */
     guint32 timer;
 

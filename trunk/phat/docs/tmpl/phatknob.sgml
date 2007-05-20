@@ -30,6 +30,7 @@ PhatKnob
 @state: 
 @saved_x: 
 @saved_y: 
+@size: 
 @timer: 
 @pixbuf: 
 @mask: 

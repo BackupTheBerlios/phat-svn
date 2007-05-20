@@ -32,14 +32,15 @@
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
-#define SCROLL_DELAY_LENGTH     300
+#define SCROLL_DELAY_LENGTH     100
 #define KNOB_SIZE               50
 
 enum
 {
     STATE_IDLE,         
     STATE_PRESSED,              
-    STATE_DRAGGING,             
+    STATE_DRAGGING,
+    STATE_SCROLL,
 };
 
 /* signals */
@@ -62,7 +63,7 @@ static gint phat_knob_button_press(GtkWidget *widget, GdkEventButton *event);
 static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event);
 static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event);
 static gint phat_knob_timer(PhatKnob *knob);
-
+static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event);
 static void phat_knob_update_mouse_update(PhatKnob *knob);
 static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y, gboolean absolute);
 static void phat_knob_update(PhatKnob *knob);
@@ -125,6 +126,7 @@ static void phat_knob_class_init (PhatKnobClass *class) {
     widget_class->button_press_event = phat_knob_button_press;
     widget_class->button_release_event = phat_knob_button_release;
     widget_class->motion_notify_event = phat_knob_motion_notify;
+       widget_class->scroll_event = phat_knob_scroll;
 
     /**
      * PhatKnob::value-changed:
@@ -148,6 +150,7 @@ static void phat_knob_init (PhatKnob *knob) {
     knob->policy = GTK_UPDATE_CONTINUOUS;
     knob->state = STATE_IDLE;
     knob->saved_x = knob->saved_y = 0;
+    knob->size = KNOB_SIZE;
     knob->timer = 0;
     knob->pixbuf = NULL;
     knob->mask = NULL;
@@ -212,6 +215,8 @@ GtkWidget* phat_knob_new_with_range (double value, double lower,
 
     adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
 
+       /*adj->step_increment=step;*/
+
     return phat_knob_new (adj);
 }
 
@@ -274,7 +279,6 @@ double phat_knob_get_value (PhatKnob* knob)
     {
         gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, exp((knob->adjustment_prv->value) * 
                                                                         (log(knob->adjustment->upper - knob->adjustment->lower))) + knob->adjustment->lower);
-        //printf("setting prv val %f lower %f upper %f \n", knob->adjustment_prv->value, knob->adjustment->lower, knob->adjustment->upper);
     }
     else
     {
@@ -411,17 +415,23 @@ static void phat_knob_realize(GtkWidget *widget) {
     GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
     knob = PHAT_KNOB(widget);
 
+    /* FIXME keeps khagan from drawing knob */
+    if(widget->allocation.height > 1)
+    {
+	knob->size = widget->allocation.height;
+    }
+
     attributes.x = widget->allocation.x;
     attributes.y = widget->allocation.y;
-    attributes.width = widget->allocation.width;
-    attributes.height = widget->allocation.height;
+    attributes.width = knob->size;
+    attributes.height = knob->size;
     attributes.wclass = GDK_INPUT_OUTPUT;
     attributes.window_type = GDK_WINDOW_CHILD;
     attributes.event_mask =
         gtk_widget_get_events (widget) | 
         GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | 
         GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK |
-        GDK_POINTER_MOTION_HINT_MASK;
+        GDK_POINTER_MOTION_HINT_MASK | GDK_SCROLL_MASK;
     attributes.visual = gtk_widget_get_visual(widget);
     attributes.colormap = gtk_widget_get_colormap(widget);
 
@@ -431,7 +441,7 @@ static void phat_knob_realize(GtkWidget *widget) {
     widget->style = gtk_style_attach(widget->parent->style, widget->window);
 
     gdk_window_set_user_data(widget->window, widget);
-    knob->pixbuf = gdk_pixbuf_new_from_file(INSTALL_DIR"/phat/pixmaps/knob.png",&gerror);
+    knob->pixbuf = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",52*knob->size,knob->size,&gerror);
     gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
     knob->mask_gc = gdk_gc_new(widget->window);
@@ -445,8 +455,11 @@ static void phat_knob_realize(GtkWidget *widget) {
 }
 
 static void phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisition) {
-    requisition->width = KNOB_SIZE;
-    requisition->height = KNOB_SIZE;
+       PhatKnob *knob;
+
+       knob = PHAT_KNOB(widget);
+    requisition->width = knob->size;
+    requisition->height = knob->size;
 }
 
 static void phat_knob_size_allocate (GtkWidget *widget, GtkAllocation *allocation) {
@@ -462,8 +475,9 @@ static void phat_knob_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
     if (GTK_WIDGET_REALIZED(widget)) {
         gdk_window_move_resize(widget->window,
                                allocation->x, allocation->y,
-                               allocation->width, allocation->height);
+                               knob->size, knob->size);
     }
+    
 }
 
 static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event) {
@@ -479,27 +493,21 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event) {
 
     knob = PHAT_KNOB(widget);
 
-    // FIXME - somewhere in here, we need to read this from the knob size
-
     // basically we need to work out if the step size is integer
     // if it is, centre the knob about the vertical
 
     dx = knob->adjustment_prv->value - knob->adjustment_prv->lower;     // value, from 0
     dy = knob->adjustment_prv->upper - knob->adjustment_prv->lower;     // range
 
-
     if (knob->adjustment_prv->step_increment != 1.0f) {
-        dx=(int)(51*dx/dy)*50;
+        dx=(int)(51*dx/dy)*knob->size;
     } else {
         throw=4;
-        dx=(int)(51*dx/throw+(24-throw))*50;
+        dx=(int)(51*dx/throw+(24-throw))*knob->size;
     }
 
-
-
     gdk_draw_pixbuf(widget->window, knob->mask_gc, knob->pixbuf,
-                    dx, 0, 0, 0, KNOB_SIZE, KNOB_SIZE,GDK_RGB_DITHER_NONE,0,0);
-
+                    dx, 0, 0, 0, knob->size, knob->size,GDK_RGB_DITHER_NONE,0,0);
 
     return FALSE;
 }
@@ -625,6 +633,44 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
     return FALSE;
 }
 
+static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
+{
+       PhatKnob *knob;
+       double lstep;
+
+       knob = PHAT_KNOB(widget);
+
+    gtk_widget_grab_focus (widget);
+
+    knob->state = STATE_SCROLL;
+
+    lstep = knob->adjustment->step_increment*10/(knob->adjustment->upper - knob->adjustment->lower);
+
+       if(event->direction == GDK_SCROLL_UP){
+               knob->adjustment_prv->value += lstep;
+               if(knob->adjustment_prv->value < 0.5 + lstep/2 && knob->adjustment_prv->value > 0.5 - lstep/2)
+                       knob->adjustment_prv->value =0.5;
+       } else if(event->direction == GDK_SCROLL_DOWN){
+               knob->adjustment_prv->value -= lstep;
+               if(knob->adjustment_prv->value < 0.5 + lstep/2 && knob->adjustment_prv->value > 0.5 - lstep/2)
+                       knob->adjustment_prv->value =0.5;
+       } else if(event->direction == GDK_SCROLL_LEFT){
+               knob->adjustment_prv->value += lstep*3;
+               if(knob->adjustment_prv->value < 0.5 + 1.5*lstep && knob->adjustment_prv->value > 0.5 - 1.5*lstep)
+                       knob->adjustment_prv->value =0.5;
+       } else {
+               knob->adjustment_prv->value -= lstep*3;
+               if(knob->adjustment_prv->value < 0.5 + 1.5*lstep && knob->adjustment_prv->value > 0.5 - 1.5*lstep)
+                       knob->adjustment_prv->value =0.5;
+       }
+
+    knob->state = STATE_IDLE;
+       if(knob->adjustment_prv->value == 0.5)g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
+    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+
+       return TRUE;
+}
+
 static gint phat_knob_timer(PhatKnob *knob) {
     g_return_val_if_fail(knob != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_KNOB(knob), FALSE);
@@ -668,7 +714,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
 
     old_value = knob->adjustment_prv->value;
 
-    angle = atan2(-y + (KNOB_SIZE>>1), x - (KNOB_SIZE>>1));
+    angle = atan2(-y + (knob->size>>1), x - (knob->size>>1));
 
     if (absolute) {
 
@@ -687,7 +733,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
         knob->saved_x = x;
         knob->saved_y = y;
 
-        if (x >= 0 && x <= KNOB_SIZE)
+        if (x >= 0 && x <= knob->size)
             dh = 0;  /* dead zone */
         else {
             angle = cos(angle);
@@ -703,7 +749,16 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
     new_value = MAX(MIN(new_value, knob->adjustment_prv->upper),
                     knob->adjustment_prv->lower);
 
-    knob->adjustment_prv->value = new_value;
+       /* keep knob from flipping between min and max */
+       if (new_value ==1 && old_value == 0) {
+               knob->adjustment_prv->value = old_value;
+       } else if (new_value ==0 && old_value == 1) {
+               knob->adjustment_prv->value = old_value;
+       } else if (new_value - old_value > 0.2 || old_value - new_value > 0.2) {
+               knob->adjustment_prv->value = old_value;
+       } else {
+               knob->adjustment_prv->value = new_value;
+       }
 
     if (knob->adjustment_prv->value != old_value)
         phat_knob_update_mouse_update(knob);
