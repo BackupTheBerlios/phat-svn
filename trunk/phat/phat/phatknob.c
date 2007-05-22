@@ -644,7 +644,7 @@ static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 
     knob->state = STATE_SCROLL;
 
-    lstep = knob->adjustment->step_increment*10/(knob->adjustment->upper - knob->adjustment->lower);
+    lstep = knob->adjustment->step_increment*20/(knob->adjustment->upper - knob->adjustment->lower);
 
        if(event->direction == GDK_SCROLL_UP){
                knob->adjustment_prv->value += lstep;
