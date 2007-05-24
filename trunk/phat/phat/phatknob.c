@@ -443,7 +443,7 @@ static void phat_knob_realize(GtkWidget *widget) {
 
     gdk_window_set_user_data(widget->window, widget);
     
-    /* init first pixbuffer set second pixbuf pointer to NULL */
+    /* init first pixbuf */
 	if(pixbuf == NULL){
     	pixbuf = calloc(1,sizeof(GdkPixbuf *));
     }
