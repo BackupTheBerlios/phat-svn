@@ -1,3 +1,9 @@
+2007-05-24  Ulrich Lorenz Schlueter  <audio-mobster@gmx.de>
+
+	* phat/phatknob.c: added size support on init, native scroll support,
+	block against flipping between min and max and a single global pixbuf
+	for every requested knob size for saving memory and faster drawing.
+	
 2006-03-07  Loki Davison  <loki.davison@gmail.com>
 	* phat/phatkeyboard.c: added null to varargs functions to fix missing
 	sentinel warnings.
