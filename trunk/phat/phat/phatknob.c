@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <gtk/gtkmain.h>
 #include <gtk/gtksignal.h>
 #include "phatknob.h"
@@ -76,6 +77,9 @@ static void phat_knob_external_adjustment_value_changed(GtkAdjustment *adjustmen
 static void phat_knob_update_internal_adjustment(PhatKnob * knob);
 
 GError *gerror;
+
+/* global pixbufs for less mem usage */
+GdkPixbuf **pixbuf = NULL;
 
 /* Local data */
 
@@ -350,11 +354,6 @@ static void phat_knob_destroy(GtkObject *object) {
         knob->adjustment_prv = NULL;
     }
 
-    if (knob->pixbuf) {
-        gdk_pixbuf_unref(knob->pixbuf);
-        knob->pixbuf = NULL;
-    }
-
     if (knob->mask) {
         gdk_bitmap_unref(knob->mask);
         knob->mask = NULL;
@@ -408,6 +407,8 @@ static void phat_knob_realize(GtkWidget *widget) {
     GdkWindowAttr attributes;
     gint attributes_mask;
     GdkColor color = { 0, 0xffff, 0, 0 };
+    extern GdkPixbuf **pixbuf;
+    int i=0;
 
     g_return_if_fail(widget != NULL);
     g_return_if_fail(PHAT_IS_KNOB(widget));
@@ -418,7 +419,7 @@ static void phat_knob_realize(GtkWidget *widget) {
     /* FIXME keeps khagan from drawing knob */
     if(widget->allocation.height > 1)
     {
-	knob->size = widget->allocation.height;
+		knob->size = widget->allocation.height;
     }
 
     attributes.x = widget->allocation.x;
@@ -441,7 +442,33 @@ static void phat_knob_realize(GtkWidget *widget) {
     widget->style = gtk_style_attach(widget->parent->style, widget->window);
 
     gdk_window_set_user_data(widget->window, widget);
-    knob->pixbuf = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",52*knob->size,knob->size,&gerror);
+    
+    /* init first pixbuffer set second pixbuf pointer to NULL */
+	if(pixbuf == NULL){
+    	pixbuf = malloc(sizeof(GdkPixbuf *) * 2);
+    	pixbuf[0] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
+    												52*knob->size,knob->size,&gerror);
+    	knob->pixbuf = pixbuf[0];
+    	pixbuf[1] = NULL;
+    }
+    /* check for fitting pixbuf or NULL */
+    while(pixbuf[i] != NULL && gdk_pixbuf_get_height(pixbuf[i]) != knob->size){
+    	i++;
+    }
+    /* if not NULL set fitting pixbuf */
+    if(pixbuf[i] != NULL) knob->pixbuf = pixbuf[i];
+    /* if NULL realloc pixbuf pointer array one bigger
+     * malloc new pixbuf with new size
+     * set local pixbuf pointer to global
+     * set last pixbuf pointer to NULL */
+    if(pixbuf[i] == NULL){
+		pixbuf[i] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
+    												52*knob->size,knob->size,&gerror);
+    	knob->pixbuf = pixbuf[i];
+		pixbuf=realloc(pixbuf,sizeof(GdkPixbuf *) * (i+2));
+    	pixbuf[i+1] = NULL;    												
+    }
+
     gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
 
     knob->mask_gc = gdk_gc_new(widget->window);
