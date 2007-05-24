@@ -445,18 +445,12 @@ static void phat_knob_realize(GtkWidget *widget) {
     
     /* init first pixbuffer set second pixbuf pointer to NULL */
 	if(pixbuf == NULL){
-    	pixbuf = malloc(sizeof(GdkPixbuf *) * 2);
-    	pixbuf[0] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
-    												52*knob->size,knob->size,&gerror);
-    	knob->pixbuf = pixbuf[0];
-    	pixbuf[1] = NULL;
+    	pixbuf = calloc(1,sizeof(GdkPixbuf *));
     }
     /* check for fitting pixbuf or NULL */
     while(pixbuf[i] != NULL && gdk_pixbuf_get_height(pixbuf[i]) != knob->size){
     	i++;
     }
-    /* if not NULL set fitting pixbuf */
-    if(pixbuf[i] != NULL) knob->pixbuf = pixbuf[i];
     /* if NULL realloc pixbuf pointer array one bigger
      * malloc new pixbuf with new size
      * set local pixbuf pointer to global
@@ -467,6 +461,8 @@ static void phat_knob_realize(GtkWidget *widget) {
     	knob->pixbuf = pixbuf[i];
 		pixbuf=realloc(pixbuf,sizeof(GdkPixbuf *) * (i+2));
     	pixbuf[i+1] = NULL;    												
+    } else { /* if not NULL set fitting pixbuf */
+		knob->pixbuf = pixbuf[i];
     }
 
     gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
