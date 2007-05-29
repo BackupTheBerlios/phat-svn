@@ -405,10 +405,9 @@ void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment) {
 static void phat_knob_realize(GtkWidget *widget) {
     PhatKnob *knob;
     GdkWindowAttr attributes;
-    gint attributes_mask;
+    gint attributes_mask,i=0;
     GdkColor color = { 0, 0xffff, 0, 0 };
     extern GdkPixbuf **pixbuf;
-    int i=0;
 
     g_return_if_fail(widget != NULL);
     g_return_if_fail(PHAT_IS_KNOB(widget));
@@ -659,7 +658,7 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
 static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 {
        PhatKnob *knob;
-       double lstep;
+       gdouble lstep;
 
        knob = PHAT_KNOB(widget);
 
