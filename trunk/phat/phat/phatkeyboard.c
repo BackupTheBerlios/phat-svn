@@ -10,6 +10,7 @@ enum
     PROP_ORIENTATION,
     PROP_NUMKEYS,
     PROP_SHOWLABELS,
+    PROP_HOLD,
 };
 
 /* signals */
@@ -31,6 +32,7 @@ enum
     TEXT_POINTS = 7,
 };
 
+
 /* natural (white) key colors */
 static const guint KEY_NAT_BG = 0xEEEEEEFF;
 static const guint KEY_NAT_HI = 0xFFFFFFFF;
@@ -51,7 +53,7 @@ static const guint KEY_ACC_SHAD = 0x4D4D4DFF;
 static const guint KEY_TEXT_BG = 0x000000FF;
 
 
-static int signals[LAST_SIGNAL];
+static gint signals[LAST_SIGNAL];
 static GtkViewportClass* parent_class;
 
 static void phat_keyboard_class_init(PhatKeyboardClass* klass);
@@ -131,6 +133,14 @@ static void phat_keyboard_class_init(PhatKeyboardClass* klass)
                                                          TRUE,
                                                          G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+    g_object_class_install_property(gobject_class,
+                                    PROP_HOLD,
+                                    g_param_spec_boolean("hold",
+                                                         "Hold Keys",
+                                                         "Wether keys should be hold or not",
+                                                         0,
+                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
     /**
      * PhatKeyboard::key-pressed
      * @keyboard: the object on which the signal was emitted
@@ -172,15 +182,20 @@ static gboolean key_press_cb(GnomeCanvasItem* item, GdkEvent* event, _Key* key)
 {
     switch (event->type)
     {
-    case GDK_BUTTON_PRESS:  
-        gnome_canvas_item_show(key->on);
-        gnome_canvas_item_show(key->shad);
-        g_signal_emit(key->keyboard, signals[KEY_PRESSED], 0, key->index);
+    case GDK_BUTTON_PRESS:
+    	if((key->keyboard->hold == 1 && key->hold == 0) || key->keyboard->hold == 0){
+        	gnome_canvas_item_show(key->on);
+        	gnome_canvas_item_show(key->shad);
+        	key->hold = 1;
+        	g_signal_emit(key->keyboard, signals[KEY_PRESSED], 0, key->index);
+    	} else if (key->keyboard->hold == 1 && key->hold == 1) key->hold = 0;
         break;
     case GDK_BUTTON_RELEASE:
-        gnome_canvas_item_hide(key->on);
-        gnome_canvas_item_hide(key->shad);
-        g_signal_emit(key->keyboard, signals[KEY_RELEASED], 0, key->index);
+    	if((key->keyboard->hold == 1 && key->hold == 0) || key->keyboard->hold == 0){
+        	gnome_canvas_item_hide(key->on);
+        	gnome_canvas_item_hide(key->shad);
+        	g_signal_emit(key->keyboard, signals[KEY_RELEASED], 0, key->index);
+    	}
         break;
     case GDK_ENTER_NOTIFY:
         gnome_canvas_item_show(key->pre);
@@ -195,18 +210,54 @@ static gboolean key_press_cb(GnomeCanvasItem* item, GdkEvent* event, _Key* key)
     return FALSE;
 }
 
+gboolean phat_keyboard_key_press(PhatKeyboard* keyboard, gint key)
+{
+	if((keyboard->hold == 1 && keyboard->keys[key].hold == 0) || keyboard->hold == 0){
+		gnome_canvas_item_show(keyboard->keys[key].on);
+		gnome_canvas_item_show(keyboard->keys[key].shad);
+		keyboard->keys[key].hold = 1;
+		g_signal_emit(keyboard, signals[KEY_PRESSED], 0, keyboard->keys[key].index);
+	} else if (keyboard->hold == 1 && keyboard->keys[key].hold == 1) keyboard->keys[key].hold = 0;
+	
+    return TRUE;
+}
+
+gboolean phat_keyboard_key_release(PhatKeyboard* keyboard, gint key)
+{
+	if((keyboard->hold == 1 && keyboard->keys[key].hold == 0) || keyboard->hold == 0){
+		gnome_canvas_item_hide(keyboard->keys[key].on);
+		gnome_canvas_item_hide(keyboard->keys[key].shad);
+		keyboard->keys[key].hold = 0;
+		g_signal_emit(keyboard, signals[KEY_RELEASED], 0, keyboard->keys[key].index);
+	}
+
+    return TRUE;
+}
+
+gboolean phat_keyboard_set_hold(PhatKeyboard* keyboard, gboolean hold)
+{
+	if(keyboard->hold) keyboard->hold = 0;
+	else keyboard->hold = 1;
+	
+    return 0;
+}
+
+gboolean phat_keyboard_get_key_hold(PhatKeyboard* keyboard, gint key)
+{
+    return keyboard->keys[key].hold;
+}
 
 /* so much gayness in here, either I suck or gnome-canvas does; most
  * likely, we both do */
-static void draw_key(PhatKeyboard* self, int index, int pos, guint bg,
+static void draw_key(PhatKeyboard* self, gint index, gint pos, guint bg,
                      guint hi, guint low, guint pre, guint on, guint shad)
 {
     _Key* key = &self->keys[index];
     GnomeCanvasPoints* points;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
+    gint x1;
+    gint y1;
+    gint x2;
+    gint y2;
 
     if (self->orientation == GTK_ORIENTATION_VERTICAL)
     {
@@ -230,6 +281,7 @@ static void draw_key(PhatKeyboard* self, int index, int pos, guint bg,
     g_signal_connect(G_OBJECT(key->group), "event",
                      G_CALLBACK(key_press_cb), (gpointer)key);
     key->index = index;
+    key->hold = 0;
     key->keyboard = self;
     
     /* draw main key rect */
@@ -403,7 +455,7 @@ static void draw_key(PhatKeyboard* self, int index, int pos, guint bg,
     /* draw label if applicable */
     if (self->label && (index % 12) == 0)
     {
-        char* s = g_strdup_printf("%d", index / 12);
+        gchar* s = g_strdup_printf("%d", index / 12 + 1);
 
         if (self->orientation == GTK_ORIENTATION_VERTICAL)
         {
@@ -440,7 +492,7 @@ static void draw_key(PhatKeyboard* self, int index, int pos, guint bg,
 
 static void draw_keyboard(PhatKeyboard* self)
 {
-    int i, pos, note;
+    gint i, pos, note;
 
     /* make sure our construction properties are set (this is
      * _lame_ass_) */
@@ -450,7 +502,7 @@ static void draw_keyboard(PhatKeyboard* self)
         return;
 
     self->keys = g_new(_Key, self->nkeys);
-    
+    self->hold = 0;
     /* orientation */
     if (self->orientation == GTK_ORIENTATION_VERTICAL)
     {
@@ -530,6 +582,7 @@ static void phat_keyboard_init(PhatKeyboard* self)
 {
     self->keys = NULL;
     self->nkeys = -1;
+    self->hold = 0;
     self->orientation = -1;
     self->label = -1;
 
@@ -562,6 +615,9 @@ static void phat_keyboard_set_property(GObject          *object,
         self->label = g_value_get_boolean(value);
         draw_keyboard(self);
         break;
+    case PROP_HOLD:
+        self->hold = g_value_get_boolean(value);
+        break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -588,6 +644,9 @@ static void phat_keyboard_get_property(GObject          *object,
         break;
     case PROP_SHOWLABELS:
         g_value_set_boolean(value, self->label);
+        break;
+    case PROP_HOLD:
+        g_value_set_boolean(value, self->hold);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -619,9 +678,9 @@ GtkAdjustment* phat_keyboard_get_adjustment(PhatKeyboard* keyboard)
     GtkAdjustment* adj;
 
     if (keyboard->orientation == GTK_ORIENTATION_VERTICAL)
-        g_object_get(keyboard, "vadjustment", &adj, (char *)NULL);
+        g_object_get(keyboard, "vadjustment", &adj, (gchar *)NULL);
     else
-        g_object_get(keyboard, "hadjustment", &adj, (char *)NULL);
+        g_object_get(keyboard, "hadjustment", &adj, (gchar *)NULL);
 
     return adj;
 }
@@ -641,7 +700,7 @@ void phat_keyboard_set_adjustment(PhatKeyboard* keyboard, GtkAdjustment* adj)
         return;
     
     if (keyboard->orientation == GTK_ORIENTATION_VERTICAL)
-        g_object_set(keyboard, "vadjustment", adj, (char *)NULL);
+        g_object_set(keyboard, "vadjustment", adj, (gchar *)NULL);
     else
-        g_object_set(keyboard, "hadjustment", adj, (char *)NULL);
+        g_object_set(keyboard, "hadjustment", adj, (gchar *)NULL);
 }

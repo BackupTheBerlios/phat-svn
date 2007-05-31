@@ -11,6 +11,7 @@ G_BEGIN_DECLS
 #define PHAT_KEYBOARD_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), PHAT_TYPE_KEYBOARD, PhatKeyboardClass))
 #define PHAT_IS_KEYBOARD(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), PHAT_TYPE_KEYBOARD))
 #define PHAT_IS_KEYBOARD_CLASS(klass) (G_TYPE_CHECK_INSTANCE_TYPE ((klass), PHAT_TYPE_KEYBOARD))
+#define PHAT_KEYBOARD_HOLD (0)
 
 typedef struct _PhatKeyboardClass PhatKeyboardClass;
 typedef struct _PhatKeyboard PhatKeyboard;
@@ -26,7 +27,8 @@ enum
 
 struct __Key
 {
-    int index;
+    gint index;
+    gboolean hold;				/* if key was pressed before */
     PhatKeyboard* keyboard;     /* the keyboard we belong to */
     GnomeCanvasGroup* group;    /* the group this key belongs to */
     GnomeCanvasItem* pre;       /* prelight rectangle */
@@ -40,8 +42,9 @@ struct _PhatKeyboard
     GtkViewport parent;
 
     _Key *keys;
-    int nkeys;
-    int label;
+    gint nkeys;
+    gint label;
+    gboolean hold;					/* hold keys or immediate release */
     GnomeCanvas* canvas;
     GtkOrientation orientation;
 };
@@ -51,14 +54,17 @@ struct _PhatKeyboardClass
     /*< private >*/
     GtkViewportClass parent_class;
 
-    void (*key_pressed)(PhatKeyboard* keyboard, int key);
-    void (*key_released)(PhatKeyboard* keyboard, int key);
+    void (*key_pressed)(PhatKeyboard* keyboard, gint key);
+    void (*key_released)(PhatKeyboard* keyboard, gint key);
 };
 
 GType phat_keyboard_get_type(void);
 GtkAdjustment* phat_keyboard_get_adjustment(PhatKeyboard* keyboard);
 void phat_keyboard_set_adjustment(PhatKeyboard* keyboard, GtkAdjustment* adjustment);
-
+gboolean phat_keyboard_key_press(PhatKeyboard* keyboard, gint key);
+gboolean phat_keyboard_key_release(PhatKeyboard* keyboard, gint key);
+gboolean phat_keyboard_get_key_hold(PhatKeyboard* keyboard, gint key);
+gboolean phat_keyboard_set_hold(PhatKeyboard* keyboard, gboolean hold);
 G_END_DECLS
 
 #endif /* __PHAT_KEYBOARD__ */

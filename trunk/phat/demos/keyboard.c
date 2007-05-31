@@ -34,7 +34,8 @@ int main (int argc, char* argv[])
     GtkWidget* vbox;
     GtkWidget* scroll;
     GtkAdjustment* adj;
-     
+    
+
     gtk_init (&argc, &argv);
 
     /* main window */
@@ -79,6 +80,17 @@ int main (int argc, char* argv[])
     /* hkeyboard */
     adj = (GtkAdjustment*) gtk_adjustment_new(0, 0, 0, 0, 0, 0);
     keyboard = phat_hkeyboard_new(adj, NUMKEYS, TRUE);
+    
+	/* next four lines are long and complicated,
+	 * could this be shorter ? */
+	/*GValue val = {0,};
+    g_value_init (&val, G_TYPE_BOOLEAN);
+	g_value_set_boolean(&val, 1);
+	g_object_set_property (G_OBJECT (keyboard), "hold", &val);*/
+	
+	/* for easy use */
+	phat_keyboard_set_hold(PHAT_KEYBOARD(keyboard),1);
+    
     gtk_box_pack_start(GTK_BOX(vbox), keyboard, FALSE, FALSE, 0);
     gtk_widget_show(keyboard);
 
@@ -98,6 +110,7 @@ int main (int argc, char* argv[])
     gtk_widget_show(mega_label);
          
     gtk_widget_show (window);
+    
     gtk_main ( );
     return 0;
 }

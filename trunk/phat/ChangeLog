@@ -1,3 +1,9 @@
+2007-05-31  Ulrich Lorenz Schlueter  <audio-mobster@gmx.de>
+
+	* phat/phatkeyboard.c phat/phatkeyboard.h: I introduced hold
+	functionality as a property and by function call. There are functions for press
+	and release of keys and for retrieving hold status. Updated sgml docs.
+	
 2007-05-29  Ulrich Lorenz Schlueter  <audio-mobster@gmx.de>
 
 	* phat/phatknob.c: Changed int in realize() to gint.
