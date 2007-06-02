@@ -7,7 +7,7 @@ GtkWidget* mega_label;
 
 static void pressed(GtkWidget* widget, int key, gpointer data)
 {
-    char* s = g_strdup_printf("Key Pressed: %d", key);
+    gchar* s = g_strdup_printf("Key Pressed: %d", key);
 
     gtk_label_set_text(GTK_LABEL(mega_label), s);
 
@@ -15,9 +15,9 @@ static void pressed(GtkWidget* widget, int key, gpointer data)
 }
 
 
-static void released(GtkWidget* widget, int key, gpointer data)
+static void released(GtkWidget* widget, gint key, gpointer data)
 {
-    char* s = g_strdup_printf("Key Released: %d", key);
+    gchar* s = g_strdup_printf("Key Released: %d", key);
 
     gtk_label_set_text(GTK_LABEL(mega_label), s);
 
