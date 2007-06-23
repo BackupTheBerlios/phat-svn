@@ -32,8 +32,8 @@ phat_hkeyboard_new() or phat_vkeyboard_new().
 
 </para>
 
-@index:
-@hold:
+@index: 
+@hold: 
 @keyboard: 
 @group: 
 @pre: 
@@ -63,6 +63,11 @@ be accessed using the functions below.
 @phatkeyboard: the object which received the signal.
 @arg1: 
 
+<!-- ##### ARG PhatKeyboard:hold ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG PhatKeyboard:numkeys ##### -->
 <para>
 
@@ -74,11 +79,6 @@ be accessed using the functions below.
 </para>
 
 <!-- ##### ARG PhatKeyboard:show-labels ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG PhatKeyboard:hold ##### -->
 <para>
 
 </para>
@@ -99,41 +99,5 @@ be accessed using the functions below.
 
 @keyboard: 
 @adjustment: 
-
-
-<!-- ##### FUNCTION phat_keyboard_key_press ##### -->
-<para>
-
-</para>
-
-@keyboard: 
-@key: 
-
-
-<!-- ##### FUNCTION phat_keyboard_key_release ##### -->
-<para>
-
-</para>
-
-@keyboard: 
-@key: 
-
-
-<!-- ##### FUNCTION phat_keyboard_get_key_hold ##### -->
-<para>
-
-</para>
-
-@keyboard: 
-@key: 
-
-
-<!-- ##### FUNCTION phat_keyboard_set_hold ##### -->
-<para>
-
-</para>
-
-@keyboard:
-@hold
 
 
