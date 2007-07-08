@@ -7,7 +7,9 @@ PHAT_VERSION=0.4.1
 AC_SUBST(PHAT_VERSION)
 
 AM_INIT_AUTOMAKE([phat],${PHAT_VERSION})
+dnl AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+
 
 # optimization and debugging checks
 with_debug="no"
@@ -40,6 +42,25 @@ else
 fi
 
 ##################################################
+# Check for glade 3 (aka gladeui-1.0)
+##################################################
+
+ac_enable_glade_plugin=no
+AC_ARG_ENABLE(glade_plugin,
+     [  --enable-glade-plugin     build the phat glade plugin (default:disabled)],
+     [ ac_enable_glade_plugin=yes ], [ ac_enable_glade_plugin=no ])
+
+if test "x${ac_enable_glade_plugin}" != xno ; then
+
+  PKG_CHECK_MODULES(GLADE3, [gladeui-1.0], [build_glade=yes], [build_glade=no])
+  AC_SUBST(GLADE3_CFLAGS)
+  AC_SUBST(GLADE3_LIBS)
+
+fi
+
+AM_CONDITIONAL([BUILD_GLADE_PLUGIN], test x$build_glade = xyes)
+
+##################################################
 # Check for gtk-doc.
 ##################################################
 
@@ -59,19 +80,25 @@ echo
 echo    "                   BUILD SUMMARY"
 echo    "                   ============="
 echo
-echo -n "             Build type:     "
+echo -n "             Build type:          "
 if test x$with_debug = xyes; then
     echo "debugging"
 else
     echo "optimized"
 fi
-echo -n "             GTK+ Version:   "
+echo -n "             GTK+ Version:        "
 if test x$with_gtk2_4 = xyes; then
     echo "2.4 or greater"
 else
     echo "2.0 or 2.2 series"
 fi
-echo -n "             Build Docs:     "
+echo -n "             Build Glade Plugin:  "
+if test x$build_glade = xyes; then
+    echo "yes"
+else
+    echo "no"
+fi
+echo -n "             Build Docs:          "
 if test x$enable_gtk_doc = xyes; then
     echo "yes"
 else
@@ -81,6 +108,19 @@ echo
 echo
 ])
 
-AC_CONFIG_FILES([Makefile phat/Makefile demos/Makefile docs/Makefile pixmaps/Makefile phat.pc phat.spec])
+AC_CONFIG_FILES([
+Makefile
+phat/Makefile
+demos/Makefile
+docs/Makefile
+pixmaps/Makefile
+glade-plugin/Makefile
+glade-plugin/icons/Makefile
+glade-plugin/icons/16x16/Makefile
+glade-plugin/icons/22x22/Makefile
+phat.pc
+phat.spec
+])
+
 AM_CONFIG_HEADER([phat/config.h])
 AC_OUTPUT
