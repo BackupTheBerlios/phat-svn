@@ -1,0 +1,27 @@
+<glade-catalog name="phat" library="gladephat" book="phat" depends="gtk+">
+
+    <glade-widget-classes>
+
+        <glade-widget-class name="PhatKnob" generic-name="phatknob" title="pixmap knob"/>
+        <glade-widget-class name="PhatHFanSlider" generic-name="phathfanslider" title="horizontal fan slider"/>
+        <glade-widget-class name="PhatVFanSlider" generic-name="phatvfanslider" title="vertical fan slider"/>
+        <glade-widget-class name="PhatHKeyboard" generic-name="phathkeyboard" title="horizontal keyboard"/>
+        <glade-widget-class name="PhatVKeyboard" generic-name="phatvkeyboard" title="vertical keyboard"/>
+        <glade-widget-class name="PhatPad" generic-name="phatpad" title="5D pad"/>
+        <glade-widget-class name="PhatSliderButton" generic-name="phatsliderbutton" title="slider button"/>
+
+    </glade-widget-classes>
+        
+    <glade-widget-group name="phat-widgets" title="Phat Widgets">
+        
+        <glade-widget-class-ref name="PhatKnob"/>
+        <glade-widget-class-ref name="PhatHFanSlider"/>
+        <glade-widget-class-ref name="PhatVFanSlider"/>
+        <glade-widget-class-ref name="PhatHKeyboard"/>
+        <glade-widget-class-ref name="PhatVKeyboard"/>
+        <glade-widget-class-ref name="PhatPad"/>
+        <glade-widget-class-ref name="PhatSliderButton"/>
+
+    </glade-widget-group>
+        
+</glade-catalog>
