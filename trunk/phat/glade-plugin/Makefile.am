@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 SUBDIRS = icons
+EXTRA_DIST = phat.xml
 
 libphat = $(top_builddir)/phat/libphat.la
 

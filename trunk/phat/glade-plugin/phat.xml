@@ -9,6 +9,9 @@
         <glade-widget-class name="PhatVKeyboard" generic-name="phatvkeyboard" title="vertical keyboard"/>
         <glade-widget-class name="PhatPad" generic-name="phatpad" title="5D pad"/>
         <glade-widget-class name="PhatSliderButton" generic-name="phatsliderbutton" title="slider button"/>
+	<glade-widget-class name="PhatVUMeter" generic-name="phat_vu_meter" title="meter VU"/>
+	<glade-widget-class name="PhatDPMMeter" generic-name="phat_dpm_meter" title="meter dpm"/>
+	<glade-widget-class name="PhatPPMMeter" generic-name="phat_ppm_meter" title="meter dpm"/>
 
     </glade-widget-classes>
         
@@ -21,6 +24,9 @@
         <glade-widget-class-ref name="PhatVKeyboard"/>
         <glade-widget-class-ref name="PhatPad"/>
         <glade-widget-class-ref name="PhatSliderButton"/>
+        <glade-widget-class-ref name="PhatVUMeter"/>
+        <glade-widget-class-ref name="PhatDPMMeter"/>
+        <glade-widget-class-ref name="PhatPPMMeter"/>
 
     </glade-widget-group>
         

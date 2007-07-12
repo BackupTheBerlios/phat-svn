@@ -1,3 +1,3 @@
-pixmaps_DATA = knob.png fader_belt.png
+pixmaps_DATA = *.png
 EXTRA_DIST = $(pixmaps_DATA)
 pixmapsdir = "$(pkgdatadir)/pixmaps"

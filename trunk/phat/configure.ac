@@ -11,6 +11,7 @@ dnl AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 
+
 # optimization and debugging checks
 with_debug="no"
 AC_ARG_ENABLE([debug], 
@@ -29,6 +30,7 @@ fi
 # standard autoconf checks
 AC_PROG_CC
 AC_PROG_CPP
+AM_PROG_CC_C_O
 
 ##################################################
 # Check for gtk+-2.0, preferably >= 2.4
