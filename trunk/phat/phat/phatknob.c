@@ -29,10 +29,6 @@
 #include <gtk/gtksignal.h>
 #include "phatknob.h"
 
-#ifndef M_PI
-# define M_PI           3.14159265358979323846  /* pi */
-#endif
-
 #define SCROLL_DELAY_LENGTH     100
 #define KNOB_SIZE               50
 
@@ -52,29 +48,61 @@ enum
     LAST_SIGNAL,
 };
 
-static int signals[LAST_SIGNAL];
-static void phat_knob_class_init(PhatKnobClass *klass);
-static void phat_knob_init(PhatKnob *knob);
-static void phat_knob_destroy(GtkObject *object);
-static void phat_knob_realize(GtkWidget *widget);
-static void phat_knob_size_request(GtkWidget *widget, GtkRequisition *requisition);
-static void phat_knob_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
-static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event);
-static gint phat_knob_button_press(GtkWidget *widget, GdkEventButton *event);
-static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event);
-static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event);
-static gint phat_knob_timer(PhatKnob *knob);
-static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event);
-static void phat_knob_update_mouse_update(PhatKnob *knob);
-static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y, gboolean absolute);
-static void phat_knob_update(PhatKnob *knob);
-static void phat_knob_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
-static void phat_knob_adjustment_value_changed(GtkAdjustment *adjustment, gpointer data);
+/* properties */
+enum
+{
+    PROP_0,
+    PROP_ADJUSTMENT,
+    PROP_UPDATE_POLICY,
+    PROP_LOG,
+    PROP_INVERTED,
+};
 
-static void phat_knob_external_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
-static void phat_knob_external_adjustment_value_changed(GtkAdjustment *adjustment, gpointer data);
+static int signals[LAST_SIGNAL];
+static void phat_knob_class_init         (PhatKnobClass *klass);
+static void phat_knob_init               (PhatKnob *knob);
+static void phat_knob_destroy            (GtkObject *object);
+static void phat_knob_realize            (GtkWidget *widget);
+static void phat_knob_size_request       (GtkWidget *widget,
+                                           GtkRequisition *requisition);
+static void phat_knob_size_allocate      (GtkWidget *widget, 
+                                           GtkAllocation *allocation);
+static gint phat_knob_expose             (GtkWidget *widget, 
+                                           GdkEventExpose *event);
+static gint phat_knob_button_press       (GtkWidget *widget, 
+                                           GdkEventButton *event);
+static gint phat_knob_button_release     (GtkWidget *widget,
+                                           GdkEventButton *event);
+static gint phat_knob_motion_notify      (GtkWidget *widget, 
+                                           GdkEventMotion *event);
+static gint phat_knob_timer              (PhatKnob *knob);
+static gint phat_knob_scroll             (GtkWidget *widget, 
+                                           GdkEventScroll *event);
+static void phat_knob_update_mouse_update(PhatKnob *knob);
+static void phat_knob_update_mouse       (PhatKnob *knob, 
+                                           gint x,
+                                           gint y,
+                                           gboolean absolute);
+static void phat_knob_update             (PhatKnob *knob);
+static void phat_knob_internal_adjustment_changed (GtkAdjustment *adjustment,
+                                                    gpointer data);
+static void phat_knob_internal_adjustment_value_changed(GtkAdjustment *adjustment,
+                                                         gpointer data);
+
+static void phat_knob_adjustment_changed(GtkAdjustment *adjustment,
+                                          gpointer data);
+static void phat_knob_adjustment_value_changed(GtkAdjustment *adjustment,
+                                                gpointer data);
 
 static void phat_knob_update_internal_adjustment(PhatKnob * knob);
+static void phat_knob_set_property      (GObject *object, 
+			                              guint prop_id, 
+			                        const GValue *value, 
+			                              GParamSpec   *pspec);
+static void phat_knob_get_property      (GObject *object, 
+			                              guint prop_id, 
+			                              GValue *value, 
+			                              GParamSpec *pspec);
 
 GError *gerror;
 
@@ -83,54 +111,30 @@ GdkPixbuf **pixbuf = NULL;
 
 /* Local data */
 
-static GtkWidgetClass *parent_class = NULL;
+G_DEFINE_TYPE (PhatKnob, phat_knob, GTK_TYPE_WIDGET);
 
-GType phat_knob_get_type(void) 
-{
-    static GType knob_type = 0;
+static void phat_knob_class_init (PhatKnobClass *klass) {
+    GtkObjectClass   *object_class;
+    GtkWidgetClass   *widget_class;
+	GObjectClass     *g_object_class;
 
-    if (!knob_type) {
-        static const GTypeInfo info = 
-            {
-                sizeof (PhatKnobClass),
-                NULL,
-                NULL,
-                (GClassInitFunc) phat_knob_class_init,
-                NULL,
-                NULL,
-                sizeof (PhatKnob),
-                0,
-                (GInstanceInitFunc) phat_knob_init,
-            };
+    object_class =   GTK_OBJECT_CLASS(klass);
+    widget_class =   GTK_WIDGET_CLASS(klass);
+	g_object_class = G_OBJECT_CLASS(klass);
 
-        knob_type =  g_type_register_static (GTK_TYPE_WIDGET,
-                                             "PhatKnob",
-                                             &info,
-                                             0);
-    }
+	g_object_class->set_property = phat_knob_set_property;
+    g_object_class->get_property = phat_knob_get_property;
+	
+    object_class->destroy =        phat_knob_destroy;
 
-    return knob_type;
-}
-
-static void phat_knob_class_init (PhatKnobClass *class) {
-    GtkObjectClass *object_class;
-    GtkWidgetClass *widget_class;
-
-    object_class = (GtkObjectClass*) class;
-    widget_class = (GtkWidgetClass*) class;
-
-    parent_class = gtk_type_class(gtk_widget_get_type());
-
-    object_class->destroy = phat_knob_destroy;
-
-    widget_class->realize = phat_knob_realize;
-    widget_class->expose_event = phat_knob_expose;
-    widget_class->size_request = phat_knob_size_request;
-    widget_class->size_allocate = phat_knob_size_allocate;
+    widget_class->realize =        phat_knob_realize;
+    widget_class->expose_event =   phat_knob_expose;
+    widget_class->size_request =   phat_knob_size_request;
+    widget_class->size_allocate =  phat_knob_size_allocate;
     widget_class->button_press_event = phat_knob_button_press;
     widget_class->button_release_event = phat_knob_button_release;
     widget_class->motion_notify_event = phat_knob_motion_notify;
-       widget_class->scroll_event = phat_knob_scroll;
+    widget_class->scroll_event =   phat_knob_scroll;
 
     /**
      * PhatKnob::value-changed:
@@ -142,59 +146,111 @@ static void phat_knob_class_init (PhatKnobClass *class) {
      */
     signals[VALUE_CHANGED_SIGNAL] =
         g_signal_new ("value-changed",
-                      G_TYPE_FROM_CLASS (class),
+                      G_TYPE_FROM_CLASS (klass),
                       G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
                       G_STRUCT_OFFSET (PhatKnobClass, value_changed),
                       NULL, NULL,
                       g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-    class->value_changed = NULL;
+    klass->value_changed = NULL;
+    
+  /**
+    * PhatKnob:adjustment:
+    *
+    * The GtkAdjustment that contains the current values of this knob
+    */ 
+    g_object_class_install_property (g_object_class,
+                                      PROP_ADJUSTMENT,
+                                      g_param_spec_object ("adjustment",
+							          "Adjustment",
+							          "The GtkAdjustment that contains the current values of this knob",
+                                      GTK_TYPE_ADJUSTMENT,
+                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
+  /**
+    * PhatKnob:update-policy:
+    *
+    * The update policy for this knob
+    *
+    * Since: 4.2
+    */                               
+    g_object_class_install_property (g_object_class,
+                                      PROP_UPDATE_POLICY,
+                                      g_param_spec_enum ("update-policy",
+							          "Update Policy",
+							          "The update policy for this widget",
+                                      GTK_TYPE_UPDATE_TYPE,
+                                      GTK_UPDATE_CONTINUOUS,
+                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
+  /**
+    * PhatKnob:log-mode:
+    *
+    * Whether log mode is enabled. log mode shifts the emphasis towards
+    * the lower values, enabling finer control there.
+    * this is typically useful when controlling frequency values
+    *
+    * Since: 4.2
+    */                                
+    g_object_class_install_property (g_object_class,
+                                      PROP_LOG,
+                                      g_param_spec_boolean ("log-mode",
+							          "Log Mode",
+							          "Whether log mode is enabled",
+                                      FALSE,
+                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
+  /**
+    * PhatKnob:inverted:
+    * 
+    * FIXME no clue. unimplemented as of yet. 
+    *
+    */                                
+    g_object_class_install_property (g_object_class,
+                                      PROP_INVERTED,
+                                      g_param_spec_boolean ("inverted",
+							          "Inverted",
+							          "Whether the knob is inverted",
+                                      FALSE,
+                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
 }
 
 static void phat_knob_init (PhatKnob *knob) {
-    knob->policy = GTK_UPDATE_CONTINUOUS;
     knob->state = STATE_IDLE;
     knob->saved_x = knob->saved_y = 0;
     knob->size = KNOB_SIZE;
     knob->timer = 0;
     knob->pixbuf = NULL;
-    knob->mask = NULL;
-    knob->mask_gc = NULL;
-    knob->red_gc = NULL;
     knob->old_value = 0.0;
     knob->old_lower = 0.0;
     knob->old_upper = 0.0;
-    knob->is_log = 0;
     knob->adjustment = NULL;
     knob->adjustment_prv = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 1.0, 0.1, 0.1, 0.0);
-    phat_knob_set_adjustment(knob, knob->adjustment_prv);
+    
+    g_signal_connect(G_OBJECT (knob->adjustment_prv), "changed",
+                       G_CALLBACK(phat_knob_internal_adjustment_changed),
+                       (gpointer) knob);
+    g_signal_connect(G_OBJECT (knob->adjustment_prv), "value_changed",
+                       G_CALLBACK(phat_knob_internal_adjustment_value_changed),
+                       (gpointer) knob);
 }
 
+
+/**
+ * phat_knob_new:
+ * @adjustment: a #GtkAdjustment or NULL
+ *
+ * Creates a new #PhatKnob with the supplied
+ * #GtkAdjustment. if adjustment is NULL or
+ * invalid, a new #GtkAdjustment will be created
+ * with the default values of:
+ * 0.0, 0.0, 10.0, 0.1, 0.1, 0.2
+ * 
+ * Returns: a newly created #PhatKnob
+ * 
+ */
 GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
-    PhatKnob *knob;
 
-    knob = gtk_type_new(phat_knob_get_type());
-
-    if (!adjustment)
-        adjustment = (GtkAdjustment*) gtk_adjustment_new(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    
-    knob->adjustment = adjustment;
-
-    gtk_signal_connect(
-        GTK_OBJECT(adjustment),
-        "changed",
-        GTK_SIGNAL_FUNC(phat_knob_external_adjustment_changed),
-        (gpointer)knob);
-    gtk_signal_connect(
-        GTK_OBJECT(adjustment),
-        "value_changed",
-        GTK_SIGNAL_FUNC(phat_knob_external_adjustment_value_changed),
-        (gpointer)knob);
-
-
-    // correlate internal adj to externally visable one
-    phat_knob_update_internal_adjustment(knob);
-    
-    return GTK_WIDGET(knob);
+    return g_object_new (PHAT_TYPE_KNOB,
+                          "adjustmnet",
+                           adjustment,
+                           NULL);
 }
 
 /**
@@ -343,7 +399,8 @@ static void phat_knob_destroy(GtkObject *object) {
     knob = PHAT_KNOB(object);
 
     if (knob->adjustment) {
-        gtk_object_destroy(GTK_OBJECT(knob->adjustment));
+		// unref external adjustment rather than destroy it as it might be shared
+        g_object_unref(GTK_OBJECT(knob->adjustment));
         knob->adjustment = NULL;
     }
 
@@ -368,8 +425,8 @@ static void phat_knob_destroy(GtkObject *object) {
         knob->red_gc = NULL;
     }
 
-    if (GTK_OBJECT_CLASS(parent_class)->destroy)
-        (*GTK_OBJECT_CLASS(parent_class)->destroy)(object);
+    if (GTK_OBJECT_CLASS(phat_knob_parent_class)->destroy)
+        (*GTK_OBJECT_CLASS(phat_knob_parent_class)->destroy)(object);
 }
 
 GtkAdjustment* phat_knob_get_adjustment(PhatKnob *knob) {
@@ -390,10 +447,27 @@ void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment) {
     g_return_if_fail (knob != NULL);
     g_return_if_fail (PHAT_IS_KNOB (knob));
 
-    gtk_signal_connect(GTK_OBJECT(adjustment), "changed",
-                       GTK_SIGNAL_FUNC(phat_knob_adjustment_changed), (gpointer) knob);
-    gtk_signal_connect(GTK_OBJECT(adjustment), "value_changed",
-                       GTK_SIGNAL_FUNC(phat_knob_adjustment_value_changed), (gpointer) knob);
+    if (!GTK_IS_ADJUSTMENT (adjustment))
+        adjustment = (GtkAdjustment*) gtk_adjustment_new (0.0, 0.0, 10.0, 0.1, 0.1, 0.2);
+    
+    if (knob->adjustment)
+    {
+        g_signal_handlers_disconnect_matched(G_OBJECT(knob->adjustment),
+                                              G_SIGNAL_MATCH_DATA,
+                                              0, 0, NULL, NULL,
+                                              knob);
+        g_object_unref(G_OBJECT (knob->adjustment));
+    }
+    
+    knob->adjustment = adjustment;
+    g_object_ref_sink(G_OBJECT(adjustment));
+    
+    g_signal_connect(G_OBJECT (adjustment), "changed",
+                       G_CALLBACK(phat_knob_adjustment_changed),
+                       (gpointer) knob);
+    g_signal_connect(G_OBJECT (adjustment), "value_changed",
+                       G_CALLBACK(phat_knob_adjustment_value_changed),
+                       (gpointer) knob);
 
     knob->old_value = adjustment->value;
     knob->old_lower = adjustment->lower;
@@ -401,6 +475,7 @@ void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment) {
 
     phat_knob_update(knob);
 }
+
 
 static void phat_knob_realize(GtkWidget *widget) {
     PhatKnob *knob;
@@ -584,13 +659,13 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
         case 1:
             knob->adjustment_prv->value -= knob->adjustment_prv->page_increment;
             g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-            gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+            g_signal_emit_by_name(G_OBJECT(knob->adjustment_prv), "value_changed");
             break;
 
         case 3:
             knob->adjustment_prv->value += knob->adjustment_prv->page_increment;
             g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-            gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+            g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
             break;
 
         default:
@@ -605,7 +680,7 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
         if (knob->policy != GTK_UPDATE_CONTINUOUS && knob->old_value != knob->adjustment_prv->value)
         {
             g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-            gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+            g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
         }
         break;
 
@@ -688,7 +763,7 @@ static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 
     knob->state = STATE_IDLE;
        if(knob->adjustment_prv->value == 0.5)g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-    gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+    g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
 
        return TRUE;
 }
@@ -700,7 +775,7 @@ static gint phat_knob_timer(PhatKnob *knob) {
     if (knob->policy == GTK_UPDATE_DELAYED)
     {
         g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+        g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
     }
     return FALSE;       /* don't keep running this timer */
 }
@@ -708,7 +783,7 @@ static gint phat_knob_timer(PhatKnob *knob) {
 static void phat_knob_update_mouse_update(PhatKnob *knob) {
     if (knob->policy == GTK_UPDATE_CONTINUOUS)
     {
-        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+        g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
         g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
     }
     else 
@@ -740,7 +815,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
 
     if (absolute) {
 
-        angle /= M_PI;
+        angle /= G_PI;
         if (angle < -0.5)
             angle += 2;
 
@@ -804,13 +879,13 @@ static void phat_knob_update(PhatKnob *knob) {
     if (new_value != knob->adjustment_prv->value) {
         knob->adjustment_prv->value = new_value;
         g_signal_emit (G_OBJECT (knob), signals[VALUE_CHANGED_SIGNAL], 0);
-        gtk_signal_emit_by_name(GTK_OBJECT(knob->adjustment_prv), "value_changed");
+        g_signal_emit_by_name(G_OBJECT (knob->adjustment_prv), "value_changed");
     }
 
     gtk_widget_draw(GTK_WIDGET(knob), NULL);
 }
 
-static void phat_knob_adjustment_changed(GtkAdjustment *adjustment, gpointer data) {
+static void phat_knob_internal_adjustment_changed(GtkAdjustment *adjustment, gpointer data) {
     PhatKnob *knob;
 
     g_return_if_fail(adjustment != NULL);
@@ -829,7 +904,7 @@ static void phat_knob_adjustment_changed(GtkAdjustment *adjustment, gpointer dat
     }
 }
 
-static void phat_knob_adjustment_value_changed (GtkAdjustment *adjustment, gpointer data) {
+static void phat_knob_internal_adjustment_value_changed (GtkAdjustment *adjustment, gpointer data) {
     PhatKnob *knob;
 
     g_return_if_fail(adjustment != NULL);
@@ -847,7 +922,7 @@ static void phat_knob_adjustment_value_changed (GtkAdjustment *adjustment, gpoin
 }
 
 static void
-phat_knob_external_adjustment_changed(
+phat_knob_adjustment_changed(
     GtkAdjustment * adjustment,
     gpointer data)
 {
@@ -859,7 +934,7 @@ phat_knob_external_adjustment_changed(
 }
 
 static void
-phat_knob_external_adjustment_value_changed(
+phat_knob_adjustment_value_changed(
     GtkAdjustment * adjustment,
     gpointer data)
 {
@@ -868,4 +943,60 @@ phat_knob_external_adjustment_value_changed(
     knob = PHAT_KNOB(data);
 
     phat_knob_update_internal_adjustment(knob);
+}
+
+static void
+phat_knob_set_property (GObject      *object, 
+			            guint         prop_id, 
+			            const GValue *value, 
+			            GParamSpec   *pspec)
+{
+  PhatKnob *knob = PHAT_KNOB (object);
+
+  switch (prop_id) 
+    {
+    case PROP_ADJUSTMENT:
+      phat_knob_set_adjustment (knob, g_value_get_object (value));
+      break;
+    case PROP_LOG:
+      phat_knob_set_log (knob, g_value_get_boolean (value));
+      break;
+    case PROP_UPDATE_POLICY:
+      phat_knob_set_update_policy (knob, g_value_get_enum (value));
+      break;
+    case PROP_INVERTED:
+      // shite all at the moment
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+phat_knob_get_property (GObject    *object, 
+			            guint       prop_id, 
+			            GValue     *value, 
+			            GParamSpec *pspec)
+{
+    PhatKnob *knob = PHAT_KNOB (object);
+	
+    switch (prop_id) 
+    {
+        case PROP_ADJUSTMENT:
+          g_value_set_object (value, knob->adjustment);
+          break;
+        case PROP_LOG:
+          g_value_set_boolean (value, knob->is_log);
+          break;
+        case PROP_UPDATE_POLICY:
+          g_value_set_enum (value, knob->policy);
+          break;
+        case PROP_INVERTED:
+          // shite all at the moment
+          break;
+        default:
+          G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+          break;
+    }
 }
