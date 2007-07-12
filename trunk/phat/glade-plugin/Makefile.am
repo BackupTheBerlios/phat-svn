@@ -34,10 +34,3 @@ libgladephat_la_LIBADD      = $(libphat)
 
 gladecatalogsdir = `pkg-config --variable=catalogdir gladeui-1.0`
 gladecatalogs_DATA = phat.xml
-install: all
-	$(INSTALL_PROGRAM) .libs/libgladephat.so $(gladephatdir);
-	$(INSTALL_DATA) phat.xml $(gladecatalogsdir);
-
-uninstall:
-	rm -f $(gladephatdir)/libgladephat.so;
-	rm -f $(gladecatalogsdir)/phat.xml;
