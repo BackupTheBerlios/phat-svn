@@ -1,0 +1,53 @@
+
+%headertop{
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include <gtk/gtk.h>
+#include <glib.h>
+%}
+
+
+class Phat:Adjustment from Gtk:Adjustment
+{
+
+    private gfloat rtfloat_copy;
+    private gfloat *rtfloat;
+    private gfloat intern;
+
+    private gint timeout_source
+	unref { g_source_remove( VAR ); };
+
+    init( self ) {
+	selfp->intern = 0.0;
+	selfp->rtfloat = &( selfp->intern );
+	selfp->rtfloat_copy = *( selfp->rtfloat );
+
+	selfp->timeout_source = g_timeout_add( 50, (GSourceFunc) self_timeout_func, (gpointer) self );
+    }
+
+    public GtkAdjustment * new (void) {
+	GtkAdjustment *ret = (GtkAdjustment *) GET_NEW;
+	return GTK_ADJUSTMENT(ret);
+    }
+
+    private gboolean timeout_func( self ) {
+
+	gfloat my_copy = *( selfp->rtfloat );
+	if( my_copy != selfp->rtfloat_copy ) {
+	    selfp->rtfloat_copy = my_copy;
+	    gtk_adjustment_set_value( GTK_ADJUSTMENT(self), my_copy );
+	}
+	return TRUE;
+    }
+
+    public gfloat *get_watch_float( self ) {
+	return selfp->rtfloat;
+    }
+
+    public void set_watch_float( self, gfloat *watch_float ) {
+	selfp->rtfloat = watch_float;
+    }
+}
+

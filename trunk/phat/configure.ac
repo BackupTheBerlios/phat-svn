@@ -69,6 +69,12 @@ AM_CONDITIONAL([BUILD_GLADE_PLUGIN], test x$build_glade = xyes)
 
 GTK_DOC_CHECK(1.0)
 
+##################################################
+# Check for gob2
+##################################################
+
+GOB2_CHECK([2.0.0])
+
 # misc checks
 PKG_CHECK_MODULES(MISC, libgnomecanvas-2.0)
 
