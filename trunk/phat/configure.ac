@@ -22,6 +22,7 @@ if test x$with_debug = xno; then
     CFLAGS="-O3"
     AC_DEFINE(DEBUG, 0, [[whether to display debugging output or not]])
 else
+    CFLAGS="-g"
     AC_DEFINE(DEBUG, 1, [[whether to display debugging output or not]])
 fi
 

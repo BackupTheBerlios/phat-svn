@@ -10,5 +10,6 @@
 #include <phat/phathkeyboard.h>
 #include <phat/phatpad.h>
 #include <phat/phatknob.h>
+#include <phat/phatslider.h>
 
 #endif /* __PHAT_H__ */
