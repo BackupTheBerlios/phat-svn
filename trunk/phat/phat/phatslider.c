@@ -59,6 +59,9 @@ static void phat_slider_adjustment_changed(GtkAdjustment *adjustment, gpointer d
 static int phat_slider_display_height (GtkWidget *widget);
 
 
+#define PIXMAPDIRIFY(filename) \
+		(SITE_PKGDATA_DIR G_DIR_SEPARATOR_S "pixmaps" G_DIR_SEPARATOR_S filename)
+
 /* Local data */
 
 static GtkWidgetClass *parent_class = NULL;
@@ -142,7 +145,7 @@ GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
 	slider->dragging = FALSE;
 	slider->default_value = adjustment->value;
 	slider->last_drawn = -1;
-	slider->pixbuf = gdk_pixbuf_new_from_file(INSTALL_DIR"/phat/pixmaps/fader_belt.png", &error);
+	slider->pixbuf = gdk_pixbuf_new_from_file( PIXMAPDIRIFY( "fader_belt.png" ), &error);
 	slider->pixheight = gdk_pixbuf_get_height(slider->pixbuf);
 	slider->adjustment = adjustment;
 
