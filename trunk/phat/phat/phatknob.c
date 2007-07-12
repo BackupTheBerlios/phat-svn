@@ -116,13 +116,13 @@ G_DEFINE_TYPE (PhatKnob, phat_knob, GTK_TYPE_WIDGET);
 static void phat_knob_class_init (PhatKnobClass *klass) {
     GtkObjectClass   *object_class;
     GtkWidgetClass   *widget_class;
-	GObjectClass     *g_object_class;
+    GObjectClass     *g_object_class;
 
     object_class =   GTK_OBJECT_CLASS(klass);
     widget_class =   GTK_WIDGET_CLASS(klass);
-	g_object_class = G_OBJECT_CLASS(klass);
+    g_object_class = G_OBJECT_CLASS(klass);
 
-	g_object_class->set_property = phat_knob_set_property;
+    g_object_class->set_property = phat_knob_set_property;
     g_object_class->get_property = phat_knob_get_property;
 	
     object_class->destroy =        phat_knob_destroy;
