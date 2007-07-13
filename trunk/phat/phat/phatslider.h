@@ -39,12 +39,6 @@ typedef struct _PhatSliderClass   PhatSliderClass;
 
 struct _PhatSlider {
     GtkRange range;
-    /* The adjustment object that stores the data for this slider */
-    GtkAdjustment *adjustment;
-
-    //what does this do?
-    /* update policy (GTK_UPDATE_[CONTINUOUS/DELAYED/DISCONTINUOUS]) */
-    //guint policy : 2;
 
     gint pixheight;
 
@@ -76,11 +70,7 @@ GtkWidget* phat_slider_new_with_range (double value,
                                      double lower,
                                      double upper,
                                      double step);
-GtkAdjustment *phat_slider_get_adjustment(PhatSlider *slider);
-double phat_slider_get_value (PhatSlider* slider);
-void phat_slider_set_value (PhatSlider* slider, double value);
-void phat_slider_set_range (PhatSlider* slider, double lower, double upper);
-void phat_slider_set_adjustment(PhatSlider *slider, GtkAdjustment *adjustment);
+
 
 G_END_DECLS
 

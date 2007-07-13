@@ -84,9 +84,7 @@ static void phat_slider_class_init (PhatSliderClass *klass) {
 }
 
 static void phat_slider_init (PhatSlider *slider)
-{
-    
-    slider->adjustment = NULL;
+{    
 	slider->dragging = FALSE;
 	slider->view.x = 0;
 	slider->view.y = 0;
@@ -109,6 +107,19 @@ GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
                           "adjustmnet",
                            adjustment,
                            NULL);
+}
+
+GtkWidget* phat_slider_new_with_range (double value,
+                                       double lower,
+                                       double upper,
+                                       double step)
+{
+    GtkAdjustment *adj;
+    
+    adj = (GtkAdjustment *)gtk_adjustment_new(value, lower, upper, step, step, 0);
+    
+    return phat_slider_new(adj);
+    
 }
 
 static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
