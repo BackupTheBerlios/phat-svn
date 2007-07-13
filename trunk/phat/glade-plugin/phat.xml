@@ -12,6 +12,8 @@
 	<glade-widget-class name="PhatVUMeter" generic-name="phat_vu_meter" title="meter VU"/>
 	<glade-widget-class name="PhatDPMMeter" generic-name="phat_dpm_meter" title="meter dpm"/>
 	<glade-widget-class name="PhatPPMMeter" generic-name="phat_ppm_meter" title="meter dpm"/>
+	<glade-widget-class name="TechKnob"  generic-name="techknob" title="techKnoB"/>
+	<glade-widget-class name="PhatSlider"  generic-name="phatslider" title="slider"/>
 
     </glade-widget-classes>
         
@@ -27,6 +29,8 @@
         <glade-widget-class-ref name="PhatVUMeter"/>
         <glade-widget-class-ref name="PhatDPMMeter"/>
         <glade-widget-class-ref name="PhatPPMMeter"/>
+	<glade-widget-class-ref name="TechKnob"/>
+	<glade-widget-class-ref name="PhatSlider"/>
 
     </glade-widget-group>
         

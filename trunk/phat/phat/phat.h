@@ -11,5 +11,6 @@
 #include <phat/phatpad.h>
 #include <phat/phatknob.h>
 #include <phat/phatslider.h>
+#include <phat/sample-display.h>
 
 #endif /* __PHAT_H__ */
