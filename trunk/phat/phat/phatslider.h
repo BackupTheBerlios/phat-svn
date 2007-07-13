@@ -38,7 +38,7 @@ typedef struct _PhatSlider        PhatSlider;
 typedef struct _PhatSliderClass   PhatSliderClass;
 
 struct _PhatSlider {
-    GtkWidget widget;
+    GtkRange range;
     /* The adjustment object that stores the data for this slider */
     GtkAdjustment *adjustment;
 
@@ -63,7 +63,7 @@ struct _PhatSlider {
 
 struct _PhatSliderClass
 {
-    GtkWidgetClass parent_class;
+    GtkRangeClass parent_class;
 
     void (*value_changed) (PhatSlider* slider);
 };

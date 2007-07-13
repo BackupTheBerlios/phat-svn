@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <gtk/gtkmain.h>
 #include <gtk/gtksignal.h>
+#include <gtk/gtkrange.h>
 #include "phatslider.h"
 
 enum
@@ -34,19 +35,11 @@ enum
     STATE_SCROLL,
 };
 
-/* signals */
-enum
-{
-    VALUE_CHANGED_SIGNAL,
-    CHANGED_SIGNAL,
-    LAST_SIGNAL,
-};
 
-static int signals[LAST_SIGNAL];
 static void phat_slider_class_init(PhatSliderClass *klass);
 static void phat_slider_init(PhatSlider *slider);
 //static void phat_slider_destroy(GtkObject *object);
-static void phat_slider_realize(GtkWidget *widget);
+//static void phat_slider_realize(GtkWidget *widget);
 static void phat_slider_size_request(GtkWidget *widget, GtkRequisition *requisition);
 //static void phat_slider_size_allocate(GtkWidget *widget, GtkAllocation *allocation);
 static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event);
@@ -55,7 +48,7 @@ static gint phat_slider_button_release(GtkWidget *widget, GdkEventButton *event)
 static gint phat_slider_motion_notify(GtkWidget *widget, GdkEventMotion *event);
 static gint phat_slider_scroll (GtkWidget *widget, GdkEventScroll *event);
 //static void phat_slider_update(PhatSlider *slider);
-static void phat_slider_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
+//static void phat_slider_adjustment_changed(GtkAdjustment *adjustment, gpointer data);
 static int phat_slider_display_height (GtkWidget *widget);
 
 
@@ -64,158 +57,59 @@ static int phat_slider_display_height (GtkWidget *widget);
 
 /* Local data */
 
-static GtkWidgetClass *parent_class = NULL;
+G_DEFINE_TYPE(PhatSlider, phat_slider, GTK_TYPE_RANGE);
 
-GType phat_slider_get_type(void) 
-{
-    static GType slider_type = 0;
+GdkPixbuf *fader_belt = NULL;
 
-    if (!slider_type) {
-        static const GTypeInfo info = 
-            {
-                sizeof (PhatSliderClass),
-                NULL,
-                NULL,
-                (GClassInitFunc) phat_slider_class_init,
-                NULL,
-                NULL,
-                sizeof (PhatSlider),
-                0,
-                (GInstanceInitFunc) phat_slider_init,
-            };
-
-        slider_type =  g_type_register_static (GTK_TYPE_WIDGET,
-                                             "PhatSlider",
-                                             &info,
-                                             0);
-    }
-
-    return slider_type;
-}
-
-static void phat_slider_class_init (PhatSliderClass *class) {
+static void phat_slider_class_init (PhatSliderClass *klass) {
+    GObjectClass   *g_object_class;
     GtkObjectClass *object_class;
     GtkWidgetClass *widget_class;
 
-    object_class = (GtkObjectClass*) class;
-    widget_class = (GtkWidgetClass*) class;
-
-    parent_class = gtk_type_class(gtk_widget_get_type());
+    g_object_class = G_OBJECT_CLASS (klass);
+    object_class = GTK_OBJECT_CLASS (klass);
+    widget_class = GTK_WIDGET_CLASS (klass);
 
     //object_class->destroy = phat_slider_destroy;
 
-    widget_class->realize = phat_slider_realize;
-    widget_class->expose_event = phat_slider_expose;
-    widget_class->size_request = phat_slider_size_request;
-    //widget_class->size_allocate = phat_slider_size_allocate;
-    widget_class->button_press_event = phat_slider_button_press;
+   // widget_class->realize =              phat_slider_realize;
+    widget_class->expose_event =         phat_slider_expose;
+    widget_class->size_request =         phat_slider_size_request;
+    //widget_class->size_allocate =      phat_slider_size_allocate;
+    widget_class->button_press_event =   phat_slider_button_press;
     widget_class->button_release_event = phat_slider_button_release;
-    widget_class->motion_notify_event = phat_slider_motion_notify;
-    widget_class->scroll_event = phat_slider_scroll;
+    widget_class->motion_notify_event =  phat_slider_motion_notify;
+    widget_class->scroll_event =         phat_slider_scroll;
 
-    /**
-     * PhatSlider::value-changed:
-     * @slider: the object on which the signal was emitted
-     *
-     * The "value-changed" signal is emitted when the value of the
-     * sliderbutton's adjustment changes.
-     *
-     */
-    signals[VALUE_CHANGED_SIGNAL] =
-        g_signal_new ("value-changed",
-                      G_TYPE_FROM_CLASS (class),
-                      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
-                      G_STRUCT_OFFSET (PhatSliderClass, value_changed),
-                      NULL, NULL,
-                      g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-    class->value_changed = NULL;
 }
 
-static void phat_slider_init (PhatSlider *slider) {
-    slider->pixbuf = NULL;
+static void phat_slider_init (PhatSlider *slider)
+{
+    
     slider->adjustment = NULL;
+	slider->dragging = FALSE;
+	slider->view.x = 0;
+	slider->view.y = 0;
+	slider->last_drawn = -1;
+    
+    if (fader_belt == NULL)
+        fader_belt = gdk_pixbuf_new_from_file( PIXMAPDIRIFY( "fader_belt.png" ), NULL);  
+    slider->pixbuf = fader_belt;    
+    
+    slider->pixheight = gdk_pixbuf_get_height(slider->pixbuf);
+	slider->view.width =  gdk_pixbuf_get_width(slider->pixbuf);
+	slider->view.height = slider->pixheight / 2;
+    slider->unity_y = (int) rint (slider->view.height - (slider->default_value * slider->view.height)) - 1;
 }
 
 GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
 {
-        PhatSlider *slider;
-	GError *error = NULL;
 
-	slider = gtk_type_new(phat_slider_get_type());
-	slider->dragging = FALSE;
-	slider->default_value = adjustment->value;
-	slider->last_drawn = -1;
-	slider->pixbuf = gdk_pixbuf_new_from_file( PIXMAPDIRIFY( "fader_belt.png" ), &error);
-	slider->pixheight = gdk_pixbuf_get_height(slider->pixbuf);
-	slider->adjustment = adjustment;
-
-
-	slider->view.x = 0;
-	slider->view.y = 0;
-	slider->view.width =  gdk_pixbuf_get_width(slider->pixbuf);
-	slider->view.height = slider->pixheight / 2;
-
-	slider->unity_y = (int) rint (slider->view.height - (slider->default_value * slider->view.height)) - 1;
-	
-	gtk_signal_connect(
-        GTK_OBJECT(slider->adjustment),
-        "changed",
-        GTK_SIGNAL_FUNC(phat_slider_adjustment_changed),
-        (gpointer)slider);
-    gtk_signal_connect(
-        GTK_OBJECT(slider->adjustment),
-        "value_changed",
-        GTK_SIGNAL_FUNC(phat_slider_adjustment_changed),
-        (gpointer)slider);
-
-	//add_events (Gdk::BUTTON_PRESS_MASK|Gdk::BUTTON_RELEASE_MASK|Gdk::POINTER_MOTION_MASK|Gdk::SCROLL_MASK);
-	return GTK_WIDGET(slider);
+    return g_object_new (PHAT_TYPE_SLIDER,
+                          "adjustmnet",
+                           adjustment,
+                           NULL);
 }
-
-static void phat_slider_realize(GtkWidget *widget)
-{
-    PhatSlider *slider;
-    GdkWindowAttr attributes;
-    gint attributes_mask;
-    //extern GdkPixbuf **pixbuf;
-
-    g_return_if_fail(widget != NULL);
-    g_return_if_fail(PHAT_IS_SLIDER(widget));
-
-    GTK_WIDGET_SET_FLAGS(widget, GTK_REALIZED);
-    slider = PHAT_SLIDER(widget);
-
-    attributes.x = widget->allocation.x;
-    attributes.y = widget->allocation.y;
-    attributes.width = slider->view.width;
-    attributes.height = slider->view.width;
-    attributes.wclass = GDK_INPUT_OUTPUT;
-    attributes.window_type = GDK_WINDOW_CHILD;
-    attributes.event_mask =
-        gtk_widget_get_events (widget) | 
-        GDK_EXPOSURE_MASK | GDK_BUTTON_PRESS_MASK | 
-        GDK_BUTTON_RELEASE_MASK | GDK_BUTTON_MOTION_MASK |
-        GDK_SCROLL_MASK;
-    attributes.visual = gtk_widget_get_visual(widget);
-    attributes.colormap = gtk_widget_get_colormap(widget);
-
-    attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
-    widget->window = gdk_window_new(widget->parent->window, &attributes, attributes_mask);
-
-    widget->style = gtk_style_attach(widget->parent->style, widget->window);
-
-    gdk_window_set_user_data(widget->window, widget);
-    
-    gtk_style_set_background(widget->style, widget->window, GTK_STATE_NORMAL);
-
-
-    //knob->mask_gc = gdk_gc_new(widget->window);
-    //gdk_gc_copy(knob->mask_gc, widget->style->bg_gc[GTK_STATE_NORMAL]);
-    //gdk_gc_set_clip_mask(knob->mask_gc, knob->mask);
-
-}
-
-
 
 static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
     PhatSlider *slider;
@@ -279,7 +173,7 @@ phat_slider_button_press (GtkWidget *widget, GdkEventButton* ev)
     switch (ev->button) {
     case 1:
     case 2:
-	    //add_modal_grab(); #FIXME is this in gtk? or just gtkmm?...
+	    gtk_grab_add(widget);
 	    slider->grab_y = ev->y;
 	    slider->grab_start = ev->y;
 	    slider->grab_window = ev->window;
@@ -297,15 +191,17 @@ gint
 phat_slider_button_release (GtkWidget *widget, GdkEventButton* ev)
 {
 	PhatSlider *slider;
+    GtkRange   *range;
 
 	slider = PHAT_SLIDER(widget);
+    range  = GTK_RANGE(widget);
 
 	double fract;
 	
 	switch (ev->button) {
 	case 1:
 		if (slider->dragging) {
-			//remove_modal_grab();
+			gtk_grab_remove(widget);
 			slider->dragging = FALSE;
 
 			if (ev->y == slider->grab_start) {
@@ -313,16 +209,16 @@ phat_slider_button_release (GtkWidget *widget, GdkEventButton* ev)
 				/* no motion - just a click */
 
 				if (ev->state & GDK_SHIFT_MASK) {
-					gtk_adjustment_set_value(slider->adjustment, slider->default_value);
+					gtk_adjustment_set_value(range->adjustment, slider->default_value);
 				} else if (ev->state & GDK_CONTROL_MASK) {
-					gtk_adjustment_set_value(slider->adjustment, slider->adjustment->lower);
+					gtk_adjustment_set_value(range->adjustment, range->adjustment->lower);
 				} else if (ev->y < slider->view.height - phat_slider_display_height(widget)) {
 					/* above the current display height, remember X Window coords */
-					gtk_adjustment_set_value(slider->adjustment, slider->adjustment->value + 
-						slider->adjustment->step_increment);
+					gtk_adjustment_set_value(range->adjustment, range->adjustment->value + 
+						range->adjustment->step_increment);
 				} else {
-				    gtk_adjustment_set_value(slider->adjustment, slider->adjustment->value - 
-						slider->adjustment->step_increment);
+				    gtk_adjustment_set_value(range->adjustment, range->adjustment->value - 
+						range->adjustment->step_increment);
 				}
 			}
 
@@ -331,7 +227,7 @@ phat_slider_button_release (GtkWidget *widget, GdkEventButton* ev)
 		
 	case 2:
 		if (slider->dragging) {
-			//remove_modal_grab();
+			gtk_grab_remove(widget);
 			slider->dragging = FALSE;
 			
 			fract = 1.0 - (ev->y / slider->view.height); // inverted X Window coordinates, grrr
@@ -339,7 +235,7 @@ phat_slider_button_release (GtkWidget *widget, GdkEventButton* ev)
 			fract = fmin(1.0, fract);
 			fract = fmax(0.0, fract);
 			
-			gtk_adjustment_set_value(slider->adjustment, (fract * (slider->adjustment->lower - slider->adjustment->upper)));
+			gtk_adjustment_set_value(range->adjustment, (fract * (range->adjustment->lower - range->adjustment->upper)));
 		}
 		break;
 
@@ -353,10 +249,12 @@ phat_slider_button_release (GtkWidget *widget, GdkEventButton* ev)
 gint
 phat_slider_scroll (GtkWidget *widget, GdkEventScroll* ev)
 {
-    	PhatSlider *slider;
-
+    PhatSlider *slider;
+    GtkRange   *range;
+    
 	slider = PHAT_SLIDER(widget);
-
+    range  = GTK_RANGE(widget);
+    
 	double scale;
 	
 	if (ev->state & GDK_CONTROL_MASK) {
@@ -373,13 +271,13 @@ phat_slider_scroll (GtkWidget *widget, GdkEventScroll* ev)
 
 	case GDK_SCROLL_UP:
 		/* wheel up */
-		gtk_adjustment_set_value(slider->adjustment, slider->adjustment->value + 
-						(slider->adjustment->page_increment * scale));
+		gtk_adjustment_set_value(range->adjustment, range->adjustment->value + 
+						(range->adjustment->page_increment * scale));
 		break;
 	case GDK_SCROLL_DOWN:
 		/* wheel down */
-		gtk_adjustment_set_value(slider->adjustment, slider->adjustment->value - 
-						(slider->adjustment->page_increment * scale));
+		gtk_adjustment_set_value(range->adjustment, range->adjustment->value - 
+						(range->adjustment->page_increment * scale));
 		break;
 	default:
 		break;
@@ -390,9 +288,11 @@ phat_slider_scroll (GtkWidget *widget, GdkEventScroll* ev)
 gint
 phat_slider_motion_notify (GtkWidget *widget, GdkEventMotion* ev)
 {
-        PhatSlider *slider;
+    PhatSlider *slider;
+    GtkRange   *range;
 
 	slider = PHAT_SLIDER(widget);
+    range  = GTK_RANGE(widget);
 
 	if (slider->dragging) {
 		double fract;
@@ -426,14 +326,15 @@ phat_slider_motion_notify (GtkWidget *widget, GdkEventMotion* ev)
 		// X Window is top->bottom for 0..Y
 		
 		fract = -fract;
-		gtk_adjustment_set_value(slider->adjustment, slider->adjustment->value + scale * fract * 
-			(slider->adjustment->upper - slider->adjustment->lower));
+		gtk_adjustment_set_value(range->adjustment, range->adjustment->value + scale * fract * 
+			(range->adjustment->upper - range->adjustment->lower));
 
 	}
 
 	return TRUE;
 }
 
+#if 0
 static void
 phat_slider_adjustment_changed (GtkAdjustment *adjustment, gpointer data)
 {
@@ -446,15 +347,17 @@ phat_slider_adjustment_changed (GtkAdjustment *adjustment, gpointer data)
 	}
 }
 
+#endif
 static int
 phat_slider_display_height (GtkWidget *widget)
 {       
 	PhatSlider *slider;
-	double fract;
+    GtkRange   *range;
+	double      fract;
 
 	slider = PHAT_SLIDER(widget);
+    range  = GTK_RANGE(widget);
 
-	fract = (slider->adjustment->upper - slider->adjustment->value) / (slider->adjustment->upper - slider->adjustment->lower);
+	fract = (range->adjustment->upper - range->adjustment->value) / (range->adjustment->upper - range->adjustment->lower);
 	return (int) floor (slider->view.height * (1.0 - fract));
 }
-
