@@ -22,6 +22,3 @@ phathfanslider.h phatsliderbutton.h phatkeyboard.h phatvkeyboard.h	\
 phathkeyboard.h phatpad.h phatknob.h phatslider.h			\
 phatppmmeter.h phatdpmmeter.h phatvumeter.h phat-adjustment.h		\
 tech-knob.h sample-display.h
-
-%.c %.h %-private.h: %.gob
-	@GOB2@ $<
