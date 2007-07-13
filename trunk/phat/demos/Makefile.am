@@ -1,4 +1,4 @@
-bin_PROGRAMS = phatfanslider phatsliderbutton phatkeyboard phatpad phatknob phatslider phatsampledisplay
+bin_PROGRAMS = phatfanslider phatsliderbutton phatkeyboard phatpad phatknob phatslider phatsampledisplay phatmeter
 
 phatfanslider_SOURCES = fanslider.c
 phatfanslider_CFLAGS = `pkg-config --cflags gtk+-2.0` -g -I..
@@ -34,5 +34,10 @@ phatsampledisplay_SOURCES = sampledisplay.c
 phatsampledisplay_CFLAGS = `pkg-config --cflags gtk+-2.0` -g -I..
 phatsampledisplay_LIBS = `pkg-config --libs gtk+-2.0`
 phatsampledisplay_LDADD = ../phat/libphat.la
+
+phatmeter_SOURCES = meters.c
+phatmeter_CFLAGS = `pkg-config --cflags gtk+-2.0` -I..
+phatmeter_LIBS = `pkg-config --libs gtk+-2.0`
+phatmeter_LDADD = ../phat/libphat.la
 
 
