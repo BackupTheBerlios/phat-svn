@@ -52,7 +52,6 @@ struct _PhatSlider {
     gboolean dragging;
     float default_value;
     int unity_y;
-
 };
 
 struct _PhatSliderClass

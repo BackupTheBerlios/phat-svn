@@ -92,18 +92,17 @@ static void phat_slider_init (PhatSlider *slider)
     if (fader_belt == NULL)
         fader_belt = gdk_pixbuf_new_from_file( PIXMAPDIRIFY( "fader_belt.png" ), NULL);  
     slider->pixbuf = fader_belt;    
-    
     slider->pixheight = gdk_pixbuf_get_height(slider->pixbuf);
 	slider->view.width =  gdk_pixbuf_get_width(slider->pixbuf);
 	slider->view.height = slider->pixheight / 2;
     slider->unity_y = (int) rint (slider->view.height - (slider->default_value * slider->view.height)) - 1;
     
-    /* warning, slider->default_value is not set at the moment */
+    /* warning, slider->default_value is not set at the moment 
+       this stuff needs to track adjustment changes */
 }
 
 GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
-{
-
+{    
     return g_object_new (PHAT_TYPE_SLIDER,
                           "adjustmnet",
                            adjustment,
@@ -127,6 +126,8 @@ static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
     PhatSlider *slider;
     int dh, offset_into_pixbuf;
     GdkRectangle expose_area;
+    GdkRectangle intersection;
+    gint xo, yo; /* parent relative offsets */
 
     g_return_val_if_fail(widget != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_SLIDER(widget), FALSE);
@@ -137,7 +138,8 @@ static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
 
     slider = PHAT_SLIDER(widget);
 
-    GdkRectangle intersection;
+    xo = widget->allocation.x;
+    yo = widget->allocation.y;
 
     expose_area = event->area;
     expose_area.x -= widget->allocation.x;
@@ -147,24 +149,40 @@ static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
     offset_into_pixbuf = (int) floor (slider->view.height / ((float) slider->view.height / dh));
 
     if (gdk_rectangle_intersect (&(slider->view), &expose_area, &intersection)) {
-	
-    //printf ("x %d y %d\n", widget->allocation.x, widget->allocation.y);
 
 	gdk_draw_pixbuf(widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)], slider->pixbuf, 
 				       intersection.x, offset_into_pixbuf + intersection.y,
-				       intersection.x + widget->allocation.x, intersection.y + widget->allocation.y,
+				       intersection.x + xo, intersection.y + yo,
 				       intersection.width, intersection.height,
 				       GDK_RGB_DITHER_NONE, 0, 0);
 
-	gdk_draw_line (widget->window, widget->style->bg_gc[GTK_STATE_ACTIVE], 0, 0, slider->view.width - 1, 0); /* top */
-	gdk_draw_line (widget->window, widget->style->bg_gc[GTK_STATE_ACTIVE], 0, 0, 0, slider->view.height - 1); /* left */
-	gdk_draw_line (widget->window, widget->style->bg_gc[GTK_STATE_NORMAL], slider->view.width - 1, 0, slider->view.width - 1, slider->view.height - 1); /* right */
-	gdk_draw_line (widget->window, widget->style->bg_gc[GTK_STATE_NORMAL], 0,  slider->view.height - 1, slider->view.width - 1, slider->view.height - 1); /* bottom */
+	gdk_draw_line (widget->window,
+                   widget->style->bg_gc[GTK_STATE_ACTIVE],
+                   xo, yo,
+                   xo + (slider->view.width - 1), yo); /* top */
+	
+    gdk_draw_line (widget->window,
+                   widget->style->bg_gc[GTK_STATE_ACTIVE],
+                   xo, yo,
+                   xo, yo + (slider->view.height - 1)); /* left */
+	
+    gdk_draw_line (widget->window,
+                   widget->style->bg_gc[GTK_STATE_NORMAL],
+                   xo + (slider->view.width -1), yo,
+                   xo + (slider->view.width - 1), yo + (slider->view.height - 1)); /* right */
+	
+    gdk_draw_line (widget->window,
+                   widget->style->bg_gc[GTK_STATE_NORMAL],
+                   xo,  yo + (slider->view.height - 1),
+                   xo + (slider->view.width - 1), yo + (slider->view.height - 1)); /* bottom */
     }
 
     /* always draw the line */
 
-    gdk_draw_line (widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)], 1, slider->unity_y, slider->view.width - 2, slider->unity_y);
+    gdk_draw_line (widget->window,
+                   widget->style->fg_gc[GTK_WIDGET_STATE(widget)],
+                   xo + 1, yo + slider->unity_y,
+                   xo + (slider->view.width - 2), yo + slider->unity_y);
 
     slider->last_drawn = dh;
     return FALSE;
