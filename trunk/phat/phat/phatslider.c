@@ -70,9 +70,6 @@ static void phat_slider_class_init (PhatSliderClass *klass) {
     object_class = GTK_OBJECT_CLASS (klass);
     widget_class = GTK_WIDGET_CLASS (klass);
 
-    //object_class->destroy = phat_slider_destroy;
-
-   // widget_class->realize =              phat_slider_realize;
     widget_class->expose_event =         phat_slider_expose;
     widget_class->size_request =         phat_slider_size_request;
     //widget_class->size_allocate =      phat_slider_size_allocate;
@@ -85,7 +82,9 @@ static void phat_slider_class_init (PhatSliderClass *klass) {
 
 static void phat_slider_init (PhatSlider *slider)
 {    
-	slider->dragging = FALSE;
+    GTK_WIDGET_SET_FLAGS (GTK_WIDGET(slider), GTK_NO_WINDOW);
+    
+    slider->dragging = FALSE;
 	slider->view.x = 0;
 	slider->view.y = 0;
 	slider->last_drawn = -1;
@@ -98,6 +97,8 @@ static void phat_slider_init (PhatSlider *slider)
 	slider->view.width =  gdk_pixbuf_get_width(slider->pixbuf);
 	slider->view.height = slider->pixheight / 2;
     slider->unity_y = (int) rint (slider->view.height - (slider->default_value * slider->view.height)) - 1;
+    
+    /* warning, slider->default_value is not set at the moment */
 }
 
 GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
@@ -125,6 +126,7 @@ GtkWidget* phat_slider_new_with_range (double value,
 static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
     PhatSlider *slider;
     int dh, offset_into_pixbuf;
+    GdkRectangle expose_area;
 
     g_return_val_if_fail(widget != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_SLIDER(widget), FALSE);
@@ -137,16 +139,20 @@ static gint phat_slider_expose(GtkWidget *widget, GdkEventExpose *event) {
 
     GdkRectangle intersection;
 
+    expose_area = event->area;
+    expose_area.x -= widget->allocation.x;
+    expose_area.y -= widget->allocation.y;
+
     dh = phat_slider_display_height (widget);
     offset_into_pixbuf = (int) floor (slider->view.height / ((float) slider->view.height / dh));
 
-    if (gdk_rectangle_intersect (&(slider->view), &event->area, &intersection)) {
+    if (gdk_rectangle_intersect (&(slider->view), &expose_area, &intersection)) {
 	
-
+    //printf ("x %d y %d\n", widget->allocation.x, widget->allocation.y);
 
 	gdk_draw_pixbuf(widget->window, widget->style->fg_gc[GTK_WIDGET_STATE(widget)], slider->pixbuf, 
 				       intersection.x, offset_into_pixbuf + intersection.y,
-				       intersection.x, intersection.y,
+				       intersection.x + widget->allocation.x, intersection.y + widget->allocation.y,
 				       intersection.width, intersection.height,
 				       GDK_RGB_DITHER_NONE, 0, 0);
 
@@ -322,23 +328,23 @@ phat_slider_motion_notify (GtkWidget *widget, GdkEventMotion* ev)
 			} else {
 				scale = 0.1;
 			}
-		} else {
-			scale = 1.0;
-		}
+        } else {
+            scale = 1.0;
+        }
 
-		delta = ev->y - slider->grab_y;
-		slider->grab_y = ev->y;
+        delta = ev->y - slider->grab_y;
+        slider->grab_y = ev->y;
 
-		fract = (delta / slider->view.height);
+        fract = (delta / slider->view.height);
 
-		fract = fmin (1.0, fract);
-		fract = fmax (-1.0, fract);
+        fract = fmin (1.0, fract);
+        fract = fmax (-1.0, fract);
 
 		// X Window is top->bottom for 0..Y
 		
-		fract = -fract;
-		gtk_adjustment_set_value(range->adjustment, range->adjustment->value + scale * fract * 
-			(range->adjustment->upper - range->adjustment->lower));
+        fract = -fract;
+        gtk_adjustment_set_value(range->adjustment, range->adjustment->value + scale * fract * 
+        (range->adjustment->upper - range->adjustment->lower));
 
 	}
 
@@ -349,26 +355,27 @@ phat_slider_motion_notify (GtkWidget *widget, GdkEventMotion* ev)
 static void
 phat_slider_adjustment_changed (GtkAdjustment *adjustment, gpointer data)
 {
-        PhatSlider *slider;
+    PhatSlider *slider;
 
-	slider = PHAT_SLIDER(data);
+    slider = PHAT_SLIDER(data);
 
-	if (phat_slider_display_height(GTK_WIDGET(slider)) != slider->last_drawn) {
-		gtk_widget_draw(GTK_WIDGET(slider), NULL);
-	}
+    if (phat_slider_display_height(GTK_WIDGET(slider)) != slider->last_drawn) {
+        gtk_widget_draw(GTK_WIDGET(slider), NULL);
+    }
 }
 
 #endif
 static int
 phat_slider_display_height (GtkWidget *widget)
 {       
-	PhatSlider *slider;
+    PhatSlider *slider;
     GtkRange   *range;
-	double      fract;
+    
+    double      fract;
 
-	slider = PHAT_SLIDER(widget);
+    slider = PHAT_SLIDER(widget);
     range  = GTK_RANGE(widget);
 
-	fract = (range->adjustment->upper - range->adjustment->value) / (range->adjustment->upper - range->adjustment->lower);
-	return (int) floor (slider->view.height * (1.0 - fract));
+    fract = (range->adjustment->upper - range->adjustment->value) / (range->adjustment->upper - range->adjustment->lower);
+    return (int) floor (slider->view.height * (1.0 - fract));
 }
