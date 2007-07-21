@@ -29,7 +29,7 @@
  
  /* porting notes. delete these when the port to phat is completed
   *
-  * i've implemented the intl marcos as simple pass thoughs. (P_ and I_)
+  * i've implemented the intl macros as simple pass thoughs. (P_ and I_)
   * this is because we don't use intl at the moment. although we probably
   * should now that property information is visible in glade. if we add
   * intl at a later date, we only need to delete the macro definitions
@@ -39,11 +39,6 @@
   * but they aren't equivilent. the G*_STATIC_* varients included in
   * the GTK_* definitions in gtkprivate.h require gobject >= 2.8 so
   * we'd need to check for that to use them. which is probably what i'll do
-  *
-  * the "change_value" signal registration is commented out as it requires
-  * custom marshallers. we may not need it anyway but this serves as a
-  * reminder to either add a glib-genmarshal etc to the build system order
-  * remove that signal.
   *
   * we need to sort out the credits above too. pete.
   */
