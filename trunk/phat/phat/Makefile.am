@@ -8,6 +8,7 @@ phathkeyboard.h phatpad.c phatpad.h phatknob.c phatknob.h		\
 phatppmmeter.h phatdpmmeter.h phatvumeter.h 				\
 phatppmmeter.c phatdpmmeter.c phatvumeter.c 				\
 phatslider.c phatslider.h						\
+phatrange.c phatrange.h                                     \
 tech-knob.c tech-knob.h tech-knob-private.h 				\
 phat-adjustment.c phat-adjustment.h phat-adjustment-private.h		\
 sample-display.c sample-display.h
@@ -19,6 +20,6 @@ libphatincludedir = $(includedir)/phat
 
 libphatinclude_HEADERS = phat.h phatfanslider.h phatvfanslider.h	\
 phathfanslider.h phatsliderbutton.h phatkeyboard.h phatvkeyboard.h	\
-phathkeyboard.h phatpad.h phatknob.h phatslider.h			\
+phathkeyboard.h phatpad.h phatknob.h phatslider.h phatslider.h		\
 phatppmmeter.h phatdpmmeter.h phatvumeter.h phat-adjustment.h		\
 tech-knob.h sample-display.h
