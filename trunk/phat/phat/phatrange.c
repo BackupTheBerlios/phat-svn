@@ -57,6 +57,7 @@
 #include <gtk/gtkscrollbar.h>
 
 #include "phatrange.h"
+#include "phatmarshallers.h"
 
 //#include "gtkmarshalers.h" old GtkRange stuff left for reference.
 //#include "gtkintl.h"       rm it when we are satisfied everything works 
@@ -326,19 +327,17 @@ phat_range_class_init (PhatRangeClass *class)
    *
    * Since: 2.6
    */
- /* signals[CHANGE_VALUE] =
+  signals[CHANGE_VALUE] =
     g_signal_new (I_("change_value"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PhatRangeClass, change_value),
                   _gtk_boolean_handled_accumulator, NULL,
-                  _gtk_marshal_BOOLEAN__ENUM_DOUBLE,
+                  phat_closure_marshal_BOOLEAN__ENUM_DOUBLE,
                   G_TYPE_BOOLEAN, 2,
                   GTK_TYPE_SCROLL_TYPE,
-                  G_TYPE_DOUBLE);
-                  
-  requires custom marshaller. boo.
-  */
+                  G_TYPE_DOUBLE);               
+ 
   g_object_class_install_property (gobject_class,
                                    PROP_UPDATE_POLICY,
                                    g_param_spec_enum ("update-policy",

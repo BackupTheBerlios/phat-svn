@@ -11,9 +11,9 @@
 
 #include <string.h> /* memset() */
 
-#include "phat-adjustment.h"
+#include "phatadjustment.h"
 
-#include "phat-adjustment-private.h"
+#include "phatadjustmentprivate.h"
 
 #ifdef G_LIKELY
 #define ___GOB_LIKELY(expr) G_LIKELY(expr)

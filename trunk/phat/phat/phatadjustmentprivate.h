@@ -3,7 +3,7 @@
 #ifndef __PHAT_ADJUSTMENT_PRIVATE_H__
 #define __PHAT_ADJUSTMENT_PRIVATE_H__
 
-#include "phat-adjustment.h"
+#include "phatadjustment.h"
 
 #ifdef __cplusplus
 extern "C" {
