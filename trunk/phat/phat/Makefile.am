@@ -1,5 +1,8 @@
 lib_LTLIBRARIES = libphat.la
 
+BUILT_SOURCES = \
+     phatmarshallers.c phatmarshallers.h 
+
 libphat_la_SOURCES =                        \
     phatmarshallers.c phatmarshallers.h     \
     phatrange.c phatrange.h                 \
