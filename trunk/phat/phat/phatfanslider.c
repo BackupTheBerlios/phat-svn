@@ -1545,7 +1545,7 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
 
 	//debug("length is %d \n", length);
 	cairo_move_to (cr, x+offset, y);
-	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -(length/2));
+	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -((length/2)-(h/2)));
 	cairo_rel_line_to (cr, 0, length);
 	cairo_line_to(cr, x+offset, y+h);
 	cairo_close_path (cr);  
@@ -1554,11 +1554,12 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
 
 	cairo_fill(cr);
 
-	cairo_move_to (cr, x+offset, y+h-(h*value));
+	cairo_move_to (cr, x+offset, y+h);
 
-	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -1 * ((length*value) - (length/2)+h-(h*value)));
-	cairo_rel_line_to (cr, 0, (length*value));
-	cairo_line_to (cr, x+offset, y+h);
+	cairo_line_to (cr, x + offset + (sign * (slider->cur_fan.width)), y+(length/2)+(h/2));
+	cairo_rel_line_to (cr, 0, -length*value);
+	cairo_line_to (cr, x+offset, y+(h*(1-value)));
+	cairo_close_path (cr);
 	
 	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
 	cairo_set_line_width (cr, 2.0);
