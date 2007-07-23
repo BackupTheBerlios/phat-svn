@@ -1569,38 +1569,45 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
     }
     else
     {
-	//FIXME not done yet
-        if (!slider->inverted)
+	if (slider->inverted)
             value = 1.0 - slider->adjustment_prv->value;
         else
             value = slider->adjustment_prv->value;
             
-        if (x > slider->xclick_root)
+        if (slider->direction)
+	{
             sign = 1;
+	    offset = h;
+	}
 	else
+	{ 
 	    sign = -1;
+	    offset = 0;
+	}
 
-	cairo_move_to (cr, slider->xclick_root, slider->yclick_root);
-	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -(slider->cur_fan.height/2));
-	cairo_rel_line_to (cr, 0, slider->cur_fan.height);
+	cairo_move_to (cr, x, y+offset);
+	cairo_rel_line_to (cr, -(length/2)+(w/2), sign * slider->cur_fan.height);
+	cairo_rel_line_to (cr, length, 0);
+	cairo_line_to(cr, x+w, y+offset);
 	cairo_close_path (cr);  
        
-	cairo_set_source_rgba(cr, 1, 0.2, 0.2, 0.3);
+	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
 
 	cairo_fill(cr);
-	cairo_stroke(cr);
 
-	cairo_move_to (cr, slider->xclick_root, slider->yclick_root);
-	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -1 * ((slider->cur_fan.height*value) -(slider->cur_fan.height/2)));
-	cairo_rel_line_to (cr, 0, (slider->cur_fan.height*value));
-	cairo_line_to (cr, slider->xclick_root, slider->yclick_root);
+	cairo_move_to (cr, x, y+offset);
+
+	cairo_line_to (cr, x-(length/2)+(w/2), y + offset + (sign * (slider->cur_fan.height)));
+	cairo_rel_line_to (cr, length*value, 0);
+	cairo_line_to (cr, x+(w*value), y+offset);
+	cairo_close_path (cr);
 	
 	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
 	cairo_set_line_width (cr, 2.0);
 	cairo_fill(cr);
-	cairo_stroke(cr);
 
 	cairo_destroy(cr);
+
     }
 
 }
