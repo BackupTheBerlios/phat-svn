@@ -1,5 +1,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <gdk/gdkscreen.h>
+#include <cairo.h>
 #include <math.h>
 #include "phatprivate.h"
 #include "phatfanslider.h"
@@ -45,7 +47,7 @@ static void phat_fan_slider_map             (GtkWidget *widget);
 static void phat_fan_slider_unmap           (GtkWidget *widget);
 static void phat_fan_slider_draw_fan        (PhatFanSlider* slider);
 static int  phat_fan_slider_get_fan_length  (PhatFanSlider* slider);
-static void phat_fan_slider_build_fan_clips (PhatFanSlider* slider);
+static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpointer userdata);
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
 static void phat_fan_slider_size_request (GtkWidget*widget,
@@ -472,6 +474,7 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
     slider->hint_clip0 = NULL;
     slider->hint_clip1 = NULL;
     slider->is_log = 0;
+    slider->direction = 0;
     slider->use_default_value = FALSE;
 
     g_signal_connect (slider->adjustment_prv, "changed",
@@ -480,6 +483,7 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
     g_signal_connect (slider->adjustment_prv, "value_changed",
                       G_CALLBACK (phat_fan_slider_adjustment_value_changed),
                       (gpointer) slider);
+
 
     phat_fan_slider_adjustment_changed (slider->adjustment_prv, slider);
     phat_fan_slider_adjustment_value_changed (slider->adjustment_prv, slider);
@@ -652,7 +656,9 @@ static void phat_fan_slider_realize (GtkWidget* widget)
     gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
 
     slider->fan_window = gtk_window_new (GTK_WINDOW_POPUP);
-    gtk_widget_set_app_paintable (slider->fan_window, TRUE); /* does this even do anything? */
+    //gtk_widget_set_double_buffered (slider->fan_window, FALSE);
+    gtk_window_resize (GTK_WINDOW (slider->fan_window), fan_max_width, fan_max_height);
+    gtk_widget_set_app_paintable (slider->fan_window, TRUE); 
     g_signal_connect (G_OBJECT (slider->fan_window),
                       "expose-event",
                       G_CALLBACK (phat_fan_slider_fan_expose),
@@ -661,8 +667,10 @@ static void phat_fan_slider_realize (GtkWidget* widget)
                       "show",
                       G_CALLBACK (phat_fan_slider_fan_show),
                       (gpointer) slider);
+    g_signal_connect(G_OBJECT(slider->fan_window), "screen-changed", G_CALLBACK(phat_screen_changed), NULL);
 
-    phat_fan_slider_build_fan_clips (slider);
+
+    phat_screen_changed(slider->fan_window, NULL, NULL);
 
     slider->hint_window0 = gtk_window_new (GTK_WINDOW_POPUP);
     gtk_widget_realize (slider->hint_window0);
@@ -820,8 +828,32 @@ static void phat_fan_slider_size_allocate (GtkWidget*     widget,
         gdk_window_move_resize (slider->event_window,
                                 x, y, w, h);
 
-        phat_fan_slider_build_fan_clips (slider);
     }
+}
+
+/* Only some X servers support alpha channels. Always have a fallback */
+gboolean supports_alpha = FALSE;
+
+static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpointer userdata)
+{
+    /* To check if the display supports alpha channels, get the colormap */
+    GdkScreen *screen = gtk_widget_get_screen(widget);
+    GdkColormap *colormap = gdk_screen_get_rgba_colormap(screen);
+
+    if (!colormap)
+    {
+        debug("Your screen does not support alpha channels!\n");
+        colormap = gdk_screen_get_rgb_colormap(screen);
+        supports_alpha = FALSE;
+    }
+    else
+    {
+        debug("Your screen supports alpha channels!\n");
+        supports_alpha = TRUE;
+    }
+
+    /* Now we have a colormap appropriate for the screen, use it */
+    gtk_widget_set_colormap(widget, colormap);
 }
 
 static gboolean phat_fan_slider_expose (GtkWidget*      widget,
@@ -844,6 +876,8 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
     slider = (PhatFanSlider*) widget;
 
     phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
+
+    //debug("expose x %d, y %d \n", x, y);
      
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
@@ -1094,6 +1128,8 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
         slider->yclick = event->y;
         slider->state = STATE_CLICKED;
 
+	//debug("click root is x %d y %d \n", slider->xclick_root, slider->yclick_root);
+
         gtk_window_present (GTK_WINDOW (slider->hint_window0));
         gtk_window_present (GTK_WINDOW (slider->hint_window1));
 
@@ -1296,11 +1332,15 @@ static gboolean phat_fan_slider_motion_notify (GtkWidget*      widget,
     }
         
     if (!(event->state & GDK_CONTROL_MASK))
+    {
         phat_fan_slider_update_fan (slider, event->x, event->y);
+    }
 
+    
     if (!(event->state & GDK_SHIFT_MASK))
         phat_fan_slider_update_value (slider, event->x_root, event->y_root);
 
+    
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         int destx = event->x_root;
@@ -1453,178 +1493,116 @@ static gboolean phat_fan_slider_leave_notify (GtkWidget* widget,
 
 static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
 {
-    GtkWidget* widget = GTK_WIDGET (slider);
-    GtkWidget* window = slider->fan_window;
-    GdkPoint points[4];
-    int x, y;
-    int start, stop;
+    int x, y, w, h, root_x, root_y;
     int length;
     float value;
-    int center_start;
-    int center_stop;
+    int offset;
+    int sign;
      
     if (!GTK_WIDGET_DRAWABLE (slider->fan_window))
         return;
-     
-    gtk_window_get_position (GTK_WINDOW (slider->fan_window),
-                             &x, &y);
+
+    GtkWidget* widget = GTK_WIDGET (slider);
+
+    phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
+    gdk_window_get_origin (widget->window, &root_x, &root_y);
+    x += root_x;
+    y += root_y;
+    //gtk_window_get_position (GTK_WINDOW (slider->fan_window),&x, &y);
+
+    cairo_t *cr = gdk_cairo_create(slider->fan_window->window);
+
+    if (supports_alpha)
+        cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0); /* transparent */
+    else
+        cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* opaque white */
+
+    /* draw the background */
+    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    cairo_paint (cr);
 
     length = phat_fan_slider_get_fan_length (slider);
 
-    gdk_window_clear (slider->fan_window->window);
+    //debug("x %d y %d\n", x, y);
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-        if (!slider->inverted)
-            value = 1.0 - slider->val;
+        if (slider->inverted)
+            value = 1.0 - slider->adjustment_prv->value;
         else
-            value = slider->val;
+            value = slider->adjustment_prv->value;
+            
+        if (slider->direction)
+	{
+            sign = 1;
+	    offset = w;
+	}
+	else
+	{ 
+	    sign = -1;
+	    offset = 0;
+	}
 
-        start = ((value * widget->allocation.height)
-                 + (window->allocation.height
-                    - widget->allocation.height) / 2);
+	//debug("length is %d \n", length);
+	cairo_move_to (cr, x+offset, y);
+	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -(length/2));
+	cairo_rel_line_to (cr, 0, length);
+	cairo_line_to(cr, x+offset, y+h);
+	cairo_close_path (cr);  
+       
+	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
 
-        stop = ((value * length)
-                + (window->allocation.height
-                   - length) / 2);
-          
-        if (slider->center_val >= 0)
-        {
-            center_start = (widget->allocation.height * (1 - slider->center_val)
-                            + (window->allocation.height
-                               - widget->allocation.height) / 2);
+	cairo_fill(cr);
 
-            center_stop = length * (1 - slider->center_val) + (fan_max_height - length)/2;
-        }
-        else
-        {
-            if (!slider->inverted)
-                center_start = center_stop = window->allocation.height;
-            else
-                center_start = center_stop = 0;
-        }
-               
-        if (x > slider->xclick_root)
-        {
-            points[0].x = 0;
-            points[0].y = start;
-            points[1].x = 0;
-            points[1].y = center_start;
-            points[2].x = window->allocation.width;
-            points[2].y = center_stop;
-            points[3].x = window->allocation.width;
-            points[3].y = stop;
-            gdk_draw_polygon (window->window, widget->style->base_gc[GTK_STATE_SELECTED],
-                              TRUE, points, 4);
-     
-            gdk_draw_line (window->window, widget->style->fg_gc[GTK_STATE_NORMAL],
-                           0, start,
-                           window->allocation.width, stop);
+	cairo_move_to (cr, x+offset, y+h-(h*value));
 
-            if (slider->center_val >= 0)
-                gdk_draw_line (window->window, widget->style->base_gc[GTK_STATE_NORMAL],
-                               0, center_start,
-                               window->allocation.width, center_stop);
-        }
-        else
-        {
-            points[0].x = window->allocation.width;
-            points[0].y = start;
-            points[1].x = window->allocation.width;
-            points[1].y = center_start;
-            points[2].x = 0;
-            points[2].y = center_stop;
-            points[3].x = 0;
-            points[3].y = stop;
-            gdk_draw_polygon (window->window, widget->style->base_gc[GTK_STATE_SELECTED],
-                              TRUE, points, 4);
-     
-            gdk_draw_line (window->window, widget->style->fg_gc[GTK_STATE_NORMAL],
-                           window->allocation.width, start,
-                           0, stop);
+	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -1 * ((length*value) - (length/2)+h-(h*value)));
+	cairo_rel_line_to (cr, 0, (length*value));
+	cairo_line_to (cr, x+offset, y+h);
+	
+	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+	cairo_set_line_width (cr, 2.0);
+	cairo_fill(cr);
 
-            if (slider->center_val >= 0)
-                gdk_draw_line (window->window, widget->style->base_gc[GTK_STATE_NORMAL],
-                               0, center_stop,
-                               window->allocation.width, center_start);
-        }
+	cairo_destroy(cr);
+
     }
     else
     {
+	//FIXME not done yet
         if (!slider->inverted)
-            value = slider->val;
+            value = 1.0 - slider->adjustment_prv->value;
         else
-            value = 1.0 - slider->val;
+            value = slider->adjustment_prv->value;
+            
+        if (x > slider->xclick_root)
+            sign = 1;
+	else
+	    sign = -1;
 
-        start = ((value * widget->allocation.width)
-                 + (window->allocation.width
-                    - widget->allocation.width) / 2);
+	cairo_move_to (cr, slider->xclick_root, slider->yclick_root);
+	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -(slider->cur_fan.height/2));
+	cairo_rel_line_to (cr, 0, slider->cur_fan.height);
+	cairo_close_path (cr);  
+       
+	cairo_set_source_rgba(cr, 1, 0.2, 0.2, 0.3);
 
-        stop = ((value * length)
-                + (window->allocation.width
-                   - length) / 2);
-          
-        if (slider->center_val >= 0)
-        {
-            center_start = (widget->allocation.width * slider->center_val
-                            + (window->allocation.width
-                               - widget->allocation.width) / 2);
+	cairo_fill(cr);
+	cairo_stroke(cr);
 
-            center_stop = length * slider->center_val + (fan_max_width - length)/2;
-        }
-        else
-        {
-            if (!slider->inverted)
-                center_start = center_stop = 0;
-            else
-                center_start = center_stop = window->allocation.width;
-        }
-          
-        if (y > slider->yclick_root)
-        {
-            points[0].x = start;
-            points[0].y = 0;
-            points[1].x = stop;
-            points[1].y = window->allocation.height;
-            points[2].x = center_stop;
-            points[2].y = window->allocation.height;
-            points[3].x = center_start;
-            points[3].y = 0;
-            gdk_draw_polygon (window->window, widget->style->base_gc[GTK_STATE_SELECTED],
-                              TRUE, points, 4);
-     
-            gdk_draw_line (window->window, widget->style->fg_gc[GTK_STATE_NORMAL],
-                           start, 0,
-                           stop, window->allocation.height);
+	cairo_move_to (cr, slider->xclick_root, slider->yclick_root);
+	cairo_rel_line_to (cr, sign * slider->cur_fan.width, -1 * ((slider->cur_fan.height*value) -(slider->cur_fan.height/2)));
+	cairo_rel_line_to (cr, 0, (slider->cur_fan.height*value));
+	cairo_line_to (cr, slider->xclick_root, slider->yclick_root);
+	
+	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+	cairo_set_line_width (cr, 2.0);
+	cairo_fill(cr);
+	cairo_stroke(cr);
 
-            if (slider->center_val >= 0)
-                gdk_draw_line (window->window, widget->style->base_gc[GTK_STATE_NORMAL],
-                               center_stop, window->allocation.height,
-                               center_start, 0);
-        }
-        else
-        {
-            points[0].x = start;
-            points[0].y = window->allocation.height;
-            points[1].x = stop;
-            points[1].y = 0;
-            points[2].x = center_stop;
-            points[2].y = 0;
-            points[3].x = center_start;
-            points[3].y = window->allocation.height;
-            gdk_draw_polygon (window->window, widget->style->base_gc[GTK_STATE_SELECTED],
-                              TRUE, points, 4);
-     
-            gdk_draw_line (window->window, widget->style->fg_gc[GTK_STATE_NORMAL],
-                           start, window->allocation.height,
-                           stop, 0);
-
-            if (slider->center_val >= 0)
-                gdk_draw_line (window->window, widget->style->base_gc[GTK_STATE_NORMAL],
-                               center_start, window->allocation.height,
-                               center_stop, 0);
-        }
+	cairo_destroy(cr);
     }
+
 }
 
 static void phat_fan_slider_calc_layout (PhatFanSlider* slider,
@@ -1732,7 +1710,6 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
 {
     int width;
     int height;
-    int fanx, fany;
     int w, h;
 
     if (slider->state != STATE_CLICKED)
@@ -1740,29 +1717,22 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
 
     gdk_window_get_geometry (slider->event_window,
                              NULL, NULL, &w, &h, NULL);
+    //debug("updating fan, x %d, y %d, w %d, h %d \n", x, y, w, h);
+
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         if (x > w)
         {
             width = x - w;
-            width = CLAMP (width, 0, slider->fan_max_thickness);
+            //width = CLAMP (width, 0, slider->fan_max_thickness);
           
-            gtk_window_resize (GTK_WINDOW (slider->fan_window), width, fan_max_height);
-
-            fanx = slider->xclick_root + (w - slider->xclick);
-
-            fany = (slider->yclick_root - slider->yclick)
-                - ((fan_max_height - h) / 2);
-
-            gtk_window_move (GTK_WINDOW (slider->fan_window), fanx, fany);          
+	    slider->cur_fan.width = width;
+	    slider->cur_fan.height = fan_max_height;
+	    slider->direction = 1;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
-
-            gdk_window_shape_combine_region (slider->fan_window->window,
-                                             slider->fan_clip1,
-                                             0, 0);
 
             if (GTK_WIDGET_VISIBLE (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
@@ -1772,26 +1742,14 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
         else if (x < 0)
         {
             width = -x;
-            width = CLAMP (width, 0, slider->fan_max_thickness);
+            //width = CLAMP (width, 0, slider->fan_max_thickness);
 
-            gtk_window_resize (GTK_WINDOW (slider->fan_window), width, fan_max_height);
-
-            fanx = slider->xclick_root - slider->xclick
-                - slider->fan_window->allocation.width;
-
-            fany = (slider->yclick_root - slider->yclick)
-                - ((fan_max_height - h) / 2);
-
-            gtk_window_move (GTK_WINDOW (slider->fan_window), fanx, fany);
+	    slider->cur_fan.width = width;
+	    slider->cur_fan.height = fan_max_height;
+	    slider->direction = 0;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
-
-            gdk_window_shape_combine_region (slider->fan_window->window,
-                                             slider->fan_clip0,
-                                             slider->fan_window->allocation.width
-                                             - slider->fan_max_thickness,
-                                             0);
 
             if (GTK_WIDGET_VISIBLE (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
@@ -1808,22 +1766,14 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
         if (y > h)
         {
             height = y - h;
-            height = CLAMP (height, 0, slider->fan_max_thickness);
+            //height = CLAMP (height, 0, slider->fan_max_thickness);
           
-            gtk_window_resize (GTK_WINDOW (slider->fan_window), fan_max_width, height);
-
-            fanx = (slider->xclick_root - slider->xclick)
-                - ((fan_max_width - w) / 2);
-
-            fany = slider->yclick_root + (h - slider->yclick);
-
-            gtk_window_move (GTK_WINDOW (slider->fan_window), fanx, fany);          
+    	    slider->cur_fan.width = fan_max_width;
+	    slider->cur_fan.height = height;      
+	    slider->direction = 1;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
-
-            gdk_window_shape_combine_region (slider->fan_window->window,
-                                             slider->fan_clip1, 0, 0);
 
             if (GTK_WIDGET_VISIBLE (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
@@ -1833,28 +1783,16 @@ static void phat_fan_slider_update_fan (PhatFanSlider* slider,
         else if (y < 0)
         {
             height = -y;
-            height = CLAMP (height, 0, slider->fan_max_thickness);
+            //height = CLAMP (height, 0, slider->fan_max_thickness);
 
-            gtk_window_resize (GTK_WINDOW (slider->fan_window), fan_max_width, height);
-
-            fanx = (slider->xclick_root - slider->xclick)
-                - ((fan_max_width - w) / 2);
-
-            fany = slider->yclick_root - slider->yclick
-                - slider->fan_window->allocation.height;
-
-            gtk_window_move (GTK_WINDOW (slider->fan_window), fanx, fany);
+       	    slider->cur_fan.width = fan_max_width;
+	    slider->cur_fan.height = height;
+	    slider->direction = 0;
 
             if (!GTK_WIDGET_VISIBLE (slider->fan_window))
                 gtk_window_present (GTK_WINDOW (slider->fan_window));
 
-            gdk_window_shape_combine_region (slider->fan_window->window,
-                                             slider->fan_clip0,
-                                             0,
-                                             slider->fan_window->allocation.height
-                                             - slider->fan_max_thickness);
-               
-            if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+	    if (GTK_WIDGET_VISIBLE (slider->hint_window0))
                 gtk_widget_hide (slider->hint_window0);
             if (GTK_WIDGET_VISIBLE (slider->hint_window1))
                 gtk_widget_hide (slider->hint_window1);
@@ -1871,13 +1809,13 @@ static int phat_fan_slider_get_fan_length (PhatFanSlider* slider)
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
         return 2 * (FAN_RISE / FAN_RUN)
-            * slider->fan_window->allocation.width
+            * slider->cur_fan.width
             + GTK_WIDGET (slider)->allocation.height;
     }
     else
     {
         return 2 * (FAN_RISE / FAN_RUN)
-            * slider->fan_window->allocation.height
+            * slider->cur_fan.height
             + GTK_WIDGET (slider)->allocation.width;
     }
 }
@@ -1894,7 +1832,7 @@ static gboolean phat_fan_slider_fan_expose (GtkWidget*      widget,
 static void phat_fan_slider_fan_show (GtkWidget* widget,
                                       GtkWidget* slider)
 {
-    gdk_window_set_background (widget->window, &slider->style->dark[GTK_STATE_NORMAL]);
+    //gdk_window_set_background (widget->window, &slider->style->dark[GTK_STATE_NORMAL]);
 }
 
 static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
@@ -1909,67 +1847,6 @@ static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
                         widget->allocation.height);
 
     return TRUE;
-}
-
-static void phat_fan_slider_build_fan_clips (PhatFanSlider* slider)
-{
-    GtkWidget* widget = GTK_WIDGET (slider);
-    int max_thickness = slider->fan_max_thickness;
-     
-    if (slider->orientation == GTK_ORIENTATION_VERTICAL)
-    {
-        GdkPoint points0[4] = {
-            { max_thickness, (fan_max_height - widget->allocation.height) / 2 },
-            { 0, 0 },
-            { 0, fan_max_height },
-            { max_thickness, fan_max_height - (fan_max_height - widget->allocation.height)/2 }
-        };
-
-        GdkPoint points1[4] = {
-            { 0, (fan_max_height - widget->allocation.height) / 2 },
-            { max_thickness, 0 },
-            { max_thickness, fan_max_height },
-            { 0, fan_max_height - (fan_max_height - widget->allocation.height) / 2 }
-        };
-
-        GdkRegion* oldfanclip0 = slider->fan_clip0;
-        GdkRegion* oldfanclip1 = slider->fan_clip1;
-          
-        slider->fan_clip0 = gdk_region_polygon (points0, 4, GDK_EVEN_ODD_RULE);
-        slider->fan_clip1 = gdk_region_polygon (points1, 4, GDK_EVEN_ODD_RULE);
-
-        if (oldfanclip0 != NULL)
-            gdk_region_destroy (oldfanclip0);
-        if (oldfanclip1 != NULL)
-            gdk_region_destroy (oldfanclip1);
-    }
-    else
-    {
-        GdkPoint points0[4] = {
-            { (fan_max_width - widget->allocation.width) / 2, max_thickness },
-            { 0, 0 },
-            { fan_max_width, 0 },
-            { fan_max_width - ((fan_max_width - widget->allocation.width) / 2), max_thickness }
-        };
-          
-        GdkPoint points1[4] = {
-            { (fan_max_width - widget->allocation.width) / 2, 0 },
-            { 0, max_thickness },
-            { fan_max_width, max_thickness },
-            { fan_max_width - (fan_max_width - widget->allocation.width) / 2, 0 }
-        };
-
-        GdkRegion* oldfanclip0 = slider->fan_clip0;
-        GdkRegion* oldfanclip1 = slider->fan_clip1;
-          
-        slider->fan_clip0 = gdk_region_polygon (points0, 4, GDK_EVEN_ODD_RULE);
-        slider->fan_clip1 = gdk_region_polygon (points1, 4, GDK_EVEN_ODD_RULE);
-
-        if (oldfanclip0 != NULL)
-            gdk_region_destroy (oldfanclip0);
-        if (oldfanclip1 != NULL)
-            gdk_region_destroy (oldfanclip1);
-    }
 }
 
 /* setup 9x9 hint arrows; I had to do a lot of juggling to get things

@@ -28,6 +28,7 @@ struct _PhatFanSlider
     int            yclick;
     int            fan_max_thickness;
     int            state;
+    int            direction;
     gboolean       inverted;
     gboolean       is_log;
     GtkOrientation orientation;
@@ -41,6 +42,7 @@ struct _PhatFanSlider
     GtkWidget*     hint_window1;
     GdkRegion*     hint_clip0;
     GdkRegion*     hint_clip1;
+    GdkRectangle   cur_fan;
     gboolean       use_default_value;
     gdouble        default_value;
 };
