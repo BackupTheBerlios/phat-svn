@@ -33,8 +33,6 @@ struct _PhatFanSlider
     gboolean       is_log;
     GtkOrientation orientation;
     GtkWidget*     fan_window;
-    GdkRegion*     fan_clip0;
-    GdkRegion*     fan_clip1;
     GdkCursor*     arrow_cursor;
     GdkCursor*     empty_cursor;
     GdkWindow*     event_window;

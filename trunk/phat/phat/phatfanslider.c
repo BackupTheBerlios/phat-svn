@@ -464,8 +464,6 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
     slider->state = STATE_NORMAL;
     slider->orientation = GTK_ORIENTATION_HORIZONTAL;
     slider->fan_window = NULL;
-    slider->fan_clip0 = NULL;
-    slider->fan_clip1 = NULL;
     slider->arrow_cursor = NULL;
     slider->empty_cursor = NULL;
     slider->event_window = NULL;
@@ -527,18 +525,6 @@ static void phat_fan_slider_destroy (GtkObject* object)
     {
         gtk_widget_destroy (slider->fan_window);
         slider->fan_window = NULL;
-    }
-
-    if (slider->fan_clip0 != NULL)
-    {
-        gdk_region_destroy (slider->fan_clip0);
-        slider->fan_clip0 = NULL;
-    }
-
-    if (slider->fan_clip1 != NULL)
-    {
-        gdk_region_destroy (slider->fan_clip1);
-        slider->fan_clip1 = NULL;
     }
 
     if (slider->hint_window0 != NULL)
@@ -709,12 +695,6 @@ static void phat_fan_slider_unrealize (GtkWidget *widget)
 
     gtk_widget_destroy (slider->fan_window);
     slider->fan_window = NULL;
-
-    gdk_region_destroy (slider->fan_clip0);
-    slider->fan_clip0 = NULL;
-
-    gdk_region_destroy (slider->fan_clip1);
-    slider->fan_clip1 = NULL;
 
     gtk_widget_destroy (slider->hint_window0);
     slider->hint_window0 = NULL;
