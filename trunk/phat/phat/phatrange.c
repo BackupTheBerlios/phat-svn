@@ -327,7 +327,7 @@ phat_range_class_init (PhatRangeClass *class)
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (PhatRangeClass, change_value),
-                  _gtk_boolean_handled_accumulator, NULL,
+                  g_signal_accumulator_true_handled, NULL,
                   phat_closure_marshal_BOOLEAN__ENUM_DOUBLE,
                   G_TYPE_BOOLEAN, 2,
                   GTK_TYPE_SCROLL_TYPE,
