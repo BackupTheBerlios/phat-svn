@@ -1078,11 +1078,6 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
                                               GdkEventButton* event)
 {
     PhatFanSlider* slider;
-    GtkAllocation* a;
-    GtkAllocation* b;
-    int width;
-    int height;
-
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (widget), FALSE);
     g_return_val_if_fail (event != NULL, FALSE);
@@ -1110,41 +1105,6 @@ static gboolean phat_fan_slider_button_press (GtkWidget*      widget,
 
 	//debug("click root is x %d y %d \n", slider->xclick_root, slider->yclick_root);
 
-        gtk_window_present (GTK_WINDOW (slider->hint_window0));
-        gtk_window_present (GTK_WINDOW (slider->hint_window1));
-
-        phat_fan_slider_update_hints (slider);
-
-        gdk_window_get_geometry (slider->event_window,
-                                 NULL, NULL, &width, &height, NULL);
-              
-        a = &slider->hint_window0->allocation;
-        b = &slider->hint_window1->allocation;
-
-        if (slider->orientation == GTK_ORIENTATION_VERTICAL)
-        {
-            gtk_window_move (GTK_WINDOW (slider->hint_window0),
-                             slider->xclick_root - slider->xclick - a->width,
-                             (slider->yclick_root - slider->yclick)
-                             + (height - a->height) / 2);
-
-            gtk_window_move (GTK_WINDOW (slider->hint_window1),
-                             slider->xclick_root - slider->xclick + width,
-                             (slider->yclick_root - slider->yclick)
-                             + (height - b->height) / 2);
-        }
-        else
-        {
-            gtk_window_move (GTK_WINDOW (slider->hint_window0),
-                             (slider->xclick_root - slider->xclick)
-                             + (width - a->width) / 2,
-                             slider->yclick_root - slider->yclick - a->height);
-
-            gtk_window_move (GTK_WINDOW (slider->hint_window1),
-                             (slider->xclick_root - slider->xclick)
-                             + (width - b->width) / 2,
-                             slider->yclick_root - slider->yclick + height);
-        }
     }
     else if (event->button == 2 && slider->use_default_value)
     {
@@ -1449,10 +1409,51 @@ skip:
 static gboolean phat_fan_slider_enter_notify (GtkWidget* widget,
                                               GdkEventCrossing* event)
 {
+    GtkAllocation* a;
+    GtkAllocation* b;
+    int width;
+    int height;
+
     PhatFanSlider* slider = PHAT_FAN_SLIDER (widget);
      
     if (slider->state == STATE_NORMAL)
         gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
+    
+    gtk_window_present (GTK_WINDOW (slider->hint_window0));
+    gtk_window_present (GTK_WINDOW (slider->hint_window1));
+
+    phat_fan_slider_update_hints (slider);
+
+    gdk_window_get_geometry (slider->event_window,
+			     NULL, NULL, &width, &height, NULL);
+	  
+    a = &slider->hint_window0->allocation;
+    b = &slider->hint_window1->allocation;
+
+    if (slider->orientation == GTK_ORIENTATION_VERTICAL)
+    {
+	gtk_window_move (GTK_WINDOW (slider->hint_window0),
+			 event->x_root - event->x - a->width,
+			 (event->y_root - event->y)
+			 + (height - a->height) / 2);
+
+	gtk_window_move (GTK_WINDOW (slider->hint_window1),
+			 event->x_root - event->x + width,
+			 (event->y_root - event->y)
+			 + (height - b->height) / 2);
+    }
+    else
+    {
+	gtk_window_move (GTK_WINDOW (slider->hint_window0),
+			 (event->x_root - event->x)
+			 + (width - a->width) / 2,
+			 event->y_root - event->y - a->height);
+
+	gtk_window_move (GTK_WINDOW (slider->hint_window1),
+			 (event->x_root - event->x)
+			 + (width - b->width) / 2,
+			 event->y_root - event->y + height);
+    }
 
     return FALSE;
 }
@@ -1467,6 +1468,13 @@ static gboolean phat_fan_slider_leave_notify (GtkWidget* widget,
         gdk_window_set_cursor (slider->event_window, NULL);
         slider->state = STATE_NORMAL;
     }
+
+    if (GTK_WIDGET_VISIBLE (slider->hint_window0))
+	gtk_widget_hide (slider->hint_window0);
+
+    if (GTK_WIDGET_VISIBLE (slider->hint_window1))
+	gtk_widget_hide (slider->hint_window1);
+
 
     return FALSE;
 }
