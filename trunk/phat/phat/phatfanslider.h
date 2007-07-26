@@ -29,6 +29,7 @@ struct _PhatFanSlider
     int            fan_max_thickness;
     int            state;
     int            direction;
+    int            stub_size;
     gboolean       inverted;
     gboolean       is_log;
     GtkOrientation orientation;

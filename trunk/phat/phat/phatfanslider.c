@@ -48,6 +48,8 @@ static void phat_fan_slider_unmap           (GtkWidget *widget);
 static void phat_fan_slider_draw_fan        (PhatFanSlider* slider);
 static int  phat_fan_slider_get_fan_length  (PhatFanSlider* slider);
 static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpointer userdata);
+static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double y0, 
+	double rect_width, double  rect_height, double radius, gboolean selected);
 static void phat_fan_slider_update_hints    (PhatFanSlider* slider);
 
 static void phat_fan_slider_size_request (GtkWidget*widget,
@@ -473,6 +475,7 @@ static void phat_fan_slider_init (PhatFanSlider* slider)
     slider->hint_clip1 = NULL;
     slider->is_log = 0;
     slider->direction = 0;
+    slider->stub_size = 20;
     slider->use_default_value = FALSE;
 
     g_signal_connect (slider->adjustment_prv, "changed",
@@ -702,10 +705,8 @@ static void phat_fan_slider_unrealize (GtkWidget *widget)
     gtk_widget_destroy (slider->hint_window1);
     slider->hint_window1 = NULL;
 
-    gdk_region_destroy (slider->hint_clip0);
     slider->hint_clip0 = NULL;
      
-    gdk_region_destroy (slider->hint_clip1);
     slider->hint_clip1 = NULL;
      
     if (klass->unrealize)
@@ -836,6 +837,89 @@ static void phat_screen_changed(GtkWidget *widget, GdkScreen *old_screen, gpoint
     gtk_widget_set_colormap(widget, colormap);
 }
 
+
+static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y0, 
+	double rect_width, double  rect_height, 
+	double radius, gboolean selected)
+{
+    /*< parameters like cairo_rectangle */
+    /*radius = 0.4;   < and an approximate curvature radius */
+
+    double x1,y1;
+    cairo_pattern_t *pat;
+
+
+    x1=x0+rect_width;
+    y1=y0+rect_height;
+    if (!rect_width || !rect_height)
+	return;
+    if (rect_width/2<radius) {
+	if (rect_height/2<radius) {
+	    cairo_move_to  (cr, x0, (y0 + y1)/2);
+	    cairo_curve_to (cr, x0 ,y0, x0, y0, (x0 + x1)/2, y0);
+	    cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1)/2);
+	    cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0)/2, y1);
+	    cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1)/2);
+	} else {
+	    cairo_move_to  (cr, x0, y0 + radius);
+	    cairo_curve_to (cr, x0 ,y0, x0, y0, (x0 + x1)/2, y0);
+	    cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
+	    cairo_line_to (cr, x1 , y1 - radius);
+	    cairo_curve_to (cr, x1, y1, x1, y1, (x1 + x0)/2, y1);
+	    cairo_curve_to (cr, x0, y1, x0, y1, x0, y1- radius);
+	}
+    } else {
+	if (rect_height/2<radius) {
+	    cairo_move_to  (cr, x0, (y0 + y1)/2);
+	    cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
+	    cairo_line_to (cr, x1 - radius, y0);
+	    cairo_curve_to (cr, x1, y0, x1, y0, x1, (y0 + y1)/2);
+	    cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
+	    cairo_line_to (cr, x0 + radius, y1);
+	    cairo_curve_to (cr, x0, y1, x0, y1, x0, (y0 + y1)/2);
+	} else {
+	    cairo_move_to  (cr, x0, y0 + radius);
+	    cairo_curve_to (cr, x0 , y0, x0 , y0, x0 + radius, y0);
+	    cairo_line_to (cr, x1 - radius, y0);
+	    cairo_curve_to (cr, x1, y0, x1, y0, x1, y0 + radius);
+	    cairo_line_to (cr, x1 , y1 - radius);
+	    cairo_curve_to (cr, x1, y1, x1, y1, x1 - radius, y1);
+	    cairo_line_to (cr, x0 + radius, y1);
+	    cairo_curve_to (cr, x0, y1, x0, y1, x0, y1- radius);
+	}
+    }
+    cairo_close_path (cr);
+
+    if(selected)
+    {
+	pat = cairo_pattern_create_radial (x0, y0, (rect_width+rect_height)/4,
+                                   x1,  y1, (rect_width+rect_height)/4);
+	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
+	//cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.180, 0.356, 0.317);
+	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);
+    }
+    else
+    {
+	pat = cairo_pattern_create_linear (x0, y0,  x1, y1);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.78,0.78,0.74);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 1, 1, 1);
+    }
+
+    cairo_set_source (cr, pat);
+    cairo_fill_preserve (cr);
+    cairo_pattern_destroy (pat);
+
+    pat = cairo_pattern_create_linear (x0, y0,  x1, y1);
+    cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
+    cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+    cairo_set_source (cr, pat);
+    cairo_stroke (cr);
+    cairo_pattern_destroy (pat);
+
+}
+
+
 static gboolean phat_fan_slider_expose (GtkWidget*      widget,
                                         GdkEventExpose* event)
 {
@@ -854,6 +938,8 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
         return FALSE;
 
     slider = (PhatFanSlider*) widget;
+
+    cairo_t *cr = gdk_cairo_create(widget->window);
 
     phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
 
@@ -909,6 +995,7 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
      
     if (!GTK_WIDGET_SENSITIVE (widget))
     {
+	/*
         gdk_draw_rectangle (widget->window,
                             widget->style->dark_gc[GTK_STATE_INSENSITIVE],
                             TRUE,
@@ -921,25 +1008,21 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
                             fx, fy,
                             fw, fh);
 
-        goto skiplines;       /* skip drawing the extra marker lines */
+        goto skiplines;      */ /* skip drawing the extra marker lines */
     }
     else
     {
-        gdk_draw_rectangle (widget->window,
-                            widget->style->dark_gc[GTK_STATE_NORMAL],
-                            TRUE,
-                            x, y,
-                            w, h);
 
-        gdk_draw_rectangle (widget->window,
-                            widget->style->base_gc[GTK_STATE_SELECTED],
-                            TRUE,
-                            fx, fy,
-                            fw, fh);
+	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
+        //widget->style->dark_gc[GTK_STATE_NORMAL],
+	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+        //widget->style->base_gc[GTK_STATE_SELECTED],
     }
 
+    /*
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
+	
         int line_y;
           
         if (slider->center_val >= 0)
@@ -1035,8 +1118,8 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
                            line_x,
                            y + h - 1);
         }
-    }
-
+    }*/
+/*
 skiplines:
     gtk_paint_shadow (widget->style,
                       widget->window,
@@ -1045,7 +1128,7 @@ skiplines:
                       NULL, widget, NULL,
                       x, y,
                       w, h);
-
+*/
     if (GTK_WIDGET_HAS_FOCUS (widget))
     {
         int focus_width, focus_pad;
@@ -1419,8 +1502,8 @@ static gboolean phat_fan_slider_enter_notify (GtkWidget* widget,
     if (slider->state == STATE_NORMAL)
         gdk_window_set_cursor (slider->event_window, slider->arrow_cursor);
     
-    gtk_window_present (GTK_WINDOW (slider->hint_window0));
-    gtk_window_present (GTK_WINDOW (slider->hint_window1));
+    //gtk_window_present (GTK_WINDOW (slider->hint_window0));
+    //gtk_window_present (GTK_WINDOW (slider->hint_window1));
 
     phat_fan_slider_update_hints (slider);
 
@@ -1590,8 +1673,12 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
 	cairo_rel_line_to (cr, length*value, 0);
 	cairo_line_to (cr, x+(w*value), y+offset);
 	cairo_close_path (cr);
-	
-	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+
+	/* patterns might be a bit over the top... :)
+	pat = cairo_pattern_create_linear (x0, y0, x1,  y1);
+	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
+	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);*/
+	cairo_set_source_rgba(cr, 0.380, 0.556, 0.717, 0.6);
 	cairo_set_line_width (cr, 2.0);
 	cairo_fill(cr);
 
@@ -1835,12 +1922,12 @@ static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
                                              GdkEventExpose* event,
                                              GtkWidget* slider)
 {
-    gdk_draw_rectangle (widget->window,
+    /*gdk_draw_rectangle (widget->window,
                         slider->style->fg_gc[GTK_STATE_NORMAL],
                         TRUE,
                         0, 0,
                         widget->allocation.width,
-                        widget->allocation.height);
+                        widget->allocation.height);*/
 
     return TRUE;
 }
@@ -1850,77 +1937,126 @@ static gboolean phat_fan_slider_hint_expose (GtkWidget* widget,
  * the code as follows */
 static void phat_fan_slider_update_hints (PhatFanSlider* slider)
 {
-    GdkRegion* oldclip0 = slider->hint_clip0;
-    GdkRegion* oldclip1 = slider->hint_clip1;
+    int x, y, w, h, root_x, root_y;
+    int length;
+    float value;
+    int offset;
+    int sign;
+    
+    slider->stub_size = 50;
+    GtkWidget* widget = GTK_WIDGET (slider);
 
-    gtk_window_resize (GTK_WINDOW (slider->hint_window0), 9, 9);
-    gtk_window_resize (GTK_WINDOW (slider->hint_window1), 9, 9);
+    phat_fan_slider_calc_layout (slider, &x, &y, &w, &h);
+    gdk_window_get_origin (widget->window, &root_x, &root_y);
+    x += root_x;
+    y += root_y;
+    //gtk_window_get_position (GTK_WINDOW (slider->fan_window),&x, &y);
+
+    cairo_t *cr = gdk_cairo_create(slider->hint_window0->window);
+
+    if (supports_alpha)
+        cairo_set_source_rgba (cr, 1.0, 1.0, 1.0, 0.0); /* transparent */
+    else
+        cairo_set_source_rgb (cr, 1.0, 1.0, 1.0); /* opaque white */
+
+    /* draw the background */
+    cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
+    cairo_paint (cr);
+
+    length = phat_fan_slider_get_fan_length (slider);
+
 
     if (slider->orientation == GTK_ORIENTATION_VERTICAL)
     {
-        GdkPoint points0[7] = {
-            { 8, 3 },
-            { 4, 3 },
-            { 4, 0 },
-            { 0, 4 },
-            { 4, 8 },
-            { 4, 6 },
-            { 8, 6 }
-        };
+	gtk_window_resize (GTK_WINDOW (slider->hint_window0), slider->stub_size, h);
+	gtk_window_resize (GTK_WINDOW (slider->hint_window1), slider->stub_size, h);
 
-        GdkPoint points1[7] = {
-            { 0, 3 },
-            { 4, 3 },
-            { 4, 0 },
-            { 8, 4 },
-            { 4, 8 },
-            { 4, 6 },
-            { 0, 6 }
-        };
+        if (slider->inverted)
+            value = 1.0 - slider->adjustment_prv->value;
+        else
+            value = slider->adjustment_prv->value;
+            
+        if (slider->direction)
+	{
+            sign = 1;
+	    offset = w;
+	}
+	else
+	{ 
+	    sign = -1;
+	    offset = 0;
+	}
 
-        slider->hint_clip0 = gdk_region_polygon (points0, 7, GDK_EVEN_ODD_RULE);
-        slider->hint_clip1 = gdk_region_polygon (points1, 7, GDK_EVEN_ODD_RULE);
+	//debug("length is %d \n", length);
+	cairo_move_to (cr, x+offset, y);
+	cairo_rel_line_to (cr, sign * slider->stub_size, -((length/2)-(h/2)));
+	cairo_rel_line_to (cr, 0, length);
+	cairo_line_to(cr, x+offset, y+h);
+	cairo_close_path (cr);  
+       
+	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
 
-        gdk_window_shape_combine_region (slider->hint_window0->window,
-                                         slider->hint_clip0, 0, 0);
-        gdk_window_shape_combine_region (slider->hint_window1->window,
-                                         slider->hint_clip1, 0, 0);
+	cairo_fill(cr);
+
+	cairo_move_to (cr, x+offset, y+h);
+
+	cairo_line_to (cr, x + offset + (sign * (slider->stub_size)), y+(length/2)+(h/2));
+	cairo_rel_line_to (cr, 0, -length*value);
+	cairo_line_to (cr, x+offset, y+(h*(1-value)));
+	cairo_close_path (cr);
+	
+	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+	cairo_set_line_width (cr, 2.0);
+	cairo_fill(cr);
+
+	cairo_destroy(cr);
+
     }
     else
     {
-        GdkPoint points0[7] = {
-            { 3, 8 },
-            { 3, 4 },
-            { 0, 4 },
-            { 4,-1 },
-            { 9, 4 },
-            { 6, 4 },
-            { 6, 8 }
-        };
+	gtk_window_resize (GTK_WINDOW (slider->hint_window0), 9, 9);
+	gtk_window_resize (GTK_WINDOW (slider->hint_window1), 9, 9);
 
-        GdkPoint points1[7] = {
-            { 3, 0 },
-            { 3, 4 },
-            { 0, 4 },
-            { 4, 9 },
-            { 9, 4 },
-            { 6, 4 },
-            { 6, 0 }
-        };
+	if (slider->inverted)
+            value = 1.0 - slider->adjustment_prv->value;
+        else
+            value = slider->adjustment_prv->value;
+            
+        if (slider->direction)
+	{
+            sign = 1;
+	    offset = h;
+	}
+	else
+	{ 
+	    sign = -1;
+	    offset = 0;
+	}
 
-        slider->hint_clip0 = gdk_region_polygon (points0, 7, GDK_EVEN_ODD_RULE);
-        slider->hint_clip1 = gdk_region_polygon (points1, 7, GDK_EVEN_ODD_RULE);
+	cairo_move_to (cr, x, y+offset);
+	cairo_rel_line_to (cr, -(length/2)+(w/2), sign * slider->stub_size);
+	cairo_rel_line_to (cr, length, 0);
+	cairo_line_to(cr, x+w, y+offset);
+	cairo_close_path (cr);  
+       
+	cairo_set_source_rgba(cr, 0.2, 0.2, 0.2, 0.3);
 
-        gdk_window_shape_combine_region (slider->hint_window0->window,
-                                         slider->hint_clip0, 0, 0);
-        gdk_window_shape_combine_region (slider->hint_window1->window,
-                                         slider->hint_clip1, 0, 0);
+	cairo_fill(cr);
+
+	cairo_move_to (cr, x, y+offset);
+
+	cairo_line_to (cr, x-(length/2)+(w/2), y + offset + (sign * (slider->stub_size)));
+	cairo_rel_line_to (cr, length*value, 0);
+	cairo_line_to (cr, x+(w*value), y+offset);
+	cairo_close_path (cr);
+	
+	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+	cairo_set_line_width (cr, 2.0);
+	cairo_fill(cr);
+
+	cairo_destroy(cr);
+
     }
-          
-    if (oldclip0 != NULL)
-        gdk_region_destroy (oldclip0);
-    if (oldclip1 != NULL)
-        gdk_region_destroy (oldclip1);
 }
 
 static void phat_fan_slider_adjustment_changed (GtkAdjustment* adjustment,
