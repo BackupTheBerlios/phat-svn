@@ -4,7 +4,7 @@ BUILT_SOURCES = \
      phatmarshallers.c phatmarshallers.h 
 
 libphat_la_SOURCES =                        \
-    phatmarshallers.c phatmarshallers.h     \
+    phatmarshallers.h phatmarshallers.c     \
     phatrange.c phatrange.h                 \
     phatfanslider.c phatfanslider.h         \
     phatvfanslider.c phatvfanslider.h       \
@@ -19,7 +19,7 @@ libphat_la_SOURCES =                        \
     phatknob.c phatknob.h		            \
     phatdpmmeter.c phatdpmmeter.h           \
     phatppmmeter.c phatppmmeter.h           \
-    phatvumeter.h phatvumeter.c             \
+    phatvumeter.c phatvumeter.h             \
     phatadjustment.c phatadjustment.h phatadjustmentprivate.h \
     tech-knob.c tech-knob.h techknobprivate.h \
     sample-display.c sample-display.h
@@ -49,6 +49,7 @@ libphatinclude_HEADERS =    \
     tech-knob.h             \
     sample-display.h        
 
+BUILT_SORCES = phatmarshallers.h phatmarshallers.c
     
 phatmarshallers.h: phatmarshallers.list
 	glib-genmarshal --header --prefix=phat_closure_marshal $< > $@

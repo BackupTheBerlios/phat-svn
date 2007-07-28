@@ -24,8 +24,7 @@
 #define __PHAT_KNOB_H__
 
 #include <gdk/gdk.h>
-#include <gtk/gtkadjustment.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtkrange.h>
 
 G_BEGIN_DECLS
 
@@ -39,14 +38,8 @@ typedef struct _PhatKnob        PhatKnob;
 typedef struct _PhatKnobClass   PhatKnobClass;
 
 struct _PhatKnob {
-    GtkWidget widget;
-    /* The adjustment object that stores the data for this knob */
-    GtkAdjustment *adjustment;
-    GtkAdjustment* adjustment_prv;
+    GtkRange range;
 
-
-    /* update policy (GTK_UPDATE_[CONTINUOUS/DELAYED/DISCONTINUOUS]) */
-    guint policy : 2;
     gboolean is_log;
 
     /* State of widget (to do with user interaction) */
@@ -56,27 +49,16 @@ struct _PhatKnob {
     /* size of the widget */
     gint size;
 
-    /* ID of update timer, or 0 if none */
-    guint32 timer;
-
     /* Pixmap for knob */
     GdkPixbuf *pixbuf;
     GdkBitmap *mask;
     GdkGC *mask_gc;
     GdkGC *red_gc;
-
-    /* Old values from adjustment stored so we know when something changes */
-    gfloat old_value;
-    gfloat old_lower;
-    gfloat old_upper;
-
 };
 
 struct _PhatKnobClass
 {
-    GtkWidgetClass parent_class;
-
-    void (*value_changed) (PhatKnob* knob);
+    GtkRangeClass parent_class;
 };
 
 GType phat_knob_get_type ( );
