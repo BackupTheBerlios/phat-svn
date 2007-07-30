@@ -967,29 +967,11 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
      
     if (!GTK_WIDGET_SENSITIVE (widget))
     {
-	/*
-        gdk_draw_rectangle (widget->window,
-                            widget->style->dark_gc[GTK_STATE_INSENSITIVE],
-                            TRUE,
-                            x, y,
-                            w, h);
-
-        gdk_draw_rectangle (widget->window,
-                            widget->style->fg_gc[GTK_STATE_INSENSITIVE],
-                            TRUE,
-                            fx, fy,
-                            fw, fh);
-
-        goto skiplines;      */ /* skip drawing the extra marker lines */
-    }
-    else
-    {
-
 	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
 	
 	pat = cairo_pattern_create_linear (x, y,  x+w, y+h);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.78,0.78,0.74);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 1, 1, 1);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.68,0.68,0.64);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
 
 	cairo_set_source (cr, pat);
 	cairo_fill_preserve (cr);
@@ -1005,11 +987,9 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
 
 	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
 
-	pat = cairo_pattern_create_radial (x, y, (w+h)/4,
-                                   x+w,  y+h, (w+h)/4);
-	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
-	//cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.180, 0.356, 0.317);
-	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);
+	pat = cairo_pattern_create_linear (fx, fy,  fx+fw, fy+fh);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.68,0.68,0.64);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 0.9, 0.9, 0.9);
 
 	cairo_set_source (cr, pat);
 	cairo_fill_preserve (cr);
@@ -1023,120 +1003,43 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
 	cairo_stroke (cr);
 	cairo_pattern_destroy (pat);
 
+    }
+    else
+    {
+
+	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
+	
+	cairo_set_source_rgb (cr, 0.78,0.78,0.74);
+	cairo_fill_preserve (cr);
+
+	cairo_set_source_rgb (cr, 0.505,0.458,0.415);
+	cairo_stroke (cr);
+
+	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
+
+	cairo_set_source_rgb (cr, 0.490, 0.647, 0.764);
+	cairo_fill_preserve (cr);
+
+	cairo_set_source_rgb (cr, 0.505,0.458,0.415);
+	cairo_stroke (cr);
+	
+	/* draw 3d effect by applying a light from top left */
+	
+	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, TRUE);
+
+	pat = cairo_pattern_create_radial (x, y, (w+h)/6,
+                                   x,  y, (w+h)/2);
+	cairo_pattern_add_color_stop_rgba (pat, 0, 1, 1, 1, 0.4);
+	cairo_pattern_add_color_stop_rgba (pat, 1, 0, 0, 0, 0.1);
+	cairo_set_source (cr, pat);
+	cairo_fill_preserve (cr);
+	cairo_stroke (cr);
+	cairo_pattern_destroy (pat);
+
         //widget->style->dark_gc[GTK_STATE_NORMAL],
 	        //widget->style->base_gc[GTK_STATE_SELECTED],
     }
 
-    /*
-    if (slider->orientation == GTK_ORIENTATION_VERTICAL)
-    {
-	
-        int line_y;
-          
-        if (slider->center_val >= 0)
-        {
-            line_y = fy;
-
-            if ((slider->val > slider->center_val && slider->inverted)
-                || (slider->val < slider->center_val && !slider->inverted))
-            {
-                line_y += fh;
-            }
-               
-            line_y = CLAMP (line_y, y, y + h-1);
-
-            gdk_draw_line (widget->window,
-                           widget->style->fg_gc[GTK_STATE_NORMAL],
-                           x,
-                           line_y,
-                           x + w - 1,
-                           line_y);
-
-            line_y = (1 - slider->center_val) * h + y;
-               
-            gdk_draw_line (widget->window,
-                           widget->style->base_gc[GTK_STATE_NORMAL],
-                           x,
-                           line_y,
-                           x + w - 1,
-                           line_y);
-        }
-        else
-        {
-            line_y = fy;
-
-            if (slider->inverted)
-                line_y += fh;
-
-            line_y = CLAMP (line_y, y, y + h-1);
-          
-            gdk_draw_line (widget->window,
-                           widget->style->fg_gc[GTK_STATE_NORMAL],
-                           x,
-                           line_y,
-                           x + w - 1,
-                           line_y);
-        }
-    }
-    else
-    {
-        int line_x;
-          
-        if (slider->center_val >= 0)
-        {
-            line_x = fx;
-
-            if ((slider->val < slider->center_val && slider->inverted)
-                || (slider->val > slider->center_val && !slider->inverted))
-            {
-                line_x += fw;
-            }
-               
-            line_x = CLAMP (line_x, x, x + w-1);
-               
-            gdk_draw_line (widget->window,
-                           widget->style->fg_gc[GTK_STATE_NORMAL],
-                           line_x,
-                           y,
-                           line_x,
-                           y + h - 1);
-
-            line_x =  slider->center_val * w + x;
-
-            gdk_draw_line (widget->window,
-                           widget->style->base_gc[GTK_STATE_NORMAL],
-                           line_x,
-                           y,
-                           line_x,
-                           y + h - 1);
-        }
-        else
-        {
-            line_x = fx;
-
-            if (!slider->inverted)
-                line_x += fw;
-               
-            line_x = CLAMP (line_x, x, x + w-1);
-                    
-            gdk_draw_line (widget->window,
-                           widget->style->fg_gc[GTK_STATE_NORMAL],
-                           line_x,
-                           y,
-                           line_x,
-                           y + h - 1);
-        }
-    }*/
-/*
-skiplines:
-    gtk_paint_shadow (widget->style,
-                      widget->window,
-                      GTK_STATE_NORMAL,
-                      GTK_SHADOW_IN,
-                      NULL, widget, NULL,
-                      x, y,
-                      w, h);
-*/
     if (GTK_WIDGET_HAS_FOCUS (widget))
     {
         int focus_width, focus_pad;
@@ -1640,7 +1543,7 @@ static void phat_fan_slider_draw_fan (PhatFanSlider* slider)
 	cairo_line_to (cr, x+offset, y+(h*(1-value)));
 	cairo_close_path (cr);
 	
-	cairo_set_source_rgba(cr, 1, 1, 0.2, 0.6);
+	cairo_set_source_rgba(cr, 0.380, 0.556, 0.717, 0.6);
 	cairo_set_line_width (cr, 2.0);
 	cairo_fill(cr);
 
