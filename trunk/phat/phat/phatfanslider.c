@@ -846,8 +846,6 @@ static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y
     /*radius = 0.4;   < and an approximate curvature radius */
 
     double x1,y1;
-    cairo_pattern_t *pat;
-
 
     x1=x0+rect_width;
     y1=y0+rect_height;
@@ -889,34 +887,6 @@ static void phat_fan_slider_rounded_rectangle (cairo_t *cr, double x0, double  y
 	}
     }
     cairo_close_path (cr);
-
-    if(selected)
-    {
-	pat = cairo_pattern_create_radial (x0, y0, (rect_width+rect_height)/4,
-                                   x1,  y1, (rect_width+rect_height)/4);
-	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
-	//cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.180, 0.356, 0.317);
-	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);
-    }
-    else
-    {
-	pat = cairo_pattern_create_linear (x0, y0,  x1, y1);
-	cairo_pattern_add_color_stop_rgb (pat, 1, 0.78,0.78,0.74);
-	cairo_pattern_add_color_stop_rgb (pat, 0, 1, 1, 1);
-    }
-
-    cairo_set_source (cr, pat);
-    cairo_fill_preserve (cr);
-    cairo_pattern_destroy (pat);
-
-    pat = cairo_pattern_create_linear (x0, y0,  x1, y1);
-    cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
-    cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
-
-    cairo_set_source (cr, pat);
-    cairo_stroke (cr);
-    cairo_pattern_destroy (pat);
-
 }
 
 
@@ -928,6 +898,8 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
     int w, h;
     int fx, fy;                /* "filled" coordinates */
     int fw, fh;
+    cairo_pattern_t *pat;
+
 
     g_return_val_if_fail (widget != NULL, FALSE);
     g_return_val_if_fail (PHAT_IS_FAN_SLIDER (widget), FALSE);
@@ -1014,9 +986,45 @@ static gboolean phat_fan_slider_expose (GtkWidget*      widget,
     {
 
 	phat_fan_slider_rounded_rectangle (cr, x, y, w, h, 20.0, FALSE);
-        //widget->style->dark_gc[GTK_STATE_NORMAL],
+	
+	pat = cairo_pattern_create_linear (x, y,  x+w, y+h);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.78,0.78,0.74);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 1, 1, 1);
+
+	cairo_set_source (cr, pat);
+	cairo_fill_preserve (cr);
+	cairo_pattern_destroy (pat);
+
+	pat = cairo_pattern_create_linear (x, y, x+w, y+h);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+	cairo_set_source (cr, pat);
+	cairo_stroke (cr);
+	cairo_pattern_destroy (pat);
+
 	phat_fan_slider_rounded_rectangle (cr, fx, fy, fw, fh, 20.0, TRUE);
-        //widget->style->base_gc[GTK_STATE_SELECTED],
+
+	pat = cairo_pattern_create_radial (x, y, (w+h)/4,
+                                   x+w,  y+h, (w+h)/4);
+	cairo_pattern_add_color_stop_rgb (pat, 0.0, 0.490, 0.647, 0.764);
+	//cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.180, 0.356, 0.317);
+	cairo_pattern_add_color_stop_rgb (pat, 1.0, 0.380, 0.556, 0.717);
+
+	cairo_set_source (cr, pat);
+	cairo_fill_preserve (cr);
+	cairo_pattern_destroy (pat);
+
+	pat = cairo_pattern_create_linear (fx, fy, fx+fw, fy+fh);
+	cairo_pattern_add_color_stop_rgb (pat, 1, 0.505,0.458,0.415);
+	cairo_pattern_add_color_stop_rgb (pat, 0, 0.741, 0.713, 0.686);
+
+	cairo_set_source (cr, pat);
+	cairo_stroke (cr);
+	cairo_pattern_destroy (pat);
+
+        //widget->style->dark_gc[GTK_STATE_NORMAL],
+	        //widget->style->base_gc[GTK_STATE_SELECTED],
     }
 
     /*
