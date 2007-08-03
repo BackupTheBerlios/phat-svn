@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <gtk/gtkmain.h>
 #include <gtk/gtksignal.h>
+#include "phatrange.h"
 #include "phatknob.h"
 
 #define SCROLL_DELAY_LENGTH     100
@@ -44,9 +45,7 @@ enum
 /* properties */
 enum
 {
-    PROP_0,
-    PROP_LOG,
-    PROP_INVERTED,
+    PROP_0, /* oops, no props any more */
 };
 
 static void phat_knob_class_init         (PhatKnobClass *klass);
@@ -87,7 +86,7 @@ GdkPixbuf **pixbuf = NULL;
 
 /* Local data */
 
-G_DEFINE_TYPE (PhatKnob, phat_knob, GTK_TYPE_RANGE);
+G_DEFINE_TYPE (PhatKnob, phat_knob, PHAT_TYPE_RANGE);
 
 static void phat_knob_class_init (PhatKnobClass *klass) {
     GtkObjectClass   *object_class;
@@ -111,35 +110,6 @@ static void phat_knob_class_init (PhatKnobClass *klass) {
     widget_class->motion_notify_event = phat_knob_motion_notify;
     widget_class->scroll_event =   phat_knob_scroll;
 
-  /**
-    * PhatKnob:log-mode:
-    *
-    * Whether log mode is enabled. log mode shifts the emphasis towards
-    * the lower values, enabling finer control there.
-    * this is typically useful when controlling frequency values
-    *
-    * Since: 4.2
-    */                                
-    g_object_class_install_property (g_object_class,
-                                      PROP_LOG,
-                                      g_param_spec_boolean ("log-mode",
-							          "Log Mode",
-							          "Whether log mode is enabled",
-                                      FALSE,
-                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
-  /**
-    * PhatKnob:inverted:
-    * 
-    * FIXME no clue. unimplemented as of yet. 
-    *
-    */                                
-    g_object_class_install_property (g_object_class,
-                                      PROP_INVERTED,
-                                      g_param_spec_boolean ("inverted",
-							          "Inverted",
-							          "Whether the knob is inverted",
-                                      FALSE,
-                                      G_PARAM_READWRITE|G_PARAM_CONSTRUCT));
 }
 
 static void phat_knob_init (PhatKnob *knob) {
@@ -213,7 +183,7 @@ void phat_knob_set_value (PhatKnob* knob, double value)
 {
     g_return_if_fail (PHAT_IS_KNOB (knob));
 
-    gtk_range_set_value( GTK_RANGE( knob ), value );
+    phat_range_set_value( PHAT_RANGE( knob ), value );
 }
 
 /**
@@ -229,24 +199,8 @@ double phat_knob_get_value (PhatKnob* knob)
 {
     g_return_val_if_fail (PHAT_IS_KNOB (knob), 0);
 
-    return gtk_range_get_value( GTK_RANGE( knob ) );
+    return phat_range_get_value( PHAT_RANGE( knob ) );
 
-    // XXX: well this is bad :( dunno how/where to the log dance
-    //      perhaps in the expose/mouse stuff... but its not nice there :(
-
-#if 0
-    if(knob->is_log)
-    {
-        gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, exp((knob->adjustment_prv->value) * 
-                                                                        (log(knob->adjustment->upper - knob->adjustment->lower))) + knob->adjustment->lower);
-    }
-    else
-    {
-        gtk_adjustment_set_value((GtkAdjustment *)knob->adjustment, (knob->adjustment_prv->value * (knob->adjustment->upper - knob->adjustment->lower) + knob->adjustment->lower));
-    }
-
-    return knob->adjustment->value;
-#endif
 }
 
 #if 0
@@ -280,7 +234,7 @@ void phat_knob_set_range (PhatKnob* knob,
 }
 #endif
 
-// XXX: this needs to use the property also....
+// XXX: this needs reimplementing when the mapper is done.
 
 void phat_knob_set_log (PhatKnob* knob, gboolean is_log)
 {
@@ -326,21 +280,16 @@ GtkAdjustment* phat_knob_get_adjustment(PhatKnob *knob) {
     g_return_val_if_fail(knob != NULL, NULL);
     g_return_val_if_fail(PHAT_IS_KNOB(knob), NULL);
 
-    return gtk_range_get_adjustment( GTK_RANGE( knob ) );
+    return phat_range_get_adjustment( PHAT_RANGE( knob ) );
 }
 
-void phat_knob_set_update_policy(PhatKnob *knob, GtkUpdateType policy) {
-    g_return_if_fail (knob != NULL);
-    g_return_if_fail (PHAT_IS_KNOB (knob));
 
-    gtk_range_set_update_policy( GTK_RANGE( knob ), policy );
-}
 
 void phat_knob_set_adjustment(PhatKnob *knob, GtkAdjustment *adjustment) {
     g_return_if_fail (knob != NULL);
     g_return_if_fail (PHAT_IS_KNOB (knob));
 
-    gtk_range_set_adjustment( GTK_RANGE( knob ), adjustment );
+    phat_range_set_adjustment( PHAT_RANGE( knob ), adjustment );
 }
 
 
@@ -386,17 +335,19 @@ static void phat_knob_realize(GtkWidget *widget) {
     }
 }
 
-static void phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisition) {
-       PhatKnob *knob;
+static void phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisition)
+{
+    PhatKnob *knob;
 
-       knob = PHAT_KNOB(widget);
+    knob = PHAT_KNOB(widget);
     requisition->width = knob->size;
     requisition->height = knob->size;
 }
 
-static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event) {
+static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event)
+{
     PhatKnob *knob;
-    gfloat dx, dy, throw;
+    gfloat dx, dy;
 
     g_return_val_if_fail(widget != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_KNOB(widget), FALSE);
@@ -410,17 +361,17 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event) {
     // basically we need to work out if the step size is integer
     // if it is, centre the knob about the vertical
 
-    GtkAdjustment *adj = gtk_range_get_adjustment( GTK_RANGE( knob ) );
+    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
     dx = adj->value - adj->lower;     // value, from 0
     dy = adj->upper - adj->lower;     // range
 
-    if (adj->step_increment != 1.0f) {
+  //  if (adj->step_increment != 1.0f) {
         dx=(int)(51*dx/dy)*knob->size;
-    } else {
-        throw=4;
-        dx=(int)(51*dx/throw+(24-throw))*knob->size;
-    }
+ //  } else {
+ //       throw=4;
+  //      dx=(int)(51*dx/throw+(24-throw))*knob->size;
+ //   }
 
     gdk_pixbuf_render_to_drawable_alpha( knob->pixbuf, widget->window,
 	    dx, 0, widget->allocation.x, widget->allocation.y,
@@ -472,7 +423,7 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
     g_return_val_if_fail(event != NULL, FALSE);
 
     knob = PHAT_KNOB(widget);
-    GtkAdjustment *adj = gtk_range_get_adjustment( GTK_RANGE( knob ) );
+    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
     switch (knob->state) {
     case STATE_PRESSED:
@@ -521,6 +472,7 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
 
     x = event->x;
     y = event->y;
+    
 
     if (event->is_hint || (event->window != widget->window))
         gdk_window_get_pointer(widget->window, &x, &y, &mods);
@@ -553,7 +505,7 @@ static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
        gdouble lstep;
 
        knob = PHAT_KNOB(widget);
-    GtkAdjustment *adj = gtk_range_get_adjustment( GTK_RANGE( knob ) );
+    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
     gtk_widget_grab_focus (widget);
 
@@ -597,7 +549,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
 
     g_return_if_fail(knob != NULL);
     g_return_if_fail(PHAT_IS_KNOB(knob));
-    GtkAdjustment *adj = gtk_range_get_adjustment( GTK_RANGE( knob ) );
+    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
     old_value = adj->value;
 
@@ -650,7 +602,7 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
 #endif
 
     if (new_value != old_value)
-        gtk_range_set_value( GTK_RANGE( knob ), new_value );
+        phat_range_set_value( PHAT_RANGE( knob ), new_value );
 }
 
 
@@ -661,16 +613,10 @@ phat_knob_set_property (GObject      *object,
 			            const GValue *value, 
 			            GParamSpec   *pspec)
 {
-  PhatKnob *knob = PHAT_KNOB (object);
+  //PhatKnob *knob = PHAT_KNOB (object);
 
   switch (prop_id) 
     {
-    case PROP_LOG:
-      phat_knob_set_log (knob, g_value_get_boolean (value));
-      break;
-    case PROP_INVERTED:
-      // shite all at the moment
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -683,16 +629,10 @@ phat_knob_get_property (GObject    *object,
 			            GValue     *value, 
 			            GParamSpec *pspec)
 {
-    PhatKnob *knob = PHAT_KNOB (object);
+    //PhatKnob *knob = PHAT_KNOB (object);
 	
     switch (prop_id) 
     {
-        case PROP_LOG:
-          g_value_set_boolean (value, knob->is_log);
-          break;
-        case PROP_INVERTED:
-          // shite all at the moment
-          break;
         default:
           G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
           break;
