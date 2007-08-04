@@ -207,6 +207,7 @@ phat_range_init (PhatRange *range)
 
     range->adjustment = NULL;
     range->value_mapper = NULL;
+    range->internal_value = 0.0;
 }
 
 
@@ -274,6 +275,8 @@ phat_range_set_adjustment (PhatRange      *range,
 	}
 
         range->adjustment = adjustment;
+        range->internal_value = (adjustment->value - adjustment->lower)/(adjustment->upper - adjustment->lower);
+
         g_object_ref_sink (adjustment);
       
         g_signal_connect (adjustment, "changed",
@@ -345,6 +348,7 @@ phat_range_set_range (PhatRange *range,
                  (range->adjustment->upper - range->adjustment->page_size));
 
     gtk_adjustment_set_value (range->adjustment, value);
+    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
     gtk_adjustment_changed (range->adjustment);
 }
 
@@ -371,6 +375,7 @@ phat_range_set_value (PhatRange *range,
                  (range->adjustment->upper));
 
     gtk_adjustment_set_value (range->adjustment, value);
+    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
 }
 
 

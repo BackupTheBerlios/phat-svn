@@ -56,6 +56,7 @@ struct _PhatRange
     GtkAdjustment *adjustment;
 
     /*< private >*/
+    gdouble internal_value;     /* adjsutment value converted to 0..1 range and possibly mapped too */
 
     GdkWindow *event_window;
 };
