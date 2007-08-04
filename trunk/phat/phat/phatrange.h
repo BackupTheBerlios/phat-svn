@@ -51,20 +51,20 @@ typedef struct _PhatRangeClass   PhatRangeClass;
 
 struct _PhatRange
 {
-  GtkWidget widget;
-  GObject *value_mapper; /* slot for the as yet unwritten value_mapper */
-  GtkAdjustment *adjustment;
+    GtkWidget widget;
+    GObject *value_mapper; /* slot for the as yet unwritten value_mapper */
+    GtkAdjustment *adjustment;
 
-  /*< private >*/
+    /*< private >*/
 
-  GdkWindow *event_window;
+    GdkWindow *event_window;
 };
 
 struct _PhatRangeClass
 {
-  GtkWidgetClass parent_class;
+    GtkWidgetClass parent_class;
     
-  void (* value_changed)    (PhatRange     *range);
+    void (* value_changed)    (PhatRange     *range);
 };
 
 
