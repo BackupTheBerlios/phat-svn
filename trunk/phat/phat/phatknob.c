@@ -53,31 +53,31 @@ static void phat_knob_init               (PhatKnob *knob);
 static void phat_knob_destroy            (GtkObject *object);
 static void phat_knob_realize            (GtkWidget *widget);
 static void phat_knob_size_request       (GtkWidget *widget,
-                                           GtkRequisition *requisition);
+                                          GtkRequisition *requisition);
 static gint phat_knob_expose             (GtkWidget *widget, 
-                                           GdkEventExpose *event);
+                                          GdkEventExpose *event);
 static gint phat_knob_button_press       (GtkWidget *widget, 
-                                           GdkEventButton *event);
+                                          GdkEventButton *event);
 static gint phat_knob_button_release     (GtkWidget *widget,
-                                           GdkEventButton *event);
+                                          GdkEventButton *event);
 static gint phat_knob_motion_notify      (GtkWidget *widget, 
-                                           GdkEventMotion *event);
+                                          GdkEventMotion *event);
 static gint phat_knob_scroll             (GtkWidget *widget, 
-                                           GdkEventScroll *event);
+                                          GdkEventScroll *event);
 static void phat_knob_update_mouse       (PhatKnob *knob, 
-                                           gint x,
-                                           gint y,
-                                           gboolean absolute);
+                                          gint x,
+                                          gint y,
+                                          gboolean absolute);
 
 
 static void phat_knob_set_property      (GObject *object, 
-                                          guint prop_id, 
-                                    const GValue *value, 
-                                          GParamSpec   *pspec);
+                                         guint prop_id, 
+                                         const GValue *value, 
+                                         GParamSpec   *pspec);
 static void phat_knob_get_property      (GObject *object, 
-                                          guint prop_id, 
-                                          GValue *value, 
-                                          GParamSpec *pspec);
+                                         guint prop_id, 
+                                         GValue *value, 
+                                         GParamSpec *pspec);
 
 GError *gerror;
 
@@ -136,9 +136,9 @@ static void phat_knob_init (PhatKnob *knob) {
 GtkWidget *phat_knob_new(GtkAdjustment *adjustment) {
 
     return g_object_new (PHAT_TYPE_KNOB,
-                          "adjustment",
-                           adjustment,
-                           NULL);
+                         "adjustment",
+                         adjustment,
+                         NULL);
 }
 
 /**
@@ -163,7 +163,7 @@ GtkWidget* phat_knob_new_with_range (double value, double lower,
 
     adj = (GtkAdjustment*) gtk_adjustment_new (value, lower, upper, step, step, 0);
 
-       /*adj->step_increment=step;*/
+    /*adj->step_increment=step;*/
 
     return phat_knob_new (adj);
 }
@@ -326,7 +326,7 @@ static void phat_knob_realize(GtkWidget *widget) {
      * set last pixbuf pointer to NULL */
     if(pixbuf[i] == NULL){
         pixbuf[i] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
-                                                    52*knob->size,knob->size,&gerror);
+                                                     52*knob->size,knob->size,&gerror);
         knob->pixbuf = pixbuf[i];
         pixbuf=g_realloc(pixbuf,sizeof(GdkPixbuf *) * (i+2));
         pixbuf[i+1] = NULL;                                                 
@@ -366,16 +366,16 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event)
     dx = adj->value - adj->lower;     // value, from 0
     dy = adj->upper - adj->lower;     // range
 
-  //  if (adj->step_increment != 1.0f) {
-        dx=(int)(51*dx/dy)*knob->size;
- //  } else {
- //       throw=4;
-  //      dx=(int)(51*dx/throw+(24-throw))*knob->size;
- //   }
+    //  if (adj->step_increment != 1.0f) {
+    dx=(int)(51*dx/dy)*knob->size;
+    //  } else {
+    //       throw=4;
+    //      dx=(int)(51*dx/throw+(24-throw))*knob->size;
+    //   }
 
     gdk_pixbuf_render_to_drawable_alpha( knob->pixbuf, widget->window,
-        dx, 0, widget->allocation.x, widget->allocation.y,
-        knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0,0,0 );
+                                         dx, 0, widget->allocation.x, widget->allocation.y,
+                                         knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0,0,0 );
 
 //    gdk_draw_pixbuf(widget->window, knob->mask_gc, knob->pixbuf,
 //                    dx, 0, 0, 0, knob->size, knob->size,GDK_RGB_DITHER_NONE,0,0);
@@ -501,10 +501,10 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
 
 static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 {
-       PhatKnob *knob;
-       gdouble lstep;
+    PhatKnob *knob;
+    gdouble lstep;
 
-       knob = PHAT_KNOB(widget);
+    knob = PHAT_KNOB(widget);
     GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
     gtk_widget_grab_focus (widget);
@@ -515,28 +515,28 @@ static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
     // XXX: implemant...
     lstep = 1.0;
 
-       if(event->direction == GDK_SCROLL_UP){
-               adj->value += lstep;
-               if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
-                       adj->value =0.5;
-       } else if(event->direction == GDK_SCROLL_DOWN){
-               adj->value -= lstep;
-               if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
-                       adj->value =0.5;
-       } else if(event->direction == GDK_SCROLL_LEFT){
-               adj->value += lstep*3;
-               if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
-                       adj->value =0.5;
-       } else {
-               adj->value -= lstep*3;
-               if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
-                       adj->value =0.5;
-       }
+    if(event->direction == GDK_SCROLL_UP){
+        adj->value += lstep;
+        if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
+            adj->value =0.5;
+    } else if(event->direction == GDK_SCROLL_DOWN){
+        adj->value -= lstep;
+        if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
+            adj->value =0.5;
+    } else if(event->direction == GDK_SCROLL_LEFT){
+        adj->value += lstep*3;
+        if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
+            adj->value =0.5;
+    } else {
+        adj->value -= lstep*3;
+        if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
+            adj->value =0.5;
+    }
 
     knob->state = STATE_IDLE;
     g_signal_emit_by_name(G_OBJECT (adj), "value_changed");
 
-       return TRUE;
+    return TRUE;
 }
 
 
@@ -589,16 +589,16 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
                     adj->lower);
 
 #if 0
-       /* keep knob from flipping between min and max */
-       if (new_value ==1 && old_value == 0) {
-               adj->value = old_value;
-       } else if (new_value ==0 && old_value == 1) {
-               adj->value = old_value;
-       } else if (new_value - old_value > 0.2 || old_value - new_value > 0.2) {
-               adj->value = old_value;
-       } else {
-               adj->value = new_value;
-       }
+    /* keep knob from flipping between min and max */
+    if (new_value ==1 && old_value == 0) {
+        adj->value = old_value;
+    } else if (new_value ==0 && old_value == 1) {
+        adj->value = old_value;
+    } else if (new_value - old_value > 0.2 || old_value - new_value > 0.2) {
+        adj->value = old_value;
+    } else {
+        adj->value = new_value;
+    }
 #endif
 
     if (new_value != old_value)
@@ -613,13 +613,13 @@ phat_knob_set_property (GObject      *object,
                         const GValue *value, 
                         GParamSpec   *pspec)
 {
-  //PhatKnob *knob = PHAT_KNOB (object);
+    //PhatKnob *knob = PHAT_KNOB (object);
 
-  switch (prop_id) 
+    switch (prop_id) 
     {
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-      break;
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
     }
 }
 
@@ -633,8 +633,8 @@ phat_knob_get_property (GObject    *object,
     
     switch (prop_id) 
     {
-        default:
-          G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-          break;
+    default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
     }
 }
