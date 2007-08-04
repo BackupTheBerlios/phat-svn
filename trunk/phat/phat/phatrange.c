@@ -93,6 +93,8 @@ static void          phat_range_adjustment_changed (GtkAdjustment *adjustment,
 static void          phat_range_adjustment_value_changed (GtkAdjustment *adjustment,
 				                                          gpointer       data);
 
+static void
+phat_range_internal_value_changed(PhatRange *range_ptr);
 
 static guint signals[LAST_SIGNAL];
 
@@ -374,8 +376,8 @@ phat_range_set_value (PhatRange *range,
     value = CLAMP (value, range->adjustment->lower,
                  (range->adjustment->upper));
 
-    gtk_adjustment_set_value (range->adjustment, value);
     range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
+    gtk_adjustment_set_value (range->adjustment, value);
 }
 
 
@@ -396,7 +398,26 @@ phat_range_get_value (PhatRange *range)
     return range->adjustment->value;
 }
 
+gdouble
+phat_range_get_internal_value(PhatRange *range_ptr)
+{
+    return range_ptr->internal_value;
+}
 
+void
+phat_range_set_internal_value(PhatRange *range_ptr, gdouble value)
+{
+    value = CLAMP(value, 0.0, 1.0);
+
+    if (range_ptr->internal_value == value)
+    {
+        return;
+    }
+
+    range_ptr->internal_value = value;
+
+    phat_range_internal_value_changed(range_ptr);
+}
 
 static void
 phat_range_destroy (GtkObject *object)
@@ -513,26 +534,34 @@ phat_range_adjustment_value_changed (GtkAdjustment *adjustment,
 {
     PhatRange *range = PHAT_RANGE (data);
 
-    gtk_widget_queue_draw (GTK_WIDGET (range));
-      
-      /* This is so we don't lag the widget being scrolled. */
-    if (GTK_WIDGET_REALIZED (range))
-        gdk_window_process_updates (GTK_WIDGET (range)->window, FALSE);
+    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
 
-
-    g_signal_emit (range, signals[VALUE_CHANGED], 0);
+    phat_range_internal_value_changed(range);
 }
 
+static void
+phat_range_internal_value_changed(PhatRange *range_ptr)
+{
+    range_ptr->adjustment->value = range_ptr->adjustment->lower + range_ptr->internal_value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+      
+    gtk_widget_queue_draw(GTK_WIDGET(range_ptr));
 
+    /* This is so we don't lag the widget being scrolled. */
+    if (GTK_WIDGET_REALIZED(range_ptr))
+        gdk_window_process_updates(GTK_WIDGET(range_ptr)->window, FALSE);
+
+    g_signal_emit(range_ptr, signals[VALUE_CHANGED], 0);
+}
 
 static void
 phat_range_adjustment_changed (GtkAdjustment *adjustment,
 			      gpointer       data)
 {
     PhatRange *range = PHAT_RANGE (data);
+
+    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
  
     gtk_widget_queue_draw (GTK_WIDGET (range));
-
 }
 
 static void
@@ -552,4 +581,35 @@ phat_range_size_allocate (GtkWidget     *widget,
 			    widget->allocation.width,
 			    widget->allocation.height);
 }
+
+void
+phat_range_page_up(PhatRange *range_ptr)
+{
+}
+
+void
+phat_range_page_down(PhatRange *range_ptr)
+{
+}
+
+void
+phat_range_step_up(PhatRange *range_ptr)
+{
+}
+
+void
+phat_range_step_down(PhatRange *range_ptr)
+{
+}
+
+void
+phat_range_step_left(PhatRange *range_ptr)
+{
+}
+
+void
+phat_range_step_right(PhatRange *range_ptr)
+{
+}
+
 #define __PHAT_RANGE_C__

@@ -85,7 +85,16 @@ void               phat_range_set_value                     (PhatRange      *ran
                                                             gdouble        value);
 gdouble            phat_range_get_value                     (PhatRange      *range);
 
+gdouble phat_range_get_internal_value(PhatRange *range_ptr);
+void phat_range_set_internal_value(PhatRange *range_ptr, gdouble value);
 
+void phat_range_page_up(PhatRange *range_ptr);
+void phat_range_page_down(PhatRange *range_ptr);
+
+void phat_range_step_up(PhatRange *range_ptr);
+void phat_range_step_down(PhatRange *range_ptr);
+void phat_range_step_left(PhatRange *range_ptr);
+void phat_range_step_right(PhatRange *range_ptr);
 
 G_END_DECLS
 

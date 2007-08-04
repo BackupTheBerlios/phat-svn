@@ -347,7 +347,8 @@ static void phat_knob_size_request (GtkWidget *widget, GtkRequisition *requisiti
 static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event)
 {
     PhatKnob *knob;
-    gfloat dx, dy;
+    PhatRange *range;
+    int dx;
 
     g_return_val_if_fail(widget != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_KNOB(widget), FALSE);
@@ -357,21 +358,9 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event)
         return FALSE;
 
     knob = PHAT_KNOB(widget);
+    range = PHAT_RANGE(widget);
 
-    // basically we need to work out if the step size is integer
-    // if it is, centre the knob about the vertical
-
-    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
-
-    dx = adj->value - adj->lower;     // value, from 0
-    dy = adj->upper - adj->lower;     // range
-
-    //  if (adj->step_increment != 1.0f) {
-    dx=(int)(51*dx/dy)*knob->size;
-    //  } else {
-    //       throw=4;
-    //      dx=(int)(51*dx/throw+(24-throw))*knob->size;
-    //   }
+    dx = (int)(51 * phat_range_get_internal_value(range)) * knob->size;
 
     gdk_pixbuf_render_to_drawable_alpha( knob->pixbuf, widget->window,
                                          dx, 0, widget->allocation.x, widget->allocation.y,
@@ -417,13 +406,14 @@ static gint phat_knob_button_press(GtkWidget *widget, GdkEventButton *event) {
 
 static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
     PhatKnob *knob;
+    PhatRange *range;
 
     g_return_val_if_fail(widget != NULL, FALSE);
     g_return_val_if_fail(PHAT_IS_KNOB(widget), FALSE);
     g_return_val_if_fail(event != NULL, FALSE);
 
     knob = PHAT_KNOB(widget);
-    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
+    range = PHAT_RANGE(widget);
 
     switch (knob->state) {
     case STATE_PRESSED:
@@ -432,13 +422,11 @@ static gint phat_knob_button_release(GtkWidget *widget, GdkEventButton *event) {
 
         switch (event->button) {
         case 1:
-            adj->value -= adj->page_increment;
-            g_signal_emit_by_name(G_OBJECT(adj), "value_changed");
+            phat_range_page_up(range);
             break;
 
         case 3:
-            adj->value += adj->page_increment;
-            g_signal_emit_by_name(G_OBJECT (adj), "value_changed");
+            phat_range_page_down(range);
             break;
 
         default:
@@ -502,39 +490,26 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
 static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 {
     PhatKnob *knob;
-    gdouble lstep;
+    PhatRange *range;
 
     knob = PHAT_KNOB(widget);
-    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
+    range = PHAT_RANGE(widget);
 
     gtk_widget_grab_focus (widget);
 
     knob->state = STATE_SCROLL;
 
-    //lstep = knob->adjustment->step_increment*20/(knob->adjustment->upper - knob->adjustment->lower);
-    // XXX: implemant...
-    lstep = 1.0;
-
     if(event->direction == GDK_SCROLL_UP){
-        adj->value += lstep;
-        if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
-            adj->value =0.5;
+        phat_range_step_up(range);
     } else if(event->direction == GDK_SCROLL_DOWN){
-        adj->value -= lstep;
-        if(adj->value < 0.5 + lstep/2 && adj->value > 0.5 - lstep/2)
-            adj->value =0.5;
+        phat_range_step_down(range);
     } else if(event->direction == GDK_SCROLL_LEFT){
-        adj->value += lstep*3;
-        if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
-            adj->value =0.5;
+        phat_range_step_left(range);
     } else {
-        adj->value -= lstep*3;
-        if(adj->value < 0.5 + 1.5*lstep && adj->value > 0.5 - 1.5*lstep)
-            adj->value =0.5;
+        phat_range_step_right(range);
     }
 
     knob->state = STATE_IDLE;
-    g_signal_emit_by_name(G_OBJECT (adj), "value_changed");
 
     return TRUE;
 }
@@ -544,14 +519,16 @@ static gint phat_knob_scroll (GtkWidget *widget, GdkEventScroll *event)
 static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
                                    gboolean absolute)
 {
-    gfloat old_value, new_value, dv, dh;
+    gdouble old_value, new_value, dv, dh;
     gdouble angle;
+    PhatRange *range;
 
     g_return_if_fail(knob != NULL);
     g_return_if_fail(PHAT_IS_KNOB(knob));
-    GtkAdjustment *adj = phat_range_get_adjustment( PHAT_RANGE( knob ) );
 
-    old_value = adj->value;
+    range = PHAT_RANGE(knob);
+
+    old_value =     phat_range_get_internal_value(range);;
 
     angle = atan2(-y + (knob->size>>1), x - (knob->size>>1));
 
@@ -562,8 +539,6 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
             angle += 2;
 
         new_value = -(2.0/3.0) * (angle - 1.25);   /* map [1.25pi, -0.25pi] onto [0, 1] */
-        new_value *= adj->upper - adj->lower;
-        new_value += adj->lower;
 
     } else {
 
@@ -579,30 +554,12 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
             dh *= angle * angle;
         }
 
-        new_value = adj->value +
-            dv * adj->step_increment +
-            dh * (adj->upper -
-                  adj->lower) / 200.0f;
+        new_value = old_value +
+            dv * 0.1 +          /* "step" == 0.1 */
+            dh / 200.0f;
     }
 
-    new_value = MAX(MIN(new_value, adj->upper),
-                    adj->lower);
-
-#if 0
-    /* keep knob from flipping between min and max */
-    if (new_value ==1 && old_value == 0) {
-        adj->value = old_value;
-    } else if (new_value ==0 && old_value == 1) {
-        adj->value = old_value;
-    } else if (new_value - old_value > 0.2 || old_value - new_value > 0.2) {
-        adj->value = old_value;
-    } else {
-        adj->value = new_value;
-    }
-#endif
-
-    if (new_value != old_value)
-        phat_range_set_value( PHAT_RANGE( knob ), new_value );
+    phat_range_set_internal_value(range, new_value);
 }
 
 
