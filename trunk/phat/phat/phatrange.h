@@ -57,6 +57,9 @@ struct _PhatRange
 
     /*< private >*/
     gdouble internal_value;     /* adjsutment value converted to 0..1 range and possibly mapped too */
+    gdouble internal_page;      /* adjsutment page_increment converted to 0..1 range */
+    gdouble internal_step;      /* adjsutment step_increment converted to 0..1 range */
+    gdouble internal_bigstep;   /* like internal_step but used for left/right scroll events */
 
     GdkWindow *event_window;
 };

@@ -94,7 +94,13 @@ static void          phat_range_adjustment_value_changed (GtkAdjustment *adjustm
 				                                          gpointer       data);
 
 static void
-phat_range_internal_value_changed(PhatRange *range_ptr);
+phat_range_update_internal_value(PhatRange *range_ptr);
+
+static void
+phat_range_update_internals(PhatRange *range_ptr);
+
+static void
+phat_range_queue_redraw(PhatRange *range_ptr);
 
 static guint signals[LAST_SIGNAL];
 
@@ -210,6 +216,9 @@ phat_range_init (PhatRange *range)
     range->adjustment = NULL;
     range->value_mapper = NULL;
     range->internal_value = 0.0;
+    range->internal_page = 0.0;
+    range->internal_step = 0.0;
+    range->internal_bigstep = 0.0;
 }
 
 
@@ -277,7 +286,7 @@ phat_range_set_adjustment (PhatRange      *range,
 	}
 
         range->adjustment = adjustment;
-        range->internal_value = (adjustment->value - adjustment->lower)/(adjustment->upper - adjustment->lower);
+        phat_range_update_internals(range);
 
         g_object_ref_sink (adjustment);
       
@@ -350,7 +359,6 @@ phat_range_set_range (PhatRange *range,
                  (range->adjustment->upper - range->adjustment->page_size));
 
     gtk_adjustment_set_value (range->adjustment, value);
-    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
     gtk_adjustment_changed (range->adjustment);
 }
 
@@ -376,7 +384,6 @@ phat_range_set_value (PhatRange *range,
     value = CLAMP (value, range->adjustment->lower,
                  (range->adjustment->upper));
 
-    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
     gtk_adjustment_set_value (range->adjustment, value);
 }
 
@@ -416,7 +423,9 @@ phat_range_set_internal_value(PhatRange *range_ptr, gdouble value)
 
     range_ptr->internal_value = value;
 
-    phat_range_internal_value_changed(range_ptr);
+    range_ptr->adjustment->value = range_ptr->adjustment->lower + range_ptr->internal_value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+
+    phat_range_queue_redraw(range_ptr);
 }
 
 static void
@@ -534,16 +543,14 @@ phat_range_adjustment_value_changed (GtkAdjustment *adjustment,
 {
     PhatRange *range = PHAT_RANGE (data);
 
-    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
+    phat_range_update_internal_value(range);
 
-    phat_range_internal_value_changed(range);
+    phat_range_queue_redraw(range);
 }
 
 static void
-phat_range_internal_value_changed(PhatRange *range_ptr)
+phat_range_queue_redraw(PhatRange *range_ptr)
 {
-    range_ptr->adjustment->value = range_ptr->adjustment->lower + range_ptr->internal_value * (range_ptr->adjustment->upper - range_ptr->adjustment->lower);
-      
     gtk_widget_queue_draw(GTK_WIDGET(range_ptr));
 
     /* This is so we don't lag the widget being scrolled. */
@@ -559,7 +566,7 @@ phat_range_adjustment_changed (GtkAdjustment *adjustment,
 {
     PhatRange *range = PHAT_RANGE (data);
 
-    range->internal_value = (range->adjustment->value - range->adjustment->lower)/(range->adjustment->upper - range->adjustment->lower);
+    phat_range_update_internals(range);
  
     gtk_widget_queue_draw (GTK_WIDGET (range));
 }
@@ -582,34 +589,59 @@ phat_range_size_allocate (GtkWidget     *widget,
 			    widget->allocation.height);
 }
 
+/* Updates internal value from adjustment */
+static
+void
+phat_range_update_internal_value(PhatRange *range_ptr)
+{
+    range_ptr->internal_value = (range_ptr->adjustment->value - range_ptr->adjustment->lower)/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+}
+
+/* Update internals from adjustment */
+static
+void
+phat_range_update_internals(PhatRange *range_ptr)
+{
+    range_ptr->internal_page = range_ptr->adjustment->page_increment/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_step = range_ptr->adjustment->step_increment/(range_ptr->adjustment->upper - range_ptr->adjustment->lower);
+    range_ptr->internal_bigstep = range_ptr->internal_step * 3; /* from phatknob, should be configurable in future */
+    phat_range_update_internal_value(range_ptr);
+}
+
 void
 phat_range_page_up(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_page);
 }
 
 void
 phat_range_page_down(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_page);
 }
 
 void
 phat_range_step_up(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_step);
 }
 
 void
 phat_range_step_down(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_step);
 }
 
 void
 phat_range_step_left(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value + range_ptr->internal_bigstep);
 }
 
 void
 phat_range_step_right(PhatRange *range_ptr)
 {
+    phat_range_set_internal_value(range_ptr, range_ptr->internal_value - range_ptr->internal_bigstep);
 }
 
 #define __PHAT_RANGE_C__
