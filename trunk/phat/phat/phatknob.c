@@ -71,13 +71,13 @@ static void phat_knob_update_mouse       (PhatKnob *knob,
 
 
 static void phat_knob_set_property      (GObject *object, 
-			                              guint prop_id, 
-			                        const GValue *value, 
-			                              GParamSpec   *pspec);
+                                          guint prop_id, 
+                                    const GValue *value, 
+                                          GParamSpec   *pspec);
 static void phat_knob_get_property      (GObject *object, 
-			                              guint prop_id, 
-			                              GValue *value, 
-			                              GParamSpec *pspec);
+                                          guint prop_id, 
+                                          GValue *value, 
+                                          GParamSpec *pspec);
 
 GError *gerror;
 
@@ -99,7 +99,7 @@ static void phat_knob_class_init (PhatKnobClass *klass) {
 
     g_object_class->set_property = phat_knob_set_property;
     g_object_class->get_property = phat_knob_get_property;
-	
+    
     object_class->destroy =        phat_knob_destroy;
 
     widget_class->realize =        phat_knob_realize;
@@ -309,29 +309,29 @@ static void phat_knob_realize(GtkWidget *widget) {
     /* FIXME keeps khagan from drawing knob */
     if(widget->allocation.height > 1)
     {
-		knob->size = widget->allocation.height;
+        knob->size = widget->allocation.height;
     }
     
     /* init first pixbuf */
-	if(pixbuf == NULL){
-    	pixbuf = g_malloc0(sizeof(GdkPixbuf *));
+    if(pixbuf == NULL){
+        pixbuf = g_malloc0(sizeof(GdkPixbuf *));
     }
     /* check for fitting pixbuf or NULL */
     while(pixbuf[i] != NULL && gdk_pixbuf_get_height(pixbuf[i]) != knob->size){
-    	i++;
+        i++;
     }
     /* if NULL realloc pixbuf pointer array one bigger
      * malloc new pixbuf with new size
      * set local pixbuf pointer to global
      * set last pixbuf pointer to NULL */
     if(pixbuf[i] == NULL){
-		pixbuf[i] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
-    												52*knob->size,knob->size,&gerror);
-    	knob->pixbuf = pixbuf[i];
-		pixbuf=g_realloc(pixbuf,sizeof(GdkPixbuf *) * (i+2));
-    	pixbuf[i+1] = NULL;    												
+        pixbuf[i] = gdk_pixbuf_new_from_file_at_size(INSTALL_DIR"/phat/pixmaps/knob.png",
+                                                    52*knob->size,knob->size,&gerror);
+        knob->pixbuf = pixbuf[i];
+        pixbuf=g_realloc(pixbuf,sizeof(GdkPixbuf *) * (i+2));
+        pixbuf[i+1] = NULL;                                                 
     } else { /* if not NULL set fitting pixbuf */
-		knob->pixbuf = pixbuf[i];
+        knob->pixbuf = pixbuf[i];
     }
 }
 
@@ -374,8 +374,8 @@ static gint phat_knob_expose(GtkWidget *widget, GdkEventExpose *event)
  //   }
 
     gdk_pixbuf_render_to_drawable_alpha( knob->pixbuf, widget->window,
-	    dx, 0, widget->allocation.x, widget->allocation.y,
-	    knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0,0,0 );
+        dx, 0, widget->allocation.x, widget->allocation.y,
+        knob->size, knob->size, GDK_PIXBUF_ALPHA_FULL, 0, 0,0,0 );
 
 //    gdk_draw_pixbuf(widget->window, knob->mask_gc, knob->pixbuf,
 //                    dx, 0, 0, 0, knob->size, knob->size,GDK_RGB_DITHER_NONE,0,0);
@@ -609,9 +609,9 @@ static void phat_knob_update_mouse(PhatKnob *knob, gint x, gint y,
 
 static void
 phat_knob_set_property (GObject      *object, 
-			            guint         prop_id, 
-			            const GValue *value, 
-			            GParamSpec   *pspec)
+                        guint         prop_id, 
+                        const GValue *value, 
+                        GParamSpec   *pspec)
 {
   //PhatKnob *knob = PHAT_KNOB (object);
 
@@ -625,12 +625,12 @@ phat_knob_set_property (GObject      *object,
 
 static void
 phat_knob_get_property (GObject    *object, 
-			            guint       prop_id, 
-			            GValue     *value, 
-			            GParamSpec *pspec)
+                        guint       prop_id, 
+                        GValue     *value, 
+                        GParamSpec *pspec)
 {
     //PhatKnob *knob = PHAT_KNOB (object);
-	
+    
     switch (prop_id) 
     {
         default:
