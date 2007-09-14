@@ -44,6 +44,12 @@ else
     PKG_CHECK_MODULES(GTK, gtk+-2.0)
 fi
 
+PKG_CHECK_MODULES( SNDFILE, sndfile )
+AC_SUBST(SNDFILE_LIBS)
+
+PKG_CHECK_MODULES( SAMPLERATE, samplerate )
+AC_SUBST(SAMPLERATE_LIBS)
+
 ##################################################
 # Check for glade 3 (aka gladeui-1.0)
 ##################################################
@@ -74,7 +80,7 @@ PKG_CHECK_MODULES(MISC, libgnomecanvas-2.0)
 
 # set compilation flags
 CFLAGS="$CFLAGS $GTK_CFLAGS $MISC_CFLAGS -Wall -Werror"
-LIBS="$LIBS $GTK_LIBS $MISC_LIBS"
+LIBS="$LIBS $GTK_LIBS $MISC_LIBS $SNDFILE_LIBS $SAMPLERATE_LIBS" 
 
 # print build summary
 AC_CONFIG_COMMANDS_POST([

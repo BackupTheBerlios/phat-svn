@@ -22,7 +22,10 @@ libphat_la_SOURCES =                        \
     phatvumeter.c phatvumeter.h             \
     phatadjustment.c phatadjustment.h phatadjustmentprivate.h \
     tech-knob.c tech-knob.h techknobprivate.h \
-    sample-display.c sample-display.h
+    sample-display.c sample-display.h \
+    phatscrolloscope.c phatscrolloscope.h \
+    phataudiostream.c phataudiostream.h \
+    phatplayaline.c phatplayaline.h
 
 libphat_la_CFLAGS = $(CFLAGS) -std=c99 -I.. -DINSTALL_DIR=\"$(datadir)\" -DSITE_PKGLIB_DIR=\"$(pkglibdir)\" -DSITE_PKGDATA_DIR=\"$(pkgdatadir)\"
 
@@ -37,7 +40,7 @@ libphatinclude_HEADERS =    \
     phathfanslider.h        \
     phatsliderbutton.h      \
     phatkeyboard.h          \
-    phatvkeyboard.h	        \
+    phatvkeyboard.h	    \
     phathkeyboard.h         \
     phatpad.h               \
     phatknob.h              \
@@ -45,9 +48,12 @@ libphatinclude_HEADERS =    \
     phatppmmeter.h          \
     phatdpmmeter.h          \
     phatvumeter.h           \
-    phatadjustment.h		\
+    phatadjustment.h	    \
     tech-knob.h             \
-    sample-display.h        
+    sample-display.h        \
+    phatscrolloscope.h	    \
+    phataudiostream.h	    \
+    phatplayaline.h
 
 BUILT_SORCES = phatmarshallers.h phatmarshallers.c
     
