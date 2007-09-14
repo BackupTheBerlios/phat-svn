@@ -104,7 +104,7 @@ static void phat_slider_init (PhatSlider *slider)
 GtkWidget * phat_slider_new (GtkAdjustment* adjustment)
 {    
     return g_object_new (PHAT_TYPE_SLIDER,
-                          "adjustmnet",
+                          "adjustment",
                            adjustment,
                            NULL);
 }

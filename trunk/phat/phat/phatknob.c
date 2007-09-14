@@ -472,10 +472,10 @@ static gint phat_knob_motion_notify(GtkWidget *widget, GdkEventMotion *event) {
 
     case STATE_DRAGGING:
         if (mods & GDK_BUTTON1_MASK) {
-            phat_knob_update_mouse(knob, x, y, TRUE);
+            phat_knob_update_mouse(knob, x-widget->allocation.x, y-widget->allocation.y , TRUE);
             return TRUE;
         } else if (mods & GDK_BUTTON3_MASK) {
-            phat_knob_update_mouse(knob, x, y, FALSE);
+            phat_knob_update_mouse(knob, x-widget->allocation.x, y-widget->allocation.y ,  FALSE);
             return TRUE;
         }
         break;
