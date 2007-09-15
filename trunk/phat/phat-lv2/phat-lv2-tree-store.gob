@@ -1,0 +1,121 @@
+
+%headertop{
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
+#include <slv2/slv2.h>
+%}
+
+%{
+static GtkTargetEntry targette = { "galan/CompAction", 0, 234 };
+%}
+
+class Phat:LV2:Tree:Store from Gtk:Tree:Store
+{
+
+	init( self ) {
+
+	    unsigned i;
+	    // Setup the columns. Name          IsPlugin       uri
+	    GType mytypes[] =  { G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING };
+	    gtk_tree_store_set_column_types( GTK_TREE_STORE( self ), 3, mytypes );
+
+	    SLV2World world = slv2_world_new();
+	    slv2_world_load_all(world);
+
+	    SLV2Plugins plugins = slv2_world_get_all_plugins(world);
+
+	    //list_plugins(plugins);
+	    for (i=0; i < slv2_plugins_size(plugins); ++i) {
+		SLV2Plugin p = slv2_plugins_get_at(plugins, i);
+
+		SLV2PluginClass pclass = slv2_plugin_get_class(p); 
+		const char *pclass_name = slv2_plugin_class_get_label(pclass);
+		const char *plugin_name = slv2_plugin_get_name(p);
+		const char *plugin_uri  = slv2_plugin_get_uri(p);
+		char *plugin_path = g_strdup_printf( "%s\\%s", pclass_name, plugin_name );
+
+		GtkTreeIter iter;
+		if( self_lookup( self, plugin_path, &iter, TRUE ) ) {
+		    gtk_tree_store_set( GTK_TREE_STORE(self), &iter, 1, TRUE, 2, plugin_uri, -1 );
+		}
+
+		g_free( plugin_path );
+	    }
+
+	    slv2_plugins_free(world, plugins);
+	    slv2_world_free(world);
+
+	}
+
+	public GtkTreeModel * new (void) {
+	    GtkTreeModel *ret = (GtkTreeModel *) GET_NEW;
+	    return GTK_TREE_MODEL(ret);
+	}
+
+	public gboolean lookup( self, char *path, GtkTreeIter *iter, gboolean create ) {
+
+		GtkTreeModel *model = GTK_TREE_MODEL( self );
+
+		gchar **splitpath = g_strsplit( path, "\\", -1 );
+		int i=0;
+		if( ! gtk_tree_model_get_iter_first( model, iter ) ) {
+
+			if( create ) {
+				gtk_tree_store_append( self, iter, NULL );
+				gtk_tree_store_set( self, iter, 0, splitpath[i], 1, FALSE, -1 );
+			} else {
+				g_strfreev( splitpath );
+				return FALSE;
+			}
+		}
+		while( splitpath[i] ) {
+			int found = 0;
+			GtkTreeIter olditer;
+			do {
+				char *name;
+				gtk_tree_model_get( model, iter, 0, &name, -1 );
+				if( !strcmp( name, splitpath[i] ) ) {
+					found = 1;
+				}
+				free(name);
+				olditer = *iter;
+			} while( (!found) && gtk_tree_model_iter_next( model, iter ) );
+			if( !found ) {
+				if( create ) {
+					gtk_tree_store_insert_after( self, iter, NULL, &olditer );
+					gtk_tree_store_set( self, iter, 0, splitpath[i], 1, FALSE, -1 );
+				} else {
+					g_strfreev( splitpath );
+					return FALSE;
+				}
+			}
+			i++;
+			if( splitpath[i] == NULL ) {
+				g_strfreev( splitpath );
+				return TRUE;
+			}
+
+			olditer = *iter;
+			if( !gtk_tree_model_iter_children( model, iter, &olditer ) ) {
+				if( create ) {
+					gtk_tree_store_append( self, iter, &olditer );
+					gtk_tree_store_set( self, iter, 0, splitpath[i], 1, FALSE, -1 );
+				} else {
+					g_strfreev( splitpath );
+					return FALSE;
+				}
+			}
+
+		}
+
+		g_strfreev( splitpath );
+		return FALSE;
+
+	}
+}
+
