@@ -20,10 +20,12 @@ AC_ARG_ENABLE([debug],
     [if test x$enable_debug = xyes; then with_debug=yes ; fi])
 
 if test x$with_debug = xno; then
-    CFLAGS="-O3"
+    if test -z $CFLAGS; then
+        CFLAGS="-O3"
+    fi
     AC_DEFINE(DEBUG, 0, [[whether to display debugging output or not]])
 else
-    CFLAGS="-g"
+    CFLAGS="$CFLAGS -g"
     AC_DEFINE(DEBUG, 1, [[whether to display debugging output or not]])
 fi
 
